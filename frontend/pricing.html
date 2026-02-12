@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pricing.pageTitle">Pricing - EngiSuite Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .pricing-card {
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .pricing-card.popular {
+            border: 2px solid #3b82f6;
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+        
+        .pricing-card.popular .popular-badge {
+            display: flex;
+        }
+        
+        .feature-check {
+            color: #10b981;
+        }
+        
+        .feature-x {
+            color: #ef4444;
+        }
+        
+        .discount-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .annual-toggle {
+            background: #e2e8f0;
+        }
+        
+        .annual-toggle.active {
+            background: #3b82f6;
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .pulse-slow {
+            animation: pulse-slow 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-slate-900 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg">
+                        <i class="fas fa-calculator text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-blue-600 dark:text-white">EngiSuite</h1>
+                        <p class="text-xs text-slate-400">Analytics Pro</p>
+                    </div>
+                </div>
+                <nav class="flex items-center gap-4">
+                    <a href="dashboard.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium" data-i18n="nav.dashboard">
+                        Dashboard
+                    </a>
+                    <a href="pricing.html" class="text-blue-600 dark:text-blue-400 font-medium" data-i18n="navPricing">
+                        Pricing
+                    </a>
+                    <a href="profile.html" class="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400">
+                        <i class="fas fa-user-circle text-xl"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-slate-800 dark:text-white mb-4" data-i18n="pricing.title">
+                Choose Your Plan
+            </h2>
+            <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto" data-i18n="pricing.subtitle">
+                Start with our free tier and upgrade as you grow. All plans include core engineering calculations.
+            </p>
+            
+            <!-- Billing Toggle -->
+            <div class="flex items-center justify-center gap-4 mt-8">
+                <span class="text-slate-600 dark:text-slate-400" id="monthly-label" data-i18n="pricing.monthly">Monthly</span>
+                <button id="billing-toggle" class="relative w-16 h-8 rounded-full annual-toggle transition-colors" onclick="toggleBilling()">
+                    <span id="toggle-dot" class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full shadow transition-transform"></span>
+                </button>
+                <span class="text-slate-600 dark:text-slate-400" id="annual-label">
+                    <span data-i18n="pricing.annual">Annual</span> 
+                    <span class="text-green-500 font-semibold">(<span data-i18n="pricing.savePercent" data-i18n-opts='{\"percent\": 20}'>Save 20%</span>)</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Special Offer Banner -->
+        <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 mb-10 text-white text-center">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <i class="fas fa-gift text-2xl pulse-slow"></i>
+                <span class="font-bold text-xl" data-i18n="pricing.promo.launchSpecial">Launch Special!</span>
+            </div>
+            <p data-i18n="pricing.promo.launchDescription" data-i18n-opts='{\"percent\": 30}'>
+                Get <span class="font-bold text-white">30% OFF</span> on all annual plans. Use code: <span class="bg-white/20 px-3 py-1 rounded-lg font-mono font-bold">LAUNCH30</span>
+            </p>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12" id="pricing-cards">
+            <!-- Free Plan -->
+            <div class="pricing-card bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 flex flex-col">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2" data-i18n="pricing.plan.free.name">Free</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm" data-i18n="pricing.plan.free.description">Perfect for trying out</p>
+                </div>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-slate-800 dark:text-white">$0</span>
+                    <span class="text-slate-500 dark:text-slate-400">/<span data-i18n="pricing.monthly">month</span></span>
+                </div>
+                <ul class="space-y-3 mb-8 flex-grow">
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.free.calculations">50 calculations/month</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.free.tools">Basic engineering tools</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.free.workflows">5 saved workflows</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.free.support">Community support</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-400">
+                        <i class="fas fa-times feature-x"></i>
+                        <span data-i18n="pricing.table.aiMessages">AI Assistant</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-400">
+                        <i class="fas fa-times feature-x"></i>
+                        <span data-i18n="pricing.table.pdfReports">PDF Reports</span>
+                    </li>
+                </ul>
+                <button onclick="selectPlan('free')" class="w-full py-3 px-4 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors" data-i18n="pricing.currentPlan">
+                    Current Plan
+                </button>
+            </div>
+
+            <!-- Starter Plan -->
+            <div class="pricing-card bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 flex flex-col">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2" data-i18n="pricing.plan.starter.name">Starter</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm" data-i18n="pricing.plan.starter.description">For students & hobbyists</p>
+                </div>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-slate-800 dark:text-white" id="starter-price">$4.99</span>
+                    <span class="text-slate-500 dark:text-slate-400">/<span data-i18n="pricing.monthly">month</span></span>
+                    <div class="text-sm text-green-500 font-medium mt-1 hidden" id="starter-annual">
+                        $47.90/year (Save $11.88)
+                    </div>
+                </div>
+                <ul class="space-y-3 mb-8 flex-grow">
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.starter.calculations">200 calculations/month</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.starter.tools">All engineering tools</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.starter.workflows">25 saved workflows</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.starter.support">Email support</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.starter.ai">Basic AI Assistant (50 msgs/mo)</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-400">
+                        <i class="fas fa-times feature-x"></i>
+                        <span data-i18n="pricing.table.pdfReports">PDF Reports</span>
+                    </li>
+                </ul>
+                <button onclick="selectPlan('starter')" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors" data-i18n="pricing.getStarted">
+                    Get Started
+                </button>
+            </div>
+
+            <!-- Professional Plan (Popular) -->
+            <div class="pricing-card popular bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 flex flex-col relative">
+                <div class="popular-badge hidden absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold" data-i18n="pricing.plan.pro.popular">
+                    Most Popular
+                </div>
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2" data-i18n="pricing.plan.pro.name">Professional</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm" data-i18n="pricing.plan.pro.description">For working engineers</p>
+                </div>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold text-blue-600" id="pro-price">$12.99</span>
+                    <span class="text-slate-500 dark:text-slate-400">/<span data-i18n="pricing.monthly">month</span></span>
+                    <div class="text-sm text-green-500 font-medium mt-1 hidden" id="pro-annual">
+                        $124.70/year (Save $31.18)
+                    </div>
+                </div>
+                <ul class="space-y-3 mb-8 flex-grow">
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.calculations">Unlimited calculations</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.tools">All engineering tools</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.workflows">Unlimited workflows</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.support">Priority support</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.ai">Full AI Assistant (500 msgs/mo)</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <i class="fas fa-check feature-check"></i>
+                        <span data-i18n="pricing.plan.pro.reports">PDF Reports & Export</span>
+                    </li>
+                </ul>
+                <button onclick="selectPlan('pro')" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-blue-500/30" data-i18n="pricing.getProfessional">
+                    Get Professional
+                </button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 flex flex-col text-white">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-2" data-i18n="pricing.plan.enterprise.name">Enterprise</h3>
+                    <p class="text-slate-400 text-sm" data-i18n="pricing.plan.enterprise.description">For teams & organizations</p>
+                </div>
+                <div class="mb-6">
+                    <span class="text-4xl font-bold" id="enterprise-price">$39.99</span>
+                    <span class="text-slate-400">/<span data-i18n="pricing.monthly">month</span></span>
+                    <div class="text-sm text-green-400 font-medium mt-1 hidden" id="enterprise-annual">
+                        $383.90/year (Save $95.98)
+                    </div>
+                </div>
+                <ul class="space-y-3 mb-8 flex-grow">
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.everything">Everything in Professional</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.team">Up to 10 team members</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.collaboration">Team collaboration</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.dashboard">Admin dashboard</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.api">API access</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fas fa-check text-green-400"></i>
+                        <span data-i18n="pricing.plan.enterprise.support">Dedicated support</span>
+                    </li>
+                </ul>
+                <button onclick="selectPlan('enterprise')" class="w-full py-3 px-4 bg-white text-slate-800 rounded-xl font-semibold hover:bg-slate-100 transition-colors" data-i18n="pricing.contactSales">
+                    Contact Sales
+                </button>
+            </div>
+        </div>
+
+        <!-- Feature Comparison Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden mb-12">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white" data-i18n="pricing.featureComparison">Feature Comparison</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-slate-700">
+                            <th class="text-left py-4 px-6 font-semibold text-slate-600 dark:text-slate-300" data-i18n="pricing.feature">Feature</th>
+                            <th class="text-center py-4 px-6 font-semibold text-slate-600 dark:text-slate-300" data-i18n="pricing.plan.free.name">Free</th>
+                            <th class="text-center py-4 px-6 font-semibold text-slate-600 dark:text-slate-300" data-i18n="pricing.plan.starter.name">Starter</th>
+                            <th class="text-center py-4 px-6 font-semibold text-blue-600" data-i18n="pricing.plan.pro.name">Professional</th>
+                            <th class="text-center py-4 px-6 font-semibold text-slate-600 dark:text-slate-300" data-i18n="pricing.plan.enterprise.name">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        <tr>
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.calculations">Calculations per month</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">50</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">200</td>
+                            <td class="py-4 px-6 text-center text-blue-600 font-semibold" data-i18n="pricing.table.unlimited">Unlimited</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.unlimited">Unlimited</td>
+                        </tr>
+                        <tr class="bg-slate-50 dark:bg-slate-700/50">
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.workflows">Saved Workflows</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">5</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">25</td>
+                            <td class="py-4 px-6 text-center text-blue-600 font-semibold" data-i18n="pricing.table.unlimited">Unlimited</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.unlimited">Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.aiMessages">AI Assistant messages</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">50/mo</td>
+                            <td class="py-4 px-6 text-center text-blue-600 font-semibold">500/mo</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.unlimited">Unlimited</td>
+                        </tr>
+                        <tr class="bg-slate-50 dark:bg-slate-700/50">
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.pdfReports">PDF Reports</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.teamMembers">Team Members</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">1</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">1</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300">1</td>
+                            <td class="py-4 px-6 text-center text-blue-600 font-semibold">Up to 10</td>
+                        </tr>
+                        <tr class="bg-slate-50 dark:bg-slate-700/50">
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.apiAccess">API Access</td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-times text-red-500"></i></td>
+                            <td class="py-4 px-6 text-center"><i class="fas fa-check text-green-500"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 text-slate-600 dark:text-slate-300" data-i18n="pricing.table.support">Support</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.community">Community</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.email">Email</td>
+                            <td class="py-4 px-6 text-center text-blue-600 font-semibold" data-i18n="pricing.table.priority">Priority</td>
+                            <td class="py-4 px-6 text-center text-slate-600 dark:text-slate-300" data-i18n="pricing.table.dedicated">Dedicated</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center" data-i18n="pricing.faq.title">Frequently Asked Questions</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow">
+                    <h4 class="font-semibold text-slate-800 dark:text-white mb-2" data-i18n="pricing.faq.changePlans">Can I change plans later?</h4>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm" data-i18n="pricing.faq.changePlansAnswer">Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the difference.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow">
+                    <h4 class="font-semibold text-slate-800 dark:text-white mb-2" data-i18n="pricing.faq.paymentMethods">What payment methods do you accept?</h4>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm" data-i18n="pricing.faq.paymentMethodsAnswer">We accept all major credit cards, PayPal, and bank transfers for enterprise accounts.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow">
+                    <h4 class="font-semibold text-slate-800 dark:text-white mb-2" data-i18n="pricing.faq.freeTrial">Is there a free trial?</h4>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm" data-i18n="pricing.faq.freeTrialAnswer">Our Free tier is permanently free with no credit card required. Paid plans come with a 14-day money-back guarantee.</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow">
+                    <h4 class="font-semibold text-slate-800 dark:text-white mb-2" data-i18n="pricing.faq.exceedLimits">What happens if I exceed my limits?</h4>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm" data-i18n="pricing.faq.exceedLimitsAnswer">We'll notify you when you're approaching your limit. You can either upgrade or wait for your monthly reset.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 text-center text-white">
+            <h3 class="text-2xl font-bold mb-4" data-i18n="pricing.cta.title">Ready to boost your engineering workflow?</h3>
+            <p class="text-blue-100 mb-6" data-i18n="pricing.cta.subtitle">Join thousands of engineers using EngiSuite Analytics</p>
+            <div class="flex justify-center gap-4">
+                <a href="register.html" class="bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors" data-i18n="pricing.cta.startFree">
+                    Start Free Trial
+                </a>
+                <a href="dashboard.html" class="border-2 border-white text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/10 transition-colors" data-i18n="pricing.cta.viewDemo">
+                    View Demo
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white" data-i18n="pricing.modal.title">Complete Your Subscription</h3>
+                <button onclick="closePaymentModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="selected-plan-info" class="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 mb-6">
+                <!-- Plan info will be inserted here -->
+            </div>
+
+            <form id="payment-form" onsubmit="processPayment(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" data-i18n="pricing.modal.fullName">Full Name</label>
+                        <input type="text" id="user-name" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" data-i18n="pricing.modal.email">Email</label>
+                        <input type="email" id="user-email" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" data-i18n="pricing.modal.phone">Phone Number</label>
+                        <input type="tel" id="user-phone" required class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1" data-i18n="pricing.modal.promoCode">Promo Code (Optional)</label>
+                        <input type="text" id="promo-code" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" data-i18n-placeholder="pricing.modal.promoPlaceholder">
+                    </div>
+                </div>
+                
+                <button type="submit" id="submit-btn" class="w-full mt-6 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors" data-i18n="pricing.modal.proceed">
+                    Proceed to Payment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white">
+                        <i class="fas fa-calculator text-sm"></i>
+                    </div>
+                    <span class="font-bold text-slate-800 dark:text-white">EngiSuite Analytics</span>
+                </div>
+                <div class="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
+                    <a href="#" class="hover:text-blue-600">Terms</a>
+                    <a href="#" class="hover:text-blue-600">Privacy</a>
+                    <a href="#" class="hover:text-blue-600">Contact</a>
+                </div>
+                <p class="text-sm text-slate-400">© 2024 EngiSuite. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/payment.js"></script>
+    <script>
+        // Pricing configuration
+        const plans = {
+            monthly: {
+                free: { price: 0, name: 'Free' },
+                starter: { price: 4.99, name: 'Starter' },
+                pro: { price: 12.99, name: 'Professional' },
+                enterprise: { price: 39.99, name: 'Enterprise' }
+            },
+            annual: {
+                free: { price: 0, name: 'Free' },
+                starter: { price: 3.99, name: 'Starter', annualTotal: 47.90, savings: 11.88 },
+                pro: { price: 10.39, name: 'Professional', annualTotal: 124.70, savings: 31.18 },
+                enterprise: { price: 31.99, name: 'Enterprise', annualTotal: 383.90, savings: 95.98 }
+            }
+        };
+
+        let isAnnual = false;
+        let selectedPlanId = null;
+
+        function toggleBilling() {
+            isAnnual = !isAnnual;
+            const toggle = document.getElementById('billing-toggle');
+            const toggleDot = document.getElementById('toggle-dot');
+            const monthlyLabel = document.getElementById('monthly-label');
+            const annualLabel = document.getElementById('annual-label');
+
+            if (isAnnual) {
+                toggle.classList.add('active');
+                toggleDot.style.transform = 'translateX(32px)';
+                monthlyLabel.classList.remove('text-slate-800', 'dark:text-white', 'font-semibold');
+                annualLabel.classList.add('text-slate-800', 'dark:text-white', 'font-semibold');
+            } else {
+                toggle.classList.remove('active');
+                toggleDot.style.transform = 'translateX(0)';
+                monthlyLabel.classList.add('text-slate-800', 'dark:text-white', 'font-semibold');
+                annualLabel.classList.remove('text-slate-800', 'dark:text-white', 'font-semibold');
+            }
+
+            updatePrices();
+        }
+
+        function updatePrices() {
+            const billing = isAnnual ? 'annual' : 'monthly';
+            
+            // Update displayed prices
+            document.getElementById('starter-price').textContent = '$' + plans[billing].starter.price.toFixed(2);
+            document.getElementById('pro-price').textContent = '$' + plans[billing].pro.price.toFixed(2);
+            document.getElementById('enterprise-price').textContent = '$' + plans[billing].enterprise.price.toFixed(2);
+
+            // Show/hide annual savings
+            document.getElementById('starter-annual').classList.toggle('hidden', !isAnnual);
+            document.getElementById('pro-annual').classList.toggle('hidden', !isAnnual);
+            document.getElementById('enterprise-annual').classList.toggle('hidden', !isAnnual);
+        }
+
+        function selectPlan(planId) {
+            if (planId === 'free') {
+                // Free plan doesn't require payment
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            if (planId === 'enterprise') {
+                // Enterprise requires contact
+                window.location.href = 'mailto:sales@engisuite.com?subject=Enterprise Plan Inquiry';
+                return;
+            }
+
+            selectedPlanId = planId;
+            const billing = isAnnual ? 'annual' : 'monthly';
+            const plan = plans[billing][planId];
+
+            // Update modal with plan info
+            const planInfo = document.getElementById('selected-plan-info');
+            let priceDisplay = '<div class="flex justify-between items-center">';
+            priceDisplay += '<div><span class="font-semibold text-slate-800 dark:text-white">' + plan.name + '</span>';
+            priceDisplay += '<span class="text-sm text-slate-500 dark:text-slate-400 ml-2">(' + (isAnnual ? 'Annual' : 'Monthly') + ')</span></div>';
+            priceDisplay += '<div class="text-right">';
+            priceDisplay += '<span class="text-2xl font-bold text-blue-600">$' + plan.price.toFixed(2) + '</span>';
+            priceDisplay += '<span class="text-slate-500 dark:text-slate-400">/mo</span>';
+            if (isAnnual && plan.annualTotal) {
+                priceDisplay += '<div class="text-sm text-green-500">$' + plan.annualTotal.toFixed(2) + '/year</div>';
+            }
+            priceDisplay += '</div></div>';
+            planInfo.innerHTML = priceDisplay;
+
+            // Pre-fill user info if logged in
+            const user = window.currentUser;
+            if (user) {
+                document.getElementById('user-email').value = user.email || '';
+                document.getElementById('user-name').value = user.name || '';
+            }
+
+            // Show modal
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            selectedPlanId = null;
+        }
+
+        async function processPayment(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+
+            const userData = {
+                name: document.getElementById('user-name').value,
+                email: document.getElementById('user-email').value,
+                phone: document.getElementById('user-phone').value
+            };
+
+            const promoCode = document.getElementById('promo-code').value;
+
+            try {
+                const result = await paymentService.subscribeToPlan(selectedPlanId, userData);
+                
+                // Open payment window
+                paymentService.openPaymentWindow(result.payment_url);
+                
+                // Show success message
+                alert('Payment window opened. Please complete your payment.');
+                closePaymentModal();
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Proceed to Payment';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (user) {
+                window.currentUser = user;
+            }
+        });
+    </script>
+</body>
+
+</html>

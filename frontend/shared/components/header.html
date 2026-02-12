@@ -1,0 +1,255 @@
+<header
+    class="bg-white dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700 h-14 sm:h-16 flex items-center justify-between px-3 sm:px-4 lg:px-6 z-10 sticky top-0 safe-area-top">
+    <!-- Left Section -->
+    <div class="flex items-center gap-2 sm:gap-4">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn"
+            class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+            aria-label="Open menu">
+            <i class="fas fa-bars text-lg text-slate-500 dark:text-slate-400"></i>
+        </button>
+
+        <!-- Page Title -->
+        <h2 class="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate"
+            data-i18n="calculators.pageTitle">
+            Engineering Calculations
+        </h2>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center gap-1 sm:gap-3">
+        <!-- Quick Actions (Mobile) -->
+        <button id="mobile-search-btn"
+            class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+            aria-label="Search">
+            <i class="fas fa-search text-slate-500 dark:text-slate-400"></i>
+        </button>
+
+        <!-- Credits Display -->
+        <div
+            class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-brand-blue dark:text-blue-400 rounded-full text-sm font-medium border border-blue-100 dark:border-blue-800 credits-display">
+            <i class="fas fa-coins text-yellow-500"></i>
+            <span data-i18n="common.loading">Loading...</span>
+        </div>
+
+        <!-- Credits Display (Mobile - Compact) -->
+        <div
+            class="sm:hidden flex items-center justify-center w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-full border border-blue-100 dark:border-blue-800 credits-display touch-target">
+            <i class="fas fa-coins text-yellow-500 text-sm"></i>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle"
+            class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+            data-theme-toggle title="Toggle dark mode" aria-label="Toggle dark mode">
+            <i class="fas fa-moon text-slate-600 dark:text-slate-400 dark:hidden"></i>
+            <i class="fas fa-sun text-yellow-500 hidden dark:inline"></i>
+        </button>
+
+        <!-- Language Switcher (Desktop) -->
+        <div class="relative hidden sm:block">
+            <select id="language-select"
+                class="appearance-none bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1.5 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 cursor-pointer"
+                data-i18n-lang>
+                <option value="ar" data-i18n="language.arabic">العربية</option>
+                <option value="en" data-i18n="language.english">English</option>
+                <option value="fr" data-i18n="language.french">Français</option>
+            </select>
+            <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500 dark:text-slate-400">
+                <i class="fas fa-chevron-down text-xs"></i>
+            </div>
+        </div>
+
+        <!-- Language Switcher (Mobile - Icon Only) -->
+        <button id="mobile-lang-btn"
+            class="sm:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+            aria-label="Change language">
+            <i class="fas fa-globe text-slate-500 dark:text-slate-400"></i>
+        </button>
+
+        <!-- Notifications -->
+        <button id="notifications-btn"
+            class="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+            aria-label="Notifications">
+            <i class="fas fa-bell text-slate-500 dark:text-slate-400"></i>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full notification-badge hidden"></span>
+        </button>
+
+        <!-- User Profile (Desktop) -->
+        <a href="profile.html"
+            class="hidden md:flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 p-1.5 rounded-lg transition-colors user-profile">
+            <div
+                class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-blue to-purple-500 text-white flex items-center justify-center font-bold text-sm user-avatar shadow-md">
+                ?
+            </div>
+            <div class="text-left">
+                <div class="text-sm font-bold text-slate-700 dark:text-white leading-none user-name"
+                    data-i18n="user.placeholderName">Loading...</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 leading-none mt-1 user-tier"
+                    data-i18n="user.placeholderRole">Loading...</div>
+            </div>
+        </a>
+
+        <!-- User Profile (Mobile - Avatar Only) -->
+        <a href="profile.html"
+            class="md:hidden w-10 h-10 rounded-full bg-gradient-to-tr from-brand-blue to-purple-500 text-white flex items-center justify-center font-bold text-sm user-avatar shadow-md touch-target">
+            ?
+        </a>
+
+        <!-- Logout Button -->
+        <button id="logout-btn"
+            class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors touch-target text-slate-500 dark:text-slate-400 hover:text-red-500"
+            title="Logout" aria-label="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+</header>
+
+<!-- Mobile Search Overlay -->
+<div id="mobile-search-overlay" class="fixed inset-0 bg-black/50 z-50 hidden">
+    <div class="bg-white dark:bg-slate-800 p-4 safe-area-top">
+        <div class="flex items-center gap-3">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="mobile-search-input"
+                    class="w-full h-12 pl-12 pr-4 bg-slate-100 dark:bg-slate-700 border-0 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                    placeholder="Search...">
+            </div>
+            <button id="close-mobile-search"
+                class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 touch-target">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- Quick Search Results -->
+        <div id="mobile-search-results" class="mt-4 max-h-[60vh] overflow-y-auto">
+            <!-- Results will be populated dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Language Sheet -->
+<div id="mobile-lang-sheet" class="fixed inset-x-0 bottom-0 z-50 hidden">
+    <div class="fixed inset-0 bg-black/50" id="mobile-lang-backdrop"></div>
+    <div class="relative bg-white dark:bg-slate-800 rounded-t-2xl p-4 pb-8 safe-area-bottom transform translate-y-full transition-transform duration-300"
+        id="mobile-lang-content">
+        <div class="w-12 h-1 bg-slate-300 dark:bg-slate-600 rounded-full mx-auto mb-4"></div>
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 text-center">Select Language</h3>
+        <div class="space-y-2">
+            <button
+                class="lang-option w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+                data-lang="ar">
+                <span class="text-2xl">🇸🇦</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">العربية</span>
+            </button>
+            <button
+                class="lang-option w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+                data-lang="en">
+                <span class="text-2xl">🇺🇸</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">English</span>
+            </button>
+            <button
+                class="lang-option w-full flex items-center gap-4 p-4 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors touch-target"
+                data-lang="fr">
+                <span class="text-2xl">🇫🇷</span>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Français</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // Mobile Search
+        const searchBtn = document.getElementById('mobile-search-btn');
+        const searchOverlay = document.getElementById('mobile-search-overlay');
+        const searchInput = document.getElementById('mobile-search-input');
+        const closeSearchBtn = document.getElementById('close-mobile-search');
+
+        if (searchBtn && searchOverlay) {
+            searchBtn.addEventListener('click', () => {
+                searchOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 100);
+            });
+        }
+
+        if (closeSearchBtn) {
+            closeSearchBtn.addEventListener('click', () => {
+                searchOverlay.classList.add('hidden');
+            });
+        }
+
+        // Mobile Language Sheet
+        const langBtn = document.getElementById('mobile-lang-btn');
+        const langSheet = document.getElementById('mobile-lang-sheet');
+        const langContent = document.getElementById('mobile-lang-content');
+        const langBackdrop = document.getElementById('mobile-lang-backdrop');
+        const langOptions = document.querySelectorAll('.lang-option');
+
+        function openLangSheet() {
+            if (langSheet && langContent) {
+                langSheet.classList.remove('hidden');
+                setTimeout(() => {
+                    langContent.style.transform = 'translateY(0)';
+                }, 10);
+            }
+        }
+
+        function closeLangSheet() {
+            if (langSheet && langContent) {
+                langContent.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    langSheet.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        if (langBtn) {
+            langBtn.addEventListener('click', openLangSheet);
+        }
+
+        if (langBackdrop) {
+            langBackdrop.addEventListener('click', closeLangSheet);
+        }
+
+        langOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const lang = option.dataset.lang;
+                const langSelect = document.getElementById('language-select');
+                if (langSelect) {
+                    langSelect.value = lang;
+                    langSelect.dispatchEvent(new Event('change'));
+                }
+                closeLangSheet();
+            });
+        });
+
+        // Logout button handler
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                if (window.authGuard) {
+                    await window.authGuard.logout();
+                } else if (window.authService) {
+                    await window.authService.logout();
+                }
+            });
+        }
+
+        // Touch feedback for buttons
+        const touchTargets = document.querySelectorAll('.touch-target');
+        touchTargets.forEach(target => {
+            target.addEventListener('touchstart', () => {
+                target.classList.add('bg-slate-100', 'dark:bg-slate-700');
+            }, { passive: true });
+
+            target.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    target.classList.remove('bg-slate-100', 'dark:bg-slate-700');
+                }, 150);
+            }, { passive: true });
+        });
+    })();
+</script>

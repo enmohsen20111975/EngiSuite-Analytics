@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#2a5298">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title data-i18n="login.pageTitle">EngiSuite Analytics Pro - Login</title>
+    <meta name="description" data-i18n="app.tagline"
+        content="Unified SaaS platform for engineering calculations and data analysis">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2a5298',
+                            dark: '#1e3c72',
+                            text: '#2c3e50',
+                            light: '#f5f7fa',
+                            accent: '#3498db',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 3s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gradient-to-br from-brand-blue to-purple-700 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Language Switcher -->
+    <div class="absolute top-5 right-5 z-10">
+        <div class="relative">
+            <select id="language-select"
+                class="appearance-none bg-white/10 backdrop-blur-md border border-white/20 text-white py-2 pl-4 pr-8 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30 hover:bg-white/20 transition-colors"
+                data-i18n-lang>
+                <option value="ar" class="text-gray-800" data-i18n="language.arabic">العربية</option>
+                <option value="en" class="text-gray-800" data-i18n="language.english">English</option>
+                <option value="fr" class="text-gray-800" data-i18n="language.french">Français</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y:0 right-0 flex items-center px-2 text-white">
+                <i class="fas fa-chevron-down text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 md:p-10 relative overflow-hidden">
+        <!-- Decorative background circle -->
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-brand-light rounded-full opacity-50 z-0"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-50 rounded-full opacity-50 z-0"></div>
+
+        <div class="relative z-10 text-center">
+            <div class="mb-8 flex justify-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-brand-blue to-brand-dark text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+
+            <h1 class="text-2xl font-bold text-brand-text mb-2 tracking-tight">
+                <span data-i18n="app.name">EngiSuite Analytics Pro</span>
+            </h1>
+            <p class="text-slate-500 text-sm mb-8 leading-relaxed" data-i18n="app.tagline">
+                Unified SaaS platform for engineering calculations and data analysis
+            </p>
+
+            <div id="error-message"
+                class="hidden bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-6 border border-red-100 flex items-center gap-3">
+                <i class="fas fa-exclamation-circle flex-shrink-0"></i>
+                <span id="error-text"></span>
+            </div>
+
+            <div id="success-message"
+                class="hidden bg-green-50 text-green-600 p-4 rounded-lg text-sm mb-6 border border-green-100 flex items-center gap-3">
+                <i class="fas fa-check-circle flex-shrink-0"></i>
+                <span id="success-text"></span>
+            </div>
+
+            <!-- Google Login Button -->
+            <button id="google-login-btn"
+                class="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-50 hover:border-slate-300 hover:shadow-md transition-all duration-300 group"
+                onclick="handleGoogleLogin()">
+                <svg viewBox="0 0 24 24" class="w-6 h-6 group-hover:scale-110 transition-transform"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                        fill="#4285F4" />
+                    <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853" />
+                    <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        fill="#FBBC05" />
+                    <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        fill="#EA4335" />
+                </svg>
+                <span data-i18n="login.googleButton" class="text-sm md:text-base">Sign in with Google</span>
+            </button>
+
+            <!-- Email/Password Login Form - HIDDEN (Google Auth Only) -->
+            <form id="login-form" class="hidden space-y-4">
+                <div class="text-left">
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="login.emailLabel">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors"
+                        placeholder="your@email.com" data-i18n-placeholder="login.emailPlaceholder">
+                </div>
+                <div class="text-left">
+                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="login.passwordLabel">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required autocomplete="current-password"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors pr-12"
+                            placeholder="••••••••" data-i18n-placeholder="login.passwordPlaceholder">
+                        <button type="button" id="toggle-password"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="remember-me"
+                            class="w-4 h-4 text-brand-blue border-slate-300 rounded focus:ring-brand-blue">
+                        <span class="text-slate-600" data-i18n="login.rememberMe">Remember me</span>
+                    </label>
+                    <a href="#" class="text-brand-blue hover:underline" data-i18n="login.forgotPassword">Forgot
+                        password?</a>
+                </div>
+                <button type="submit" id="login-submit-btn"
+                    class="w-full bg-gradient-to-r from-brand-blue to-purple-600 text-white font-semibold py-3.5 px-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20">
+                    <span data-i18n="login.submitButton">Sign In</span>
+                </button>
+            </form>
+
+            <div id="loading" class="hidden flex-col items-center justify-center py-4">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-blue mb-3"></div>
+                <span class="text-slate-500 text-sm font-medium animate-pulse" data-i18n="login.redirecting">Signing
+                    in...</span>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-500">
+                    <span data-i18n="login.noAccount">Don't have an account?</span>
+                    <a href="register.html" class="text-brand-blue font-semibold hover:underline"
+                        data-i18n="login.signUpLink">Sign up</a>
+                </p>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-slate-100">
+                <p class="text-xs text-slate-400">
+                    By signing in, you agree to our <a href="#" class="text-brand-blue hover:underline">Terms of
+                        Service</a> and <a href="#" class="text-brand-blue hover:underline">Privacy Policy</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script>
+        // Check if already authenticated
+        document.addEventListener('DOMContentLoaded', async () => {
+            const authSvc = new AuthService();
+
+            // Check if already authenticated
+            if (authSvc.isAuthenticated()) {
+                // Verify with backend
+                const user = await authSvc.getCurrentUser();
+                if (user) {
+                    // Redirect to intended page or dashboard
+                    const params = new URLSearchParams(window.location.search);
+                    const redirect = params.get('redirect') || 'dashboard.html';
+                    window.location.href = redirect;
+                    return;
+                }
+            }
+
+            // Show error from OAuth redirect if any
+            const params = new URLSearchParams(window.location.search);
+            const oauthError = params.get('oauth_error');
+            if (oauthError) {
+                showError(oauthError.replace(/_/g, ' '));
+            }
+
+            // Show success message from registration
+            const successMsg = params.get('success');
+            if (successMsg) {
+                showSuccess(successMsg.replace(/_/g, ' '));
+            }
+
+            // Language switcher
+            const langSelect = document.getElementById('language-select');
+            if (langSelect && window.i18n) {
+                langSelect.value = window.i18n.currentLang || 'en';
+                langSelect.addEventListener('change', (event) => {
+                    window.i18n.setLanguage(event.target.value);
+                });
+            }
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    togglePassword.innerHTML = type === 'password'
+                        ? '<i class="fas fa-eye"></i>'
+                        : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+
+            // Handle form submission
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleEmailLogin);
+            }
+        });
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorContainer.classList.remove('hidden');
+            errorContainer.classList.add('flex');
+
+            // Hide success if showing
+            document.getElementById('success-message').classList.add('hidden');
+            document.getElementById('success-message').classList.remove('flex');
+        }
+
+        function showSuccess(message) {
+            const successContainer = document.getElementById('success-message');
+            const successText = document.getElementById('success-text');
+            successText.textContent = message;
+            successContainer.classList.remove('hidden');
+            successContainer.classList.add('flex');
+
+            // Hide error if showing
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('flex');
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('flex');
+            document.getElementById('success-message').classList.add('hidden');
+            document.getElementById('success-message').classList.remove('flex');
+        }
+
+        function showLoading(show) {
+            const loadingEl = document.getElementById('loading');
+            const formEl = document.getElementById('login-form');
+            const googleBtn = document.getElementById('google-login-btn');
+
+            if (show) {
+                loadingEl.classList.remove('hidden');
+                loadingEl.classList.add('flex');
+                formEl.classList.add('hidden');
+                googleBtn.classList.add('hidden');
+            } else {
+                loadingEl.classList.add('hidden');
+                loadingEl.classList.remove('flex');
+                formEl.classList.remove('hidden');
+                googleBtn.classList.remove('hidden');
+            }
+        }
+
+        async function handleGoogleLogin() {
+            showLoading(true);
+            const authSvc = new AuthService();
+            authSvc.loginWithGoogle();
+        }
+
+        async function handleEmailLogin(event) {
+            event.preventDefault();
+            hideMessages();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const authSvc = new AuthService();
+                await authSvc.login(email, password);
+
+                // Redirect to intended page or dashboard
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect') || 'dashboard.html';
+                window.location.href = redirect;
+
+            } catch (error) {
+                showLoading(false);
+                showError(error.message || 'Login failed. Please try again.');
+            }
+        }
+    </script>
+</body>
+
+</html>

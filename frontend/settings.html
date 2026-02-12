@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="settings.pageTitle">Settings - EngiSuite Analytics Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared/css/settings.css">
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden main-content">
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-6xl mx-auto">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-slate-800 mb-2" data-i18n="settings.title">Settings</h1>
+                    <p class="text-slate-500" data-i18n="settings.subtitle">Customize your EngiSuite experience</p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Settings Navigation -->
+                    <div class="lg:w-64 flex-shrink-0">
+                        <div class="card p-4 sticky top-4">
+                            <nav class="space-y-1">
+                                <div class="settings-nav-item active" data-section="appearance">
+                                    <i class="fas fa-palette w-5"></i>
+                                    <span data-i18n="settings.nav.appearance">Appearance</span>
+                                </div>
+                                <div class="settings-nav-item" data-section="language">
+                                    <i class="fas fa-globe w-5"></i>
+                                    <span data-i18n="settings.nav.language">Language & Region</span>
+                                </div>
+                                <div class="settings-nav-item" data-section="units">
+                                    <i class="fas fa-ruler w-5"></i>
+                                    <span data-i18n="settings.nav.units">Units & Format</span>
+                                </div>
+                                <div class="settings-nav-item" data-section="profile">
+                                    <i class="fas fa-user w-5"></i>
+                                    <span data-i18n="settings.nav.profile">Personal Data</span>
+                                </div>
+                                <div class="settings-nav-item" data-section="notifications">
+                                    <i class="fas fa-bell w-5"></i>
+                                    <span data-i18n="settings.nav.notifications">Notifications</span>
+                                </div>
+                                <div class="settings-nav-item" data-section="accessibility">
+                                    <i class="fas fa-universal-access w-5"></i>
+                                    <span data-i18n="settings.nav.accessibility">Accessibility</span>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- Settings Content -->
+                    <div class="flex-1 space-y-6">
+
+                        <!-- Appearance Section -->
+                        <section id="section-appearance" class="card">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-palette text-primary"></i>
+                                    <span data-i18n="settings.appearance.title">Appearance</span>
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1" data-i18n="settings.appearance.description">
+                                    Customize how EngiSuite looks for you
+                                </p>
+                            </div>
+                            <div class="card-body space-y-8">
+
+                                <!-- Theme Mode -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4" data-i18n="settings.appearance.themeMode">
+                                        Theme Mode</h3>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="theme-mode" value="light" class="sr-only peer">
+                                            <div
+                                                class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                                                <div
+                                                    class="w-full h-20 bg-white border border-slate-200 rounded-lg mb-3 flex items-center justify-center">
+                                                    <i class="fas fa-sun text-2xl text-yellow-500"></i>
+                                                </div>
+                                                <p class="text-center font-medium"
+                                                    data-i18n="settings.appearance.light">Light</p>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="theme-mode" value="dark" class="sr-only peer">
+                                            <div
+                                                class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                                                <div
+                                                    class="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg mb-3 flex items-center justify-center">
+                                                    <i class="fas fa-moon text-2xl text-slate-300"></i>
+                                                </div>
+                                                <p class="text-center font-medium" data-i18n="settings.appearance.dark">
+                                                    Dark</p>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="theme-mode" value="system" class="sr-only peer">
+                                            <div
+                                                class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                                                <div
+                                                    class="w-full h-20 bg-gradient-to-r from-white to-slate-800 border border-slate-200 rounded-lg mb-3 flex items-center justify-center">
+                                                    <i class="fas fa-desktop text-2xl text-slate-500"></i>
+                                                </div>
+                                                <p class="text-center font-medium"
+                                                    data-i18n="settings.appearance.system">System</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Custom Colors -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="text-lg font-semibold" data-i18n="settings.appearance.customColors">
+                                            Custom Colors</h3>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm text-slate-500"
+                                                data-i18n="settings.appearance.enableCustomColors">Enable</span>
+                                            <div class="toggle-switch" id="custom-colors-toggle"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-slate-500 mb-4"
+                                        data-i18n="settings.appearance.customColorsHint">
+                                        Customize your own color scheme. Turn off to use default theme colors.
+                                    </p>
+
+                                    <div id="custom-colors-section" class="space-y-3">
+                                        <!-- Primary Color -->
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="color-primary" value="#2a6fdb">
+                                            <div class="flex-1">
+                                                <label class="font-medium text-sm"
+                                                    data-i18n="settings.appearance.primaryColor">Primary / Accent
+                                                    Color</label>
+                                                <p class="text-xs text-slate-500"
+                                                    data-i18n="settings.appearance.primaryColorHint">Used for buttons,
+                                                    links, and highlights</p>
+                                            </div>
+                                            <input type="text" id="color-primary-hex"
+                                                class="w-24 px-3 py-1.5 text-sm border rounded-lg" value="#2a6fdb">
+                                        </div>
+
+                                        <!-- Background Color -->
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="color-background" value="#f8fafc">
+                                            <div class="flex-1">
+                                                <label class="font-medium text-sm"
+                                                    data-i18n="settings.appearance.backgroundColor">Background
+                                                    Color</label>
+                                                <p class="text-xs text-slate-500"
+                                                    data-i18n="settings.appearance.backgroundColorHint">Main page
+                                                    background</p>
+                                            </div>
+                                            <input type="text" id="color-background-hex"
+                                                class="w-24 px-3 py-1.5 text-sm border rounded-lg" value="#f8fafc">
+                                        </div>
+
+                                        <!-- Surface Color -->
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="color-surface" value="#ffffff">
+                                            <div class="flex-1">
+                                                <label class="font-medium text-sm"
+                                                    data-i18n="settings.appearance.surfaceColor">Surface / Card
+                                                    Color</label>
+                                                <p class="text-xs text-slate-500"
+                                                    data-i18n="settings.appearance.surfaceColorHint">Used for cards and
+                                                    panels</p>
+                                            </div>
+                                            <input type="text" id="color-surface-hex"
+                                                class="w-24 px-3 py-1.5 text-sm border rounded-lg" value="#ffffff">
+                                        </div>
+
+                                        <!-- Text Primary Color -->
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="color-text" value="#0f172a">
+                                            <div class="flex-1">
+                                                <label class="font-medium text-sm"
+                                                    data-i18n="settings.appearance.textColor">Primary Text Color</label>
+                                                <p class="text-xs text-slate-500"
+                                                    data-i18n="settings.appearance.textColorHint">Main text color</p>
+                                            </div>
+                                            <input type="text" id="color-text-hex"
+                                                class="w-24 px-3 py-1.5 text-sm border rounded-lg" value="#0f172a">
+                                        </div>
+
+                                        <!-- Text Secondary Color -->
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="color-text-secondary" value="#475569">
+                                            <div class="flex-1">
+                                                <label class="font-medium text-sm"
+                                                    data-i18n="settings.appearance.textSecondaryColor">Secondary Text
+                                                    Color</label>
+                                                <p class="text-xs text-slate-500"
+                                                    data-i18n="settings.appearance.textSecondaryColorHint">For
+                                                    descriptions and labels</p>
+                                            </div>
+                                            <input type="text" id="color-text-secondary-hex"
+                                                class="w-24 px-3 py-1.5 text-sm border rounded-lg" value="#475569">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 flex gap-3">
+                                        <button class="btn btn-secondary text-sm" onclick="resetCustomColors()">
+                                            <i class="fas fa-undo mr-2"></i>
+                                            <span data-i18n="settings.appearance.resetColors">Reset to Defaults</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Font Size -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4" data-i18n="settings.appearance.fontSize">Font
+                                        Size</h3>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-slate-500">A</span>
+                                        <input type="range" min="1" max="4" value="2"
+                                            class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                                            id="font-size-slider">
+                                        <span class="text-lg text-slate-500">A</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-slate-400 mt-2">
+                                        <span data-i18n="settings.appearance.small">Small</span>
+                                        <span data-i18n="settings.appearance.medium">Medium</span>
+                                        <span data-i18n="settings.appearance.large">Large</span>
+                                        <span data-i18n="settings.appearance.xlarge">Extra Large</span>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Preview -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4" data-i18n="settings.appearance.preview">Live
+                                        Preview</h3>
+                                    <div class="preview-card" id="theme-preview">
+                                        <div class="flex items-center gap-4 mb-4">
+                                            <button class="btn btn-primary">Primary Button</button>
+                                            <button class="btn btn-secondary">Secondary</button>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <p class="text-base" style="color: var(--text-primary)">This is primary text
+                                                - headings and important content</p>
+                                            <p class="text-sm" style="color: var(--text-secondary)">This is secondary
+                                                text - descriptions and labels</p>
+                                        </div>
+                                        <div class="mt-4 p-3 rounded-lg"
+                                            style="background: var(--primary-light); color: var(--primary)">
+                                            <i class="fas fa-info-circle mr-2"></i>
+                                            This shows how alerts will look with your current settings.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Language & Region Section -->
+                        <section id="section-language" class="card hidden">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-globe text-primary"></i>
+                                    <span data-i18n="settings.language.title">Language & Region</span>
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1" data-i18n="settings.language.description">
+                                    Set your preferred language - changes apply immediately across all pages
+                                </p>
+                            </div>
+                            <div class="card-body space-y-6">
+                                <!-- Language Selection -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.language.selectLanguage">Display
+                                        Language</label>
+                                    <select id="language-select-settings" class="form-select">
+                                        <option value="en">🇺🇸 English</option>
+                                        <option value="ar">🇸🇦 العربية (Arabic)</option>
+                                        <option value="fr">🇫🇷 Français (French)</option>
+                                    </select>
+                                    <p class="form-helper" data-i18n="settings.language.languageHint">
+                                        This will change the language of the entire application immediately
+                                    </p>
+                                </div>
+
+                                <!-- Timezone -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.language.timezone">Timezone</label>
+                                    <select id="timezone" class="form-select">
+                                        <option value="UTC">UTC (Coordinated Universal Time)</option>
+                                        <option value="Africa/Cairo">Africa/Cairo (GMT+2)</option>
+                                        <option value="Europe/London">Europe/London (GMT+0/+1)</option>
+                                        <option value="America/New_York">America/New York (GMT-5/-4)</option>
+                                        <option value="Asia/Dubai">Asia/Dubai (GMT+4)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Units & Format Section -->
+                        <section id="section-units" class="card hidden">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-ruler text-primary"></i>
+                                    <span data-i18n="settings.units.title">Units & Format</span>
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1" data-i18n="settings.units.description">
+                                    Configure measurement units and number formatting for calculations
+                                </p>
+                            </div>
+                            <div class="card-body space-y-6">
+                                <!-- Unit System -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4" data-i18n="settings.units.measurementSystem">
+                                        Measurement System</h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="unit-system" value="metric" class="sr-only peer">
+                                            <div
+                                                class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <i class="fas fa-ruler-combined text-2xl text-blue-500"></i>
+                                                    <span class="font-bold">Metric (SI)</span>
+                                                </div>
+                                                <ul class="text-sm text-slate-500 space-y-1">
+                                                    <li>• Meters, Kilometers</li>
+                                                    <li>• Kilograms, Grams</li>
+                                                    <li>• Celsius, Kelvin</li>
+                                                    <li>• Bar, Pascal</li>
+                                                </ul>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="unit-system" value="imperial"
+                                                class="sr-only peer">
+                                            <div
+                                                class="p-4 border-2 border-slate-200 rounded-xl peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <i class="fas fa-ruler text-2xl text-green-500"></i>
+                                                    <span class="font-bold">Imperial (US)</span>
+                                                </div>
+                                                <ul class="text-sm text-slate-500 space-y-1">
+                                                    <li>• Feet, Miles, Inches</li>
+                                                    <li>• Pounds, Ounces</li>
+                                                    <li>• Fahrenheit</li>
+                                                    <li>• PSI</li>
+                                                </ul>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Date Format -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.units.dateFormat">Date Format</label>
+                                    <select id="date-format" class="form-select">
+                                        <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2024)</option>
+                                        <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2024)</option>
+                                        <option value="YYYY-MM-DD">YYYY-MM-DD (2024-12-31)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Number Format -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.units.numberFormat">Number
+                                        Format</label>
+                                    <select id="number-format" class="form-select">
+                                        <option value="en-US">1,234.56 (US - comma thousands, dot decimal)</option>
+                                        <option value="fr-FR">1 234,56 (European - space thousands, comma decimal)
+                                        </option>
+                                        <option value="de-DE">1.234,56 (German - dot thousands, comma decimal)</option>
+                                    </select>
+                                </div>
+
+                                <!-- Decimal Places -->
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.units.decimalPlaces">Default Decimal
+                                        Places</label>
+                                    <select id="decimal-places" class="form-select">
+                                        <option value="2">2 decimal places</option>
+                                        <option value="3">3 decimal places</option>
+                                        <option value="4">4 decimal places</option>
+                                        <option value="0">No decimal (whole numbers)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Personal Data Section -->
+                        <section id="section-profile" class="card hidden">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-user text-primary"></i>
+                                    <span data-i18n="settings.profile.title">Personal Data</span>
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1" data-i18n="settings.profile.description">
+                                    Your personal information used for report generation
+                                </p>
+                            </div>
+                            <div class="card-body space-y-6">
+                                <!-- Profile Picture -->
+                                <div class="flex items-center gap-6">
+                                    <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-blue to-blue-400 flex items-center justify-center text-white text-3xl font-bold shadow-lg"
+                                        id="profile-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-secondary mb-2">
+                                            <i class="fas fa-camera mr-2"></i>
+                                            <span data-i18n="settings.profile.changePhoto">Change Photo</span>
+                                        </button>
+                                        <p class="text-sm text-slate-500" data-i18n="settings.profile.photoHint">
+                                            JPG, PNG or GIF. Max 2MB.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Basic Info -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.firstName">First
+                                            Name</label>
+                                        <input type="text" id="first-name" class="form-input"
+                                            placeholder="Enter your first name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.lastName">Last
+                                            Name</label>
+                                        <input type="text" id="last-name" class="form-input"
+                                            placeholder="Enter your last name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.profile.email">Email Address</label>
+                                    <input type="email" id="email" class="form-input"
+                                        placeholder="your.email@example.com" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" data-i18n="settings.profile.phone">Phone Number</label>
+                                    <input type="tel" id="phone" class="form-input" placeholder="+20 123 456 7890">
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Professional Info (for reports) -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4"
+                                        data-i18n="settings.profile.professionalInfo">
+                                        Professional Information
+                                    </h3>
+                                    <p class="text-sm text-slate-500 mb-4"
+                                        data-i18n="settings.profile.professionalInfoHint">
+                                        This information will appear on generated reports
+                                    </p>
+
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.jobTitle">Job
+                                            Title</label>
+                                        <input type="text" id="job-title" class="form-input"
+                                            placeholder="e.g., Senior Engineer">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.company">Company /
+                                            Organization</label>
+                                        <input type="text" id="company" class="form-input"
+                                            placeholder="Your company name">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.license">Professional
+                                            License Number</label>
+                                        <input type="text" id="license" class="form-input" placeholder="e.g., PE-12345">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label"
+                                            data-i18n="settings.profile.specialization">Specialization</label>
+                                        <select id="specialization" class="form-select">
+                                            <option value="">Select your specialization</option>
+                                            <option value="electrical">Electrical Engineering</option>
+                                            <option value="mechanical">Mechanical Engineering</option>
+                                            <option value="civil">Civil Engineering</option>
+                                            <option value="structural">Structural Engineering</option>
+                                            <option value="environmental">Environmental Engineering</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" data-i18n="settings.profile.address">Business
+                                            Address</label>
+                                        <textarea id="address" class="form-textarea" rows="2"
+                                            placeholder="Enter your business address"></textarea>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="form-group">
+                                            <label class="form-label" data-i18n="settings.profile.city">City</label>
+                                            <input type="text" id="city" class="form-input" placeholder="City">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label"
+                                                data-i18n="settings.profile.country">Country</label>
+                                            <select id="country" class="form-select">
+                                                <option value="">Select country</option>
+                                                <option value="EG">Egypt</option>
+                                                <option value="SA">Saudi Arabia</option>
+                                                <option value="AE">United Arab Emirates</option>
+                                                <option value="US">United States</option>
+                                                <option value="GB">United Kingdom</option>
+                                                <option value="FR">France</option>
+                                                <option value="DE">Germany</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="section-divider"></div>
+
+                                <!-- Report Signature -->
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-4" data-i18n="settings.profile.signature">
+                                        Digital Signature</h3>
+                                    <p class="text-sm text-slate-500 mb-4" data-i18n="settings.profile.signatureHint">
+                                        Upload your signature for report authentication
+                                    </p>
+
+                                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-primary transition-colors cursor-pointer"
+                                        id="signature-upload">
+                                        <i class="fas fa-signature text-4xl text-slate-400 mb-2"></i>
+                                        <p class="text-slate-500" data-i18n="settings.profile.uploadSignature">
+                                            Click to upload or drag and drop
+                                        </p>
+                                        <p class="text-xs text-slate-400 mt-1">PNG with transparent background
+                                            recommended</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer justify-end">
+                                <button class="btn btn-secondary mr-3" onclick="resetPersonalData()">
+                                    <i class="fas fa-undo mr-2"></i>
+                                    <span data-i18n="common.reset">Reset</span>
+                                </button>
+                                <button class="btn btn-primary" onclick="savePersonalData()">
+                                    <i class="fas fa-save mr-2"></i>
+                                    <span data-i18n="common.save">Save Changes</span>
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- Notifications Section -->
+                        <section id="section-notifications" class="card hidden">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-bell text-primary"></i>
+                                    <span data-i18n="settings.notifications.title">Notifications</span>
+                                </h2>
+                            </div>
+                            <div class="card-body space-y-4">
+                                <!-- Email Notifications -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.notifications.email">Email
+                                            Notifications</h4>
+                                        <p class="text-sm text-slate-500" data-i18n="settings.notifications.emailHint">
+                                            Receive updates via email
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch" id="email-notifications-toggle" data-setting="email">
+                                    </div>
+                                </div>
+
+                                <!-- Calculation Complete -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.notifications.calcComplete">
+                                            Calculation Complete</h4>
+                                        <p class="text-sm text-slate-500"
+                                            data-i18n="settings.notifications.calcCompleteHint">
+                                            Notify when long calculations finish
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch active" id="calc-notifications-toggle"
+                                        data-setting="calcComplete"></div>
+                                </div>
+
+                                <!-- Report Generated -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.notifications.reportGenerated">
+                                            Report Generated</h4>
+                                        <p class="text-sm text-slate-500"
+                                            data-i18n="settings.notifications.reportGeneratedHint">
+                                            Notify when reports are ready
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch active" id="report-notifications-toggle"
+                                        data-setting="reportGenerated"></div>
+                                </div>
+
+                                <!-- Marketing -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.notifications.marketing">Marketing &
+                                            Updates</h4>
+                                        <p class="text-sm text-slate-500"
+                                            data-i18n="settings.notifications.marketingHint">
+                                            News about features and updates
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch" id="marketing-notifications-toggle"
+                                        data-setting="marketing"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Accessibility Section -->
+                        <section id="section-accessibility" class="card hidden">
+                            <div class="card-header">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-universal-access text-primary"></i>
+                                    <span data-i18n="settings.accessibility.title">Accessibility</span>
+                                </h2>
+                            </div>
+                            <div class="card-body space-y-4">
+                                <!-- Reduced Motion -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.accessibility.reducedMotion">Reduced
+                                            Motion</h4>
+                                        <p class="text-sm text-slate-500"
+                                            data-i18n="settings.accessibility.reducedMotionHint">
+                                            Minimize animations throughout the app
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch" id="reduced-motion-toggle"></div>
+                                </div>
+
+                                <!-- High Contrast -->
+                                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                                    <div>
+                                        <h4 class="font-medium" data-i18n="settings.accessibility.highContrast">High
+                                            Contrast</h4>
+                                        <p class="text-sm text-slate-500"
+                                            data-i18n="settings.accessibility.highContrastHint">
+                                            Increase contrast for better visibility
+                                        </p>
+                                    </div>
+                                    <div class="toggle-switch" id="high-contrast-toggle"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script src="shared/js/mobile-navigation.js"></script>
+    <script>
+        // Initialize settings page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadComponents();
+            initializeSettingsNav();
+            initializeThemeSettings();
+            initializeCustomColorPickers();
+            initializeFontSizeSlider();
+            initializeUnitSystem();
+            initializeToggleSwitches();
+            loadUserPreferences();
+            loadPersonalData();
+        });
+
+        // Load sidebar and header components
+        async function loadComponents() {
+            try {
+                const sidebarContainer = document.getElementById('sidebar-container');
+                const headerContainer = document.getElementById('header-container');
+
+                const [sidebarHtml, headerHtml] = await Promise.all([
+                    fetch('shared/components/sidebar.html').then(r => r.text()),
+                    fetch('shared/components/header.html').then(r => r.text())
+                ]);
+
+                sidebarContainer.innerHTML = sidebarHtml;
+                headerContainer.innerHTML = headerHtml;
+
+                // Initialize auth
+                if (window.authService) {
+                    authService.initialize();
+                }
+            } catch (error) {
+                console.error('Failed to load components:', error);
+            }
+        }
+
+        // Settings navigation
+        function initializeSettingsNav() {
+            const navItems = document.querySelectorAll('.settings-nav-item');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+
+                    // Update nav active state
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // Show corresponding section
+                    document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+                    document.getElementById(`section-${section}`).classList.remove('hidden');
+                });
+            });
+        }
+
+        // Initialize theme settings
+        function initializeThemeSettings() {
+            const themeRadios = document.querySelectorAll('input[name="theme-mode"]');
+            const currentTheme = themeManager.getTheme();
+
+            // Set current theme
+            themeRadios.forEach(radio => {
+                radio.checked = radio.value === currentTheme;
+
+                radio.addEventListener('change', (e) => {
+                    themeManager.setTheme(e.target.value);
+                    showToast('Theme updated successfully', 'success');
+                });
+            });
+
+            // Listen for theme changes
+            themeManager.on('themeChange', ({ theme }) => {
+                themeRadios.forEach(radio => {
+                    radio.checked = radio.value === theme;
+                });
+            });
+        }
+
+        // Initialize custom color pickers
+        function initializeCustomColorPickers() {
+            const customColors = themeManager.getCustomColors();
+            const toggle = document.getElementById('custom-colors-toggle');
+            const section = document.getElementById('custom-colors-section');
+
+            // Color inputs and their hex text inputs
+            const colorInputs = {
+                primary: { picker: 'color-primary', hex: 'color-primary-hex', key: 'primaryColor' },
+                background: { picker: 'color-background', hex: 'color-background-hex', key: 'backgroundColor' },
+                surface: { picker: 'color-surface', hex: 'color-surface-hex', key: 'surfaceColor' },
+                text: { picker: 'color-text', hex: 'color-text-hex', key: 'textColor' },
+                textSecondary: { picker: 'color-text-secondary', hex: 'color-text-secondary-hex', key: 'textSecondaryColor' }
+            };
+
+            // Set initial values
+            Object.entries(colorInputs).forEach(([name, config]) => {
+                const picker = document.getElementById(config.picker);
+                const hexInput = document.getElementById(config.hex);
+                const value = customColors[config.key] || '#000000';
+
+                picker.value = value;
+                hexInput.value = value;
+
+                // Picker change handler
+                picker.addEventListener('input', (e) => {
+                    hexInput.value = e.target.value;
+                    updateCustomColors();
+                });
+
+                // Hex input change handler
+                hexInput.addEventListener('change', (e) => {
+                    const hex = e.target.value;
+                    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                        picker.value = hex;
+                        updateCustomColors();
+                    }
+                });
+            });
+
+            // Toggle custom colors
+            function updateToggleState() {
+                if (customColors.enabled) {
+                    toggle.classList.add('active');
+                    section.style.opacity = '1';
+                    section.style.pointerEvents = 'auto';
+                } else {
+                    toggle.classList.remove('active');
+                    section.style.opacity = '0.5';
+                    section.style.pointerEvents = 'none';
+                }
+            }
+
+            updateToggleState();
+
+            toggle.addEventListener('click', () => {
+                customColors.enabled = !customColors.enabled;
+                themeManager.setCustomColorsEnabled(customColors.enabled);
+                updateToggleState();
+                showToast(customColors.enabled ? 'Custom colors enabled' : 'Using default colors', 'success');
+            });
+
+            // Update custom colors function
+            window.updateCustomColors = function () {
+                const colors = {
+                    enabled: customColors.enabled,
+                    primaryColor: document.getElementById('color-primary').value,
+                    backgroundColor: document.getElementById('color-background').value,
+                    surfaceColor: document.getElementById('color-surface').value,
+                    textColor: document.getElementById('color-text').value,
+                    textSecondaryColor: document.getElementById('color-text-secondary').value
+                };
+                themeManager.setCustomColors(colors);
+            };
+        }
+
+        // Reset custom colors to defaults
+        window.resetCustomColors = function () {
+            const defaults = {
+                enabled: true,
+                primaryColor: '#2a6fdb',
+                backgroundColor: '#f8fafc',
+                surfaceColor: '#ffffff',
+                textColor: '#0f172a',
+                textSecondaryColor: '#475569'
+            };
+
+            document.getElementById('color-primary').value = defaults.primaryColor;
+            document.getElementById('color-primary-hex').value = defaults.primaryColor;
+            document.getElementById('color-background').value = defaults.backgroundColor;
+            document.getElementById('color-background-hex').value = defaults.backgroundColor;
+            document.getElementById('color-surface').value = defaults.surfaceColor;
+            document.getElementById('color-surface-hex').value = defaults.surfaceColor;
+            document.getElementById('color-text').value = defaults.textColor;
+            document.getElementById('color-text-hex').value = defaults.textColor;
+            document.getElementById('color-text-secondary').value = defaults.textSecondaryColor;
+            document.getElementById('color-text-secondary-hex').value = defaults.textSecondaryColor;
+
+            themeManager.setCustomColors(defaults);
+            showToast('Colors reset to defaults', 'success');
+        };
+
+        // Initialize font size slider
+        function initializeFontSizeSlider() {
+            const slider = document.getElementById('font-size-slider');
+            const fontSizes = ['small', 'medium', 'large', 'x-large'];
+            const currentFontSize = themeManager.getFontSize();
+
+            slider.value = fontSizes.indexOf(currentFontSize) + 1;
+
+            slider.addEventListener('input', (e) => {
+                const sizeIndex = parseInt(e.target.value) - 1;
+                themeManager.setFontSize(fontSizes[sizeIndex]);
+            });
+        }
+
+        // Initialize unit system
+        function initializeUnitSystem() {
+            const unitRadios = document.querySelectorAll('input[name="unit-system"]');
+            const currentUnitSystem = themeManager.getUnitSystem();
+
+            unitRadios.forEach(radio => {
+                radio.checked = radio.value === currentUnitSystem;
+
+                radio.addEventListener('change', (e) => {
+                    themeManager.setUnitSystem(e.target.value);
+                    showToast(`Unit system changed to ${e.target.value}`, 'success');
+                });
+            });
+        }
+
+        // Initialize toggle switches
+        function initializeToggleSwitches() {
+            const prefs = themeManager.getAllPreferences();
+
+            // Reduced motion toggle
+            const reducedMotionToggle = document.getElementById('reduced-motion-toggle');
+            if (prefs.reducedMotion) {
+                reducedMotionToggle.classList.add('active');
+            }
+            reducedMotionToggle.addEventListener('click', () => {
+                const isActive = reducedMotionToggle.classList.toggle('active');
+                themeManager.setReducedMotion(isActive);
+            });
+
+            // Language select
+            const langSelect = document.getElementById('language-select-settings');
+            langSelect.value = prefs.language;
+            langSelect.addEventListener('change', (e) => {
+                themeManager.setLanguage(e.target.value);
+                showToast('Language updated. Page will refresh...', 'success');
+                setTimeout(() => location.reload(), 1000);
+            });
+
+            // Date format
+            const dateFormat = document.getElementById('date-format');
+            if (dateFormat) {
+                dateFormat.value = prefs.dateFormat || 'DD/MM/YYYY';
+                dateFormat.addEventListener('change', (e) => {
+                    prefs.dateFormat = e.target.value;
+                    themeManager.savePreferences();
+                });
+            }
+
+            // Number format
+            const numberFormat = document.getElementById('number-format');
+            if (numberFormat) {
+                numberFormat.value = prefs.numberFormat || 'en-US';
+                numberFormat.addEventListener('change', (e) => {
+                    prefs.numberFormat = e.target.value;
+                    themeManager.savePreferences();
+                });
+            }
+        }
+
+        // Load user preferences
+        function loadUserPreferences() {
+            const prefs = themeManager.getAllPreferences();
+
+            // Notification toggles would be loaded from backend
+            console.log('Loaded preferences:', prefs);
+        }
+
+        // Load personal data
+        async function loadPersonalData() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+
+                    // Populate form fields
+                    document.getElementById('first-name').value = user.given_name || '';
+                    document.getElementById('last-name').value = user.family_name || '';
+                    document.getElementById('email').value = user.email || '';
+
+                    // Update avatar
+                    const avatar = document.getElementById('profile-avatar');
+                    if (user.picture) {
+                        avatar.innerHTML = `<img src="${user.picture}" class="w-full h-full rounded-full object-cover" alt="Profile">`;
+                    } else if (user.name) {
+                        avatar.textContent = user.name.charAt(0).toUpperCase();
+                    }
+
+                    // Load profile data if exists
+                    if (user.profile_data) {
+                        document.getElementById('job-title').value = user.profile_data.job_title || '';
+                        document.getElementById('company').value = user.profile_data.company || '';
+                        document.getElementById('phone').value = user.profile_data.phone || '';
+                        document.getElementById('license').value = user.profile_data.license || '';
+                        document.getElementById('specialization').value = user.profile_data.specialization || '';
+                        document.getElementById('address').value = user.profile_data.address || '';
+                        document.getElementById('city').value = user.profile_data.city || '';
+                        document.getElementById('country').value = user.profile_data.country || '';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load personal data:', error);
+            }
+        }
+
+        // Save personal data
+        async function savePersonalData() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    showToast('Please log in to save your data', 'error');
+                    return;
+                }
+
+                const profileData = {
+                    given_name: document.getElementById('first-name').value,
+                    family_name: document.getElementById('last-name').value,
+                    profile_data: {
+                        job_title: document.getElementById('job-title').value,
+                        company: document.getElementById('company').value,
+                        phone: document.getElementById('phone').value,
+                        license: document.getElementById('license').value,
+                        specialization: document.getElementById('specialization').value,
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        country: document.getElementById('country').value
+                    }
+                };
+
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                if (response.ok) {
+                    showToast('Personal data saved successfully', 'success');
+                } else {
+                    throw new Error('Failed to save');
+                }
+            } catch (error) {
+                console.error('Failed to save personal data:', error);
+                showToast('Failed to save personal data', 'error');
+            }
+        }
+
+        // Reset personal data
+        function resetPersonalData() {
+            if (confirm('Are you sure you want to reset all personal data to defaults?')) {
+                loadPersonalData();
+                showToast('Personal data reset', 'info');
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+
+            const icons = {
+                success: 'fas fa-check-circle text-green-500',
+                error: 'fas fa-exclamation-circle text-red-500',
+                warning: 'fas fa-exclamation-triangle text-yellow-500',
+                info: 'fas fa-info-circle text-blue-500'
+            };
+
+            toast.innerHTML = `
+                <i class="${icons[type]}"></i>
+                <span class="flex-1">${message}</span>
+                <button class="text-slate-400 hover:text-slate-600" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

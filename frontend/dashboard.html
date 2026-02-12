@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title data-i18n="dashboard.pageTitle">EngiSuite Analytics Pro - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <link rel="stylesheet" href="shared/css/scrollbar.css">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+
+    <!-- Sidebar (loaded dynamically) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+
+        <!-- Header (loaded dynamically) -->
+        <div id="header-container"></div>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto w-full p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- Welcome Banner (Mobile Only) -->
+                <div class="md:hidden bg-brand-blue rounded-xl p-6 text-white shadow-lg mb-6">
+                    <h1 class="text-2xl font-bold mb-1">Welcome back!</h1>
+                    <p class="text-blue-200 text-sm">Here's what's happening with your projects today.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Recent Calculations -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-brand-text flex items-center gap-2">
+                                <i class="fas fa-history text-brand-accent"></i>
+                                <span data-i18n="dashboard.widgets.recentCalculations">Latest Calculations</span>
+                            </h3>
+                            <a href="calculators.html"
+                                class="text-sm font-semibold text-brand-blue hover:text-brand-dark">View All</a>
+                        </div>
+                        <div id="recentCalculations" class="space-y-4">
+                            <div class="flex justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-brand-text flex items-center gap-2">
+                                <i class="fas fa-bolt text-brand-warning"></i>
+                                <span data-i18n="dashboard.widgets.quickActions">Quick Actions</span>
+                            </h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="window.location.href='calculators.html?type=electrical'"
+                                class="flex flex-col items-center justify-center p-4 rounded-xl bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors border border-yellow-100 group">
+                                <i class="fas fa-bolt text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-bold"
+                                    data-i18n="dashboard.quickActions.electrical">Electrical</span>
+                            </button>
+                            <button onclick="window.location.href='calculators.html?type=mechanical'"
+                                class="flex flex-col items-center justify-center p-4 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors border border-blue-100 group">
+                                <i class="fas fa-cog text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-bold"
+                                    data-i18n="dashboard.quickActions.mechanical">Mechanical</span>
+                            </button>
+                            <button onclick="window.location.href='calculators.html?type=civil'"
+                                class="flex flex-col items-center justify-center p-4 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 transition-colors border border-green-100 group">
+                                <i class="fas fa-building text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-bold" data-i18n="dashboard.quickActions.civil">Civil</span>
+                            </button>
+                            <button onclick="window.location.href='visual-workflow.html'"
+                                class="flex flex-col items-center justify-center p-4 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors border border-purple-100 group">
+                                <i
+                                    class="fas fa-project-diagram text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-xs font-bold"
+                                    data-i18n="dashboard.quickActions.visualWorkflow">Workflow</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Saved Reports -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-brand-text flex items-center gap-2">
+                                <i class="fas fa-file-alt text-brand-success"></i>
+                                <span data-i18n="dashboard.widgets.savedReports">Saved Reports</span>
+                            </h3>
+                            <a href="reports.html"
+                                class="text-sm font-semibold text-brand-blue hover:text-brand-dark">View All</a>
+                        </div>
+                        <div id="savedReports" class="space-y-3">
+                            <div class="flex justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Suggestions -->
+                    <div
+                        class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-lg shadow-indigo-500/30 p-6 text-white">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <i class="fas fa-lightbulb text-yellow-300"></i>
+                                <span data-i18n="dashboard.widgets.aiSuggestions">AI Suggestions</span>
+                            </h3>
+                            <span class="px-2 py-1 bg-white/20 rounded text-xs font-bold">BETA</span>
+                        </div>
+                        <div id="aiSuggestions" class="space-y-3">
+                            <div class="flex justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JS Files -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/ai-service.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script src="shared/js/mobile-navigation.js"></script>
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Load components
+            await utils.renderComponent('sidebar-container', 'shared/components/sidebar.html');
+            await utils.renderComponent('header-container', 'shared/components/header.html');
+
+            // Initialize common functionality (page-init.js handles auth check)
+            currentUser = pageInit.getStoredUser();
+            
+            // Update UI with user data after components are loaded
+            if (currentUser && window.pageInit) {
+                pageInit.updateUserUI(currentUser);
+            }
+
+            // Load dashboard data
+            loadRecentCalculations();
+            loadSavedReports();
+            loadAISuggestions();
+
+            // Listen for user updates from page-init
+            window.addEventListener('userUpdated', (e) => {
+                currentUser = e.detail;
+                // Update UI when user data is refreshed from backend
+                if (currentUser && window.pageInit) {
+                    pageInit.updateUserUI(currentUser);
+                }
+            });
+
+            // Listen for i18n changes
+            document.addEventListener('i18n:changed', () => {
+                if (currentUser) {
+                    pageInit.updateCreditsDisplay(currentUser.credits_remaining);
+                }
+                loadRecentCalculations();
+                loadSavedReports();
+                loadAISuggestions();
+            });
+        });
+
+        async function loadRecentCalculations() {
+            try {
+                const container = document.getElementById('recentCalculations');
+                if (!container) return;
+
+                // Mock data for demonstration
+                const calculations = [
+                    { id: 1, typeKey: 'dashboard.recentCalc.load', date: '2024-02-10', result: '12.5 A', icon: 'bolt' },
+                    { id: 2, typeKey: 'dashboard.recentCalc.capacity', date: '2024-02-09', result: '350 kVA', icon: 'battery-full' },
+                    { id: 3, typeKey: 'dashboard.recentCalc.transformer', date: '2024-02-08', result: '450 kVA', icon: 'plug' }
+                ];
+
+                container.innerHTML = calculations.map(calc => `
+                    <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group cursor-pointer border border-transparent hover:border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                <i class="fas fa-${calc.icon || 'calculator'}"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-800 text-sm">${i18n.getTranslation(calc.typeKey) || calc.typeKey}</div>
+                                <div class="text-xs text-gray-400">${calc.date}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-brand-success">${calc.result}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading recent calculations:', error);
+                const container = document.getElementById('recentCalculations');
+                if (container) container.innerHTML = `<div class="text-red-400 text-sm p-4 text-center bg-red-50 rounded-lg">${i18n.getTranslation('dashboard.errors.recentCalculations') || 'Error loading calculations'}</div>`;
+            }
+        }
+
+        async function loadSavedReports() {
+            try {
+                const container = document.getElementById('savedReports');
+                if (!container) return;
+
+                // Mock data for demonstration
+                const reports = [
+                    { id: 1, titleKey: 'dashboard.report.dailySite', date: '2024-02-10', type: 'PDF' },
+                    { id: 2, titleKey: 'dashboard.report.energyUsage', date: '2024-02-09', type: 'Excel' },
+                    { id: 3, titleKey: 'dashboard.report.monthly', date: '2024-02-01', type: 'PDF' }
+                ];
+
+                container.innerHTML = reports.map(report => `
+                    <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group cursor-pointer border border-transparent hover:border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded bg-red-50 text-red-500 flex items-center justify-center text-sm">
+                                <i class="fas fa-file-${report.type === 'PDF' ? 'pdf' : 'excel'}"></i>
+                            </div>
+                             <div>
+                                <div class="font-bold text-gray-800 text-sm">${i18n.getTranslation(report.titleKey) || report.titleKey}</div>
+                                <div class="text-xs text-gray-400">${report.date}</div>
+                            </div>
+                        </div>
+                         <button class="text-slate-300 hover:text-brand-blue"><i class="fas fa-download"></i></button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading saved reports:', error);
+                const container = document.getElementById('savedReports');
+                if (container) container.innerHTML = `<div class="text-red-400 text-sm p-4 text-center bg-red-50 rounded-lg">${i18n.getTranslation('dashboard.errors.savedReports') || 'Error loading reports'}</div>`;
+            }
+        }
+
+        async function loadAISuggestions() {
+            try {
+                const container = document.getElementById('aiSuggestions');
+                if (!container) return;
+
+                // Mock AI suggestions for demonstration
+                const suggestions = [
+                    i18n.getTranslation('dashboard.aiSuggestion.transformerUpgrade') || 'Upgrade transformer for efficiency',
+                    i18n.getTranslation('dashboard.aiSuggestion.efficiency') || 'Optimize power factor correction',
+                    i18n.getTranslation('dashboard.aiSuggestion.powerFactor') || 'Check harmonic distortion levels'
+                ];
+
+                container.innerHTML = suggestions.map(suggestion => `
+                    <div class="flex items-start gap-3 p-3 bg-white/10 rounded-lg border border-white/10 hover:bg-white/20 transition-colors">
+                        <i class="fas fa-sparkles text-yellow-300 mt-1 flex-shrink-0"></i>
+                         <span class="text-sm text-indigo-100 leading-snug">${suggestion}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading AI suggestions:', error);
+                const container = document.getElementById('aiSuggestions');
+                if (container) container.innerHTML = `<div class="text-white/60 text-sm p-4 text-center">${i18n.getTranslation('dashboard.errors.aiSuggestions') || 'Error loading AI suggestions'}</div>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

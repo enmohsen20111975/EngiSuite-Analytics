@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="workflows.pageTitle">Engineering Workflows - EngiSuite Analytics Pro</title>
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <link rel="stylesheet" href="shared/css/scrollbar.css">
+    <link rel="stylesheet" href="shared/css/calculators.css">
+    <link rel="stylesheet" href="shared/css/workflows.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2a5298',
+                            dark: '#1e3c72',
+                            text: '#2c3e50',
+                            light: '#f5f7fa',
+                            accent: '#3498db',
+                            success: '#2ecc71',
+                            warning: '#f39c12',
+                            danger: '#e74c3c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+    <!-- Sidebar (loaded dynamically) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+        <!-- Header (loaded dynamically) -->
+        <div id="header-container"></div>
+
+        <!-- Workflows Content -->
+        <div class="flex-1 overflow-y-auto w-full p-3 sm:p-4 lg:p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="mb-4 sm:mb-6">
+                    <h1 class="text-xl sm:text-2xl font-bold text-brand-text" data-i18n="workflows.pageTitle">
+                        Engineering Workflows</h1>
+                    <p class="text-sm text-slate-500 mt-1">Automated engineering calculation workflows</p>
+                </div>
+
+                <!-- Domain Filter -->
+                <div class="domain-filter flex gap-2 overflow-x-auto pb-2 mb-4 sm:mb-6 -mx-3 px-3 sm:mx-0 sm:px-0">
+                    <button class="active px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap" data-domain="all"
+                        data-i18n="workflows.filter.all">All Domains</button>
+                    <button class="px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap" data-domain="electrical"
+                        data-i18n="workflows.filter.electrical">Electrical</button>
+                    <button class="px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap" data-domain="mechanical"
+                        data-i18n="workflows.filter.mechanical">Mechanical</button>
+                    <button class="px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap" data-domain="civil"
+                        data-i18n="workflows.filter.civil">Civil</button>
+                </div>
+
+                <!-- Workflow Grid -->
+                <div id="workflow-grid"
+                    class="workflow-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <!-- Workflow cards will be dynamically populated -->
+                </div>
+
+                <!-- No Workflows Message -->
+                <div id="no-workflows" class="no-workflows text-center py-12" style="display: none;">
+                    <i class="fas fa-inbox text-4xl text-slate-300 mb-4"></i>
+                    <p class="text-slate-500" data-i18n="workflows.noWorkflows">No workflows found</p>
+                    <p class="text-sm text-slate-400 mt-2" data-i18n="workflows.getStarted">Get started by creating your
+                        first engineering workflow</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script src="shared/js/mobile-navigation.js"></script>
+    <script type="module" src="shared/js/workflows-app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#2a5298">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title data-i18n="register.pageTitle">EngiSuite Analytics Pro - Sign Up</title>
+    <meta name="description" data-i18n="app.tagline"
+        content="Unified SaaS platform for engineering calculations and data analysis">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2a5298',
+                            dark: '#1e3c72',
+                            text: '#2c3e50',
+                            light: '#f5f7fa',
+                            accent: '#3498db',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gradient-to-br from-brand-blue to-purple-700 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Language Switcher -->
+    <div class="absolute top-5 right-5 z-10">
+        <div class="relative">
+            <select id="language-select"
+                class="appearance-none bg-white/10 backdrop-blur-md border border-white/20 text-white py-2 pl-4 pr-8 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30 hover:bg-white/20 transition-colors"
+                data-i18n-lang>
+                <option value="ar" class="text-gray-800" data-i18n="language.arabic">العربية</option>
+                <option value="en" class="text-gray-800" data-i18n="language.english">English</option>
+                <option value="fr" class="text-gray-800" data-i18n="language.french">Français</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                <i class="fas fa-chevron-down text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Card -->
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 md:p-10 relative overflow-hidden">
+        <!-- Decorative background circle -->
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-brand-light rounded-full opacity-50 z-0"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-50 rounded-full opacity-50 z-0"></div>
+
+        <div class="relative z-10 text-center">
+            <div class="mb-6 flex justify-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-brand-blue to-brand-dark text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+
+            <h1 class="text-2xl font-bold text-brand-text mb-2 tracking-tight">
+                <span data-i18n="register.title">Create Account</span>
+            </h1>
+            <p class="text-slate-500 text-sm mb-6 leading-relaxed" data-i18n="register.subtitle">
+                Start your engineering journey with 100 free credits
+            </p>
+
+            <div id="error-message"
+                class="hidden bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-6 border border-red-100 flex items-center gap-3">
+                <i class="fas fa-exclamation-circle flex-shrink-0"></i>
+                <span id="error-text"></span>
+            </div>
+
+            <!-- Google Sign Up Button -->
+            <button id="google-signup-btn"
+                class="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-50 hover:border-slate-300 hover:shadow-md transition-all duration-300 group"
+                onclick="handleGoogleSignup()">
+                <svg viewBox="0 0 24 24" class="w-6 h-6 group-hover:scale-110 transition-transform"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                        fill="#4285F4" />
+                    <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853" />
+                    <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        fill="#FBBC05" />
+                    <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        fill="#EA4335" />
+                </svg>
+                <span data-i18n="register.googleButton" class="text-sm md:text-base">Sign up with Google</span>
+            </button>
+
+            <!-- Email/Password Registration Form - HIDDEN (Google Auth Only) -->
+            <form id="register-form" class="hidden space-y-4">
+                <div class="text-left">
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="register.nameLabel">Full Name</label>
+                    <input type="text" id="name" name="name" required
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors"
+                        placeholder="John Doe" data-i18n-placeholder="register.namePlaceholder">
+                </div>
+                <div class="text-left">
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="register.emailLabel">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors"
+                        placeholder="your@email.com" data-i18n-placeholder="register.emailPlaceholder">
+                </div>
+                <div class="text-left">
+                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="register.passwordLabel">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors pr-12"
+                            placeholder="••••••••" data-i18n-placeholder="register.passwordPlaceholder">
+                        <button type="button" id="toggle-password"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="register.passwordHint">Minimum 8 characters</p>
+                </div>
+                <div class="text-left">
+                    <label for="confirm-password" class="block text-sm font-medium text-slate-700 mb-1"
+                        data-i18n="register.confirmPasswordLabel">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required autocomplete="new-password"
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-colors"
+                        placeholder="••••••••" data-i18n-placeholder="register.confirmPasswordPlaceholder">
+                </div>
+                <div class="text-left">
+                    <label class="flex items-start gap-2 cursor-pointer">
+                        <input type="checkbox" id="agree-terms" required
+                            class="w-4 h-4 mt-1 text-brand-blue border-slate-300 rounded focus:ring-brand-blue">
+                        <span class="text-sm text-slate-600">
+                            <span data-i18n="register.agreeTerms">I agree to the</span>
+                            <a href="#" class="text-brand-blue hover:underline" data-i18n="register.termsLink">Terms of
+                                Service</a>
+                            <span data-i18n="register.and">and</span>
+                            <a href="#" class="text-brand-blue hover:underline" data-i18n="register.privacyLink">Privacy
+                                Policy</a>
+                        </span>
+                    </label>
+                </div>
+                <button type="submit" id="register-submit-btn"
+                    class="w-full bg-gradient-to-r from-brand-blue to-purple-600 text-white font-semibold py-3.5 px-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20">
+                    <span data-i18n="register.submitButton">Create Account</span>
+                </button>
+            </form>
+
+            <div id="loading" class="hidden flex-col items-center justify-center py-4">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-blue mb-3"></div>
+                <span class="text-slate-500 text-sm font-medium animate-pulse"
+                    data-i18n="register.creatingAccount">Creating account...</span>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-500">
+                    <span data-i18n="register.haveAccount">Already have an account?</span>
+                    <a href="login.html" class="text-brand-blue font-semibold hover:underline"
+                        data-i18n="register.signInLink">Sign in</a>
+                </p>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-slate-100">
+                <div class="flex items-center justify-center gap-4 text-sm text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span data-i18n="register.benefit1">100 free credits</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span data-i18n="register.benefit2">No credit card</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const authSvc = new AuthService();
+
+            // Check if already authenticated
+            if (authSvc.isAuthenticated()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Language switcher
+            const langSelect = document.getElementById('language-select');
+            if (langSelect && window.i18n) {
+                langSelect.value = window.i18n.currentLang || 'en';
+                langSelect.addEventListener('change', (event) => {
+                    window.i18n.setLanguage(event.target.value);
+                });
+            }
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    togglePassword.innerHTML = type === 'password'
+                        ? '<i class="fas fa-eye"></i>'
+                        : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+
+            // Handle form submission
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            }
+        });
+
+        function showError(message) {
+            const errorContainer = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorContainer.classList.remove('hidden');
+            errorContainer.classList.add('flex');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('flex');
+        }
+
+        function showLoading(show) {
+            const loadingEl = document.getElementById('loading');
+            const formEl = document.getElementById('register-form');
+            const googleBtn = document.getElementById('google-signup-btn');
+
+            if (show) {
+                loadingEl.classList.remove('hidden');
+                loadingEl.classList.add('flex');
+                formEl.classList.add('hidden');
+                googleBtn.classList.add('hidden');
+            } else {
+                loadingEl.classList.add('hidden');
+                loadingEl.classList.remove('flex');
+                formEl.classList.remove('hidden');
+                googleBtn.classList.remove('hidden');
+            }
+        }
+
+        async function handleGoogleSignup() {
+            showLoading(true);
+            const authSvc = new AuthService();
+            authSvc.loginWithGoogle();
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            hideError();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const agreeTerms = document.getElementById('agree-terms').checked;
+
+            // Validation
+            if (!name || !email || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+
+            if (!agreeTerms) {
+                showError('Please agree to the Terms of Service and Privacy Policy');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const authSvc = new AuthService();
+                await authSvc.register(email, password, name);
+
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html?success=Account_created_successfully';
+
+            } catch (error) {
+                showLoading(false);
+                showError(error.message || 'Registration failed. Please try again.');
+            }
+        }
+    </script>
+</body>
+
+</html>

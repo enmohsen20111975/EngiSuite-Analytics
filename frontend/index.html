@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#2a5298">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="pageTitle">EngiSuite - Engineering Suite Pro</title>
+    <meta name="description" content="Complete engineering suite for calculations, workflows, and analytics">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <link rel="stylesheet" href="shared/css/index-tailwind.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans antialiased bg-gradient-primary min-h-screen m-0 p-0 text-gray-800">
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay fixed inset-0 bg-black/50 z-40 hidden md:hidden" id="mobile-menu-overlay"></div>
+
+    <!-- Header -->
+    <header
+        class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-soft transition-all duration-300"
+        id="main-header">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <a href="index.html"
+                class="flex items-center gap-3 text-brand-blue font-bold text-xl hover:text-brand-dark transition-colors">
+                <i class="fas fa-calculator text-2xl"></i>
+                <span data-i18n="app.name">EngiSuite</span>
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <button
+                class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 touch-target"
+                id="mobile-nav-toggle" aria-label="Toggle menu">
+                <i class="fas fa-bars text-slate-600"></i>
+            </button>
+
+            <!-- Desktop Navigation -->
+            <ul class="hidden md:flex items-center gap-8 list-none m-0 p-0">
+                <li><a href="#features"
+                        class="relative text-gray-700 font-medium hover:text-brand-blue transition-colors"
+                        data-i18n="nav.features">Features</a></li>
+                <li><a href="calculators.html"
+                        class="relative text-gray-700 font-medium hover:text-brand-blue transition-colors"
+                        data-i18n="nav.calculators">Calculators</a></li>
+                <li><a href="workflows.html"
+                        class="relative text-gray-700 font-medium hover:text-brand-blue transition-colors"
+                        data-i18n="nav.workflows">Workflows</a></li>
+                <li><a href="analytics.html"
+                        class="relative text-gray-700 font-medium hover:text-brand-blue transition-colors"
+                        data-i18n="nav.analytics">Analytics</a></li>
+                <li><a href="reports.html"
+                        class="relative text-gray-700 font-medium hover:text-brand-blue transition-colors"
+                        data-i18n="nav.reports">Reports</a></li>
+            </ul>
+
+            <div class="hidden md:flex items-center gap-4">
+                <div class="language-switcher">
+                    <select id="language-select"
+                        class="appearance-none bg-slate-50 border border-slate-200 text-slate-600 py-2 px-4 pr-10 rounded-lg text-sm cursor-pointer hover:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                        <option value="en" data-i18n="language.english">English</option>
+                        <option value="ar" data-i18n="language.arabic">العربية</option>
+                        <option value="fr" data-i18n="language.french">Français</option>
+                    </select>
+                </div>
+
+                <div id="user-profile" style="display: none;">
+                    <div class="user-avatar" id="user-avatar"></div>
+                    <span id="user-name"></span>
+                </div>
+
+                <a href="login.html"
+                    class="px-6 py-3 bg-brand-blue text-white rounded-lg font-medium hover:bg-brand-dark hover:-translate-y-0.5 hover:shadow-brand transition-all"
+                    data-i18n="nav.login">Login</a>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Drawer -->
+        <div class="mobile-nav-drawer fixed top-0 right-0 w-72 h-full bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-50 md:hidden"
+            id="mobile-nav-drawer">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <span class="font-bold text-brand-blue">Menu</span>
+                <button class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 touch-target"
+                    id="close-mobile-nav">
+                    <i class="fas fa-times text-slate-600"></i>
+                </button>
+            </div>
+            <ul class="p-4 space-y-2">
+                <li><a href="#features" class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 touch-target"
+                        data-i18n="nav.features">Features</a></li>
+                <li><a href="calculators.html"
+                        class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 touch-target"
+                        data-i18n="nav.calculators">Calculators</a></li>
+                <li><a href="workflows.html"
+                        class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 touch-target"
+                        data-i18n="nav.workflows">Workflows</a></li>
+                <li><a href="analytics.html"
+                        class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 touch-target"
+                        data-i18n="nav.analytics">Analytics</a></li>
+                <li><a href="reports.html"
+                        class="block px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 touch-target"
+                        data-i18n="nav.reports">Reports</a></li>
+            </ul>
+            <div class="p-4 border-t border-gray-100">
+                <select id="mobile-language-select"
+                    class="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-600 py-3 px-4 rounded-lg cursor-pointer">
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                    <option value="fr">Français</option>
+                </select>
+            </div>
+            <div class="p-4">
+                <a href="login.html"
+                    class="block w-full text-center px-4 py-3 bg-brand-blue text-white rounded-lg font-medium touch-target"
+                    data-i18n="nav.login">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center py-32 px-8 text-center overflow-hidden">
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight" data-i18n="hero.title">
+                <span class="text-yellow-300">Professional Engineering</span> Made Simple
+            </h1>
+            <p class="text-xl text-white/90 mb-12 leading-relaxed max-w-3xl mx-auto" data-i18n="hero.subtitle">
+                A comprehensive suite for engineering calculations, workflows, and analytics.
+                Streamline your projects with powerful tools designed for engineers.
+            </p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="calculators.html"
+                    class="px-8 py-4 bg-brand-blue text-white rounded-lg font-semibold text-lg hover:bg-brand-dark hover:-translate-y-1 hover:shadow-brand transition-all flex items-center gap-2"
+                    data-i18n="hero.getStarted">
+                    <i class="fas fa-rocket"></i> Get Started
+                </a>
+                <a href="#features"
+                    class="px-8 py-4 bg-white text-brand-blue rounded-lg font-semibold text-lg hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg transition-all flex items-center gap-2"
+                    data-i18n="hero.learnMore">
+                    <i class="fas fa-info-circle"></i> Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-24 px-8 bg-white" id="features">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4" data-i18n="features.title">Powerful Features</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="features.subtitle">Everything you need for
+                    professional engineering projects</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Feature Card 1 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.calculatorsTitle">Advanced
+                        Calculators</h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.calculatorsDesc">
+                        Access a comprehensive library of engineering calculators for various disciplines
+                        including electrical, mechanical, civil, and more.
+                    </p>
+                </div>
+
+                <!-- Feature Card 2 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.workflowsTitle">Visual
+                        Workflows</h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.workflowsDesc">
+                        Design and execute complex engineering workflows visually. Drag and drop components
+                        to create custom calculation pipelines.
+                    </p>
+                </div>
+
+                <!-- Feature Card 3 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.analyticsTitle">Data
+                        Analytics</h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.analyticsDesc">
+                        Analyze engineering data with powerful analytical tools. Create custom queries,
+                        visualize data, and generate insightful reports.
+                    </p>
+                </div>
+
+                <!-- Feature Card 4 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.reportsTitle">Professional
+                        Reports</h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.reportsDesc">
+                        Generate professional engineering reports with customizable templates.
+                        Export to PDF, Excel, or share directly from the platform.
+                    </p>
+                </div>
+
+                <!-- Feature Card 5 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.multilingualTitle">
+                        Multilingual</h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.multilingualDesc">
+                        Available in multiple languages including English, Arabic, and French.
+                        Switch seamlessly between languages with just a click.
+                    </p>
+                </div>
+
+                <!-- Feature Card 6 -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-medium hover:-translate-y-2 hover:shadow-strong transition-all text-center group">
+                    <div
+                        class="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-white group-hover:scale-110 transition-transform">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4" data-i18n="features.cloudTitle">Cloud Storage
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed" data-i18n="features.cloudDesc">
+                        Save and access your engineering projects from anywhere.
+                        All data is securely stored in the cloud with automatic syncing.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-gradient-primary py-20 px-8 text-center text-white">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4" data-i18n="cta.title">Ready to Get Started?</h2>
+            <p class="text-xl mb-12 max-w-2xl mx-auto text-white/90" data-i18n="cta.subtitle">
+                Join thousands of engineers who are already using EngiSuite to streamline their work
+            </p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="register.html"
+                    class="px-8 py-4 bg-white text-brand-blue rounded-lg font-semibold text-lg hover:bg-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all flex items-center gap-2"
+                    data-i18n="cta.createAccount">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </a>
+                <a href="login.html"
+                    class="px-8 py-4 bg-brand-blue text-white rounded-lg font-semibold text-lg hover:bg-brand-dark hover:-translate-y-1 hover:shadow-brand transition-all flex items-center gap-2"
+                    data-i18n="cta.signIn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-xl font-semibold mb-4" data-i18n="footer.company">EngiSuite</h4>
+                    <p class="text-gray-400" data-i18n="footer.tagline">Professional Engineering Suite</p>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-semibold mb-4" data-i18n="footer.product">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="calculators.html" class="hover:text-white transition-colors"
+                                data-i18n="footer.calculators">Calculators</a></li>
+                        <li><a href="workflows.html" class="hover:text-white transition-colors"
+                                data-i18n="footer.workflows">Workflows</a></li>
+                        <li><a href="analytics.html" class="hover:text-white transition-colors"
+                                data-i18n="footer.analytics">Analytics</a></li>
+                        <li><a href="reports.html" class="hover:text-white transition-colors"
+                                data-i18n="footer.reports">Reports</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-semibold mb-4" data-i18n="footer.company">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.about">About Us</a>
+                        </li>
+                        <li><a href="#" class="hover:text-white transition-colors"
+                                data-i18n="footer.contact">Contact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.privacy">Privacy
+                                Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.terms">Terms of
+                                Service</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-semibold mb-4" data-i18n="footer.support">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors"
+                                data-i18n="footer.documentation">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors"
+                                data-i18n="footer.tutorials">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors" data-i18n="footer.helpCenter">Help
+                                Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors"
+                                data-i18n="footer.community">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center pt-8 border-t border-gray-800 text-gray-500">
+                <p>&copy; 2024 EngiSuite. All rights reserved.</p>
+                <p class="mt-2" data-i18n="footer.version">Version 1.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script type="module" src="shared/js/index-app.js"></script>
+    <script src="shared/js/index-init.js"></script>
+</body>
+
+</html>

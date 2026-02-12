@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Authentication</h1>
+        <p>Click the button below to set the test token and access the workflows page.</p>
+        <button onclick="login()">Set Test Token</button>
+    </div>
+
+    <script>
+        function login() {
+            // Set test token in localStorage and cookie
+            const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiZXhwIjoxNzcxNDU1MTM2fQ.GIywtQ_2Up3yWStsnCuR7QWxSp2vfkgTMOzPNMoBHuU';
+            localStorage.setItem('token', testToken);
+            document.cookie = `access_token=${testToken}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+            
+            // Redirect to workflows page
+            window.location.href = '/workflows.html';
+        }
+    </script>
+</body>
+</html>

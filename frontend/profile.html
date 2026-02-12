@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="profile.pageTitle">Profile - EngiSuite Analytics Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+
+    <!-- Sidebar (loaded dynamically) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+
+        <!-- Header (loaded dynamically) -->
+        <div id="header-container"></div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- Profile Header Card -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <div
+                        class="w-32 h-32 rounded-full bg-gradient-to-tr from-brand-blue to-blue-400 text-white flex items-center justify-center text-4xl font-bold shadow-xl shadow-blue-500/20 user-avatar border-4 border-white ring-1 ring-slate-100">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-1" data-i18n="user.placeholderName">Loading...
+                        </h2>
+                        <div class="text-slate-500 font-medium mb-6 user-email" data-i18n="user.placeholderEmail">
+                            user@example.com</div>
+
+                        <div class="flex flex-wrap justify-center md:justify-start gap-6 text-sm text-slate-500 mb-6">
+                            <div
+                                class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                                <i class="fas fa-calendar text-blue-500"></i>
+                                <span data-i18n="profile.meta.memberSince">Member since January 2024</span>
+                            </div>
+                            <div
+                                class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                                <i class="fas fa-map-marker-alt text-red-500"></i>
+                                <span data-i18n="profile.meta.location">Cairo, Egypt</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                            <button
+                                class="px-4 py-2 bg-brand-blue hover:bg-brand-dark text-white rounded-lg shadow-sm transition-all font-medium flex items-center gap-2"
+                                onclick="editProfile()">
+                                <i class="fas fa-edit"></i> <span data-i18n="profile.actions.edit">Edit Profile</span>
+                            </button>
+                            <button
+                                class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg shadow-sm transition-all font-medium flex items-center gap-2"
+                                onclick="changePassword()">
+                                <i class="fas fa-key"></i> <span data-i18n="profile.actions.changePassword">Change
+                                    Password</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Left Column -->
+                    <div class="lg:col-span-2 space-y-6">
+
+                        <!-- Account Settings -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                <i class="fas fa-cog text-slate-500"></i>
+                                <span data-i18n="profile.settings.title">Account Settings</span>
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2"
+                                        data-i18n="profile.settings.emailNotifications">Email Notifications</label>
+                                    <select id="emailNotifications"
+                                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all text-slate-700">
+                                        <option value="all" data-i18n="profile.settings.notifications.all">All
+                                            notifications</option>
+                                        <option value="important" data-i18n="profile.settings.notifications.important">
+                                            Important only</option>
+                                        <option value="none" data-i18n="profile.settings.notifications.none">None
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2"
+                                            data-i18n="profile.settings.language">Language</label>
+                                        <select id="language"
+                                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all text-slate-700">
+                                            <option value="ar" data-i18n="language.arabic">العربية</option>
+                                            <option value="en" data-i18n="language.english">English</option>
+                                            <option value="fr" data-i18n="language.french">Français</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-2">Theme</label>
+                                        <select id="theme"
+                                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all text-slate-700">
+                                            <option value="default">Default Blue</option>
+                                            <option value="ocean">Ocean Teal</option>
+                                            <option value="midnight">Midnight Purple</option>
+                                            <option value="forest">Forest Green</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <button
+                                        class="px-6 py-2.5 bg-brand-blue hover:bg-brand-dark text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all font-semibold flex items-center gap-2"
+                                        onclick="saveSettings()">
+                                        <i class="fas fa-save"></i> <span data-i18n="profile.settings.save">Save
+                                            Settings</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+
+                        <!-- Subscription Info -->
+                        <div id="subscription-card"
+                            class="bg-gradient-to-br from-brand-blue to-blue-600 rounded-2xl shadow-lg text-white p-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-xl">
+                            </div>
+                            <div class="border-b border-white/20 pb-4 mb-4">
+                                <h3 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fas fa-crown text-yellow-300"></i>
+                                    <span id="plan-name" data-i18n="profile.subscription.title">Free Plan</span>
+                                </h3>
+                            </div>
+
+                            <div class="space-y-3 text-blue-50 text-sm mb-6">
+                                <div class="flex justify-between items-center bg-white/10 px-3 py-2 rounded-lg">
+                                    <span data-i18n="profile.subscription.credits">Credits remaining:</span>
+                                    <span id="credits-remaining" class="font-bold text-white">50</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white/10 px-3 py-2 rounded-lg">
+                                    <span data-i18n="profile.subscription.calculations">Calculations/month:</span>
+                                    <span id="calculations-limit" class="font-bold text-white">50</span>
+                                </div>
+                                <div id="subscription-end-row" class="flex justify-between items-center bg-white/10 px-3 py-2 rounded-lg hidden">
+                                    <span data-i18n="profile.subscription.remaining">Time remaining:</span>
+                                    <span id="time-remaining" class="font-bold text-white">--</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button
+                                    class="flex-1 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all font-medium text-sm"
+                                    onclick="manageSubscription()">
+                                    <i class="fas fa-cog"></i> <span
+                                        data-i18n="profile.subscription.manage">Manage</span>
+                                </button>
+                                <button
+                                    class="flex-1 py-2 bg-white text-brand-blue hover:bg-blue-50 rounded-lg transition-all font-bold text-sm shadow-sm"
+                                    onclick="upgradeSubscription()">
+                                    <i class="fas fa-arrow-up"></i> <span
+                                        data-i18n="profile.subscription.upgrade">Upgrade</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Plan Usage Stats -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-pie text-blue-500"></i>
+                                <span>Usage This Month</span>
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-600">Calculations</span>
+                                        <span id="calc-usage" class="font-medium text-slate-800">0 / 50</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div id="calc-bar" class="h-full bg-blue-500 rounded-full transition-all" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-600">Workflows</span>
+                                        <span id="workflow-usage" class="font-medium text-slate-800">0 / 5</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div id="workflow-bar" class="h-full bg-green-500 rounded-full transition-all" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div id="ai-usage-section">
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-600">AI Messages</span>
+                                        <span id="ai-usage" class="font-medium text-slate-800">0 / 0</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div id="ai-bar" class="h-full bg-purple-500 rounded-full transition-all" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-slate-500"></i>
+                                <span data-i18n="profile.security.title">Security</span>
+                            </h3>
+                            <div class="space-y-4">
+                                <button
+                                    class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all font-medium text-sm flex items-center justify-center gap-2"
+                                    onclick="logoutOtherSessions()">
+                                    <i class="fas fa-sign-out-alt"></i> <span
+                                        data-i18n="profile.security.logoutOthers">Sign out of other sessions</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JS Files -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Load components
+            await utils.renderComponent('sidebar-container', 'shared/components/sidebar.html');
+            await utils.renderComponent('header-container', 'shared/components/header.html');
+
+            // Initialize common functionality (includes themes)
+            const user = await utils.initCommonPage();
+
+            if (user) {
+                // Update profile-specific elements if any
+                document.querySelectorAll('[data-i18n="user.placeholderName"]').forEach(el => {
+                    el.textContent = user.name || user.email.split('@')[0];
+                    el.removeAttribute('data-i18n');
+                });
+
+                document.querySelectorAll('.user-email').forEach(el => {
+                    el.textContent = user.email;
+                });
+
+                document.querySelectorAll('.user-avatar').forEach(el => {
+                    if (!el.querySelector('i')) { // don't overwrite if it has an icon
+                        el.textContent = (user.name || user.email.split('@')[0]).charAt(0).toUpperCase();
+                    }
+                });
+                
+                // Update subscription display
+                updateSubscriptionDisplay(user);
+            }
+
+            // Sync setting dropdowns with current state
+            const settingsLang = document.getElementById('language');
+            if (settingsLang && i18n.currentLang) {
+                settingsLang.value = i18n.currentLang;
+                settingsLang.addEventListener('change', (event) => {
+                    i18n.setLanguage(event.target.value);
+                });
+            }
+        });
+
+        function editProfile() {
+            alert(i18n.getTranslation('profile.alerts.editProfile') || 'Edit profile feature coming soon');
+        }
+
+        function changePassword() {
+            alert(i18n.getTranslation('profile.alerts.changePassword') || 'Change password feature coming soon');
+        }
+
+        function manageSubscription() {
+            // Redirect to pricing page
+            window.location.href = 'pricing.html';
+        }
+
+        function upgradeSubscription() {
+            // Redirect to pricing page
+            window.location.href = 'pricing.html';
+        }
+        
+        // Subscription plan configurations
+        const planConfigs = {
+            'free': {
+                name: 'Free Plan',
+                calculations: 50,
+                workflows: 5,
+                aiMessages: 0,
+                gradient: 'from-slate-500 to-slate-600'
+            },
+            'starter': {
+                name: 'Starter Plan',
+                calculations: 200,
+                workflows: 25,
+                aiMessages: 50,
+                gradient: 'from-green-500 to-green-600'
+            },
+            'basic': {
+                name: 'Starter Plan',
+                calculations: 200,
+                workflows: 25,
+                aiMessages: 50,
+                gradient: 'from-green-500 to-green-600'
+            },
+            'pro': {
+                name: 'Professional Plan',
+                calculations: -1, // unlimited
+                workflows: -1,
+                aiMessages: 500,
+                gradient: 'from-blue-500 to-blue-600'
+            },
+            'enterprise': {
+                name: 'Enterprise Plan',
+                calculations: -1,
+                workflows: -1,
+                aiMessages: -1,
+                gradient: 'from-purple-600 to-slate-800'
+            }
+        };
+        
+        function updateSubscriptionDisplay(user) {
+            const tier = user.tier || 'free';
+            const plan = planConfigs[tier] || planConfigs['free'];
+            
+            // Update plan name
+            document.getElementById('plan-name').textContent = plan.name;
+            
+            // Update card gradient
+            const card = document.getElementById('subscription-card');
+            card.className = `bg-gradient-to-br ${plan.gradient} rounded-2xl shadow-lg text-white p-6 relative overflow-hidden`;
+            
+            // Update credits
+            const credits = user.credits_remaining || 0;
+            document.getElementById('credits-remaining').textContent = credits;
+            
+            // Update calculations limit display
+            const calcLimit = plan.calculations === -1 ? '∞' : plan.calculations;
+            document.getElementById('calculations-limit').textContent = calcLimit;
+            
+            // Update usage bars (mock data - would come from API in real app)
+            const calcUsed = Math.min(credits, plan.calculations === -1 ? credits : plan.calculations);
+            const calcPercent = plan.calculations === -1 ? 0 : (calcUsed / plan.calculations) * 100;
+            document.getElementById('calc-usage').textContent = `${calcUsed} / ${calcLimit}`;
+            document.getElementById('calc-bar').style.width = `${Math.min(calcPercent, 100)}%`;
+            
+            // Workflow usage
+            const workflowUsed = 0; // Would come from API
+            const workflowLimit = plan.workflows === -1 ? '∞' : plan.workflows;
+            const workflowPercent = plan.workflows === -1 ? 0 : (workflowUsed / plan.workflows) * 100;
+            document.getElementById('workflow-usage').textContent = `${workflowUsed} / ${workflowLimit}`;
+            document.getElementById('workflow-bar').style.width = `${Math.min(workflowPercent, 100)}%`;
+            
+            // AI usage
+            const aiUsed = 0; // Would come from API
+            const aiLimit = plan.aiMessages === -1 ? '∞' : plan.aiMessages;
+            const aiPercent = plan.aiMessages === -1 ? 0 : (aiUsed / plan.aiMessages) * 100;
+            document.getElementById('ai-usage').textContent = `${aiUsed} / ${aiLimit}`;
+            document.getElementById('ai-bar').style.width = `${Math.min(aiPercent, 100)}%`;
+            
+            // Show/hide AI section for free users
+            document.getElementById('ai-usage-section').style.display = plan.aiMessages === 0 ? 'none' : 'block';
+            
+            // Show subscription end date if available
+            if (user.subscription_end_date) {
+                const endDate = new Date(user.subscription_end_date);
+                const now = new Date();
+                const daysRemaining = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
+                
+                document.getElementById('subscription-end-row').classList.remove('hidden');
+                document.getElementById('time-remaining').textContent = daysRemaining > 0 ? `${daysRemaining} days` : 'Expired';
+            }
+        }
+
+        function saveSettings() {
+            const notifications = document.getElementById('emailNotifications').value;
+            const language = document.getElementById('language').value;
+            const theme = document.getElementById('theme').value;
+
+            // Theme is already saved by the change listener in utils.js, but good to confirm
+            utils.applyTheme(theme);
+            i18n.setLanguage(language);
+
+            const template = i18n.getTranslation('profile.alerts.settingsSaved') || 'Settings saved successfully.\nTheme: {theme}\nLanguage: {language}';
+            alert(template
+                .replace('{theme}', theme)
+                .replace('{language}', language));
+        }
+
+        function logoutOtherSessions() {
+            if (confirm(i18n.getTranslation('profile.alerts.logoutOthersConfirm') || 'Are you sure you want to log out of all other sessions?')) {
+                alert(i18n.getTranslation('profile.alerts.logoutOthersSuccess') || 'Logged out of other sessions.');
+            }
+        }
+    </script>
+</body>
+
+</html>

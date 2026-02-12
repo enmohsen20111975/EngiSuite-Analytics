@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="reports.pageTitle">Reports - EngiSuite Analytics Pro</title>
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <link rel="stylesheet" href="shared/css/calculators.css">
+    <link rel="stylesheet" href="shared/css/reports.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2a5298',
+                            dark: '#1e3c72',
+                            text: '#2c3e50',
+                            light: '#f5f7fa',
+                            accent: '#3498db',
+                            success: '#2ecc71',
+                            warning: '#f39c12',
+                            danger: '#e74c3c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+    <!-- Sidebar (loaded dynamically) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+        <!-- Header (loaded dynamically) -->
+        <div id="header-container"></div>
+
+        <!-- Reports Content -->
+        <div class="flex-1 overflow-y-auto w-full p-3 sm:p-4 lg:p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-brand-text" data-i18n="reports.pageTitle">Reports
+                        </h1>
+                        <p class="text-sm text-slate-500 mt-1">Generate and manage engineering reports</p>
+                    </div>
+                    <button id="create-report-btn"
+                        class="create-report-btn inline-flex items-center gap-2 px-4 py-2.5 bg-brand-blue text-white rounded-xl font-medium text-sm hover:bg-brand-dark transition-colors touch-target"
+                        data-i18n="reports.createReport">
+                        <i class="fas fa-plus"></i> Create Report
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="reports-filter-bar">
+                    <div class="reports-filter-group">
+                        <label for="report-type-filter" data-i18n="reports.filter.type">Report Type:</label>
+                        <select id="report-type-filter">
+                            <option value="all" data-i18n="reports.filter.all">All Types</option>
+                            <option value="engineering" data-i18n="reports.filter.engineering">Engineering</option>
+                            <option value="financial" data-i18n="reports.filter.financial">Financial</option>
+                            <option value="inventory" data-i18n="reports.filter.inventory">Inventory</option>
+                            <option value="project" data-i18n="reports.filter.project">Project</option>
+                        </select>
+                    </div>
+                    <div class="reports-filter-group">
+                        <label for="start-date" data-i18n="reports.filter.dateRange">Date Range:</label>
+                        <input type="date" id="start-date">
+                        <input type="date" id="end-date">
+                    </div>
+                    <div class="reports-filter-actions">
+                        <button id="filter-btn" class="btn-filter" data-i18n="reports.filter.apply">Apply
+                            Filters</button>
+                        <button id="reset-btn" class="btn-reset" data-i18n="reports.filter.reset">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Reports List -->
+                <div id="reports-list" class="reports-list">
+                    <!-- Reports will be dynamically populated here -->
+                </div>
+
+                <!-- No Reports Message -->
+                <div id="no-reports" class="no-reports" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <p data-i18n="reports.noReports">No reports found</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;" data-i18n="reports.getStarted">Get started by
+                        creating
+                        your first report</p>
+                </div>
+
+                <!-- Report Editor -->
+                <div id="report-editor" class="report-editor" style="display: none;">
+                    <div class="report-editor-header">
+                        <h2 data-i18n="reports.createNew">Create New Report</h2>
+                        <button id="cancel-editor-btn" class="btn-cancel" data-i18n="common.cancel">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+
+                    <form id="report-form" class="report-form">
+                        <div class="form-section">
+                            <h3 data-i18n="reports.basicInformation">Basic Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="report-title" data-i18n="reports.title">Report Title:</label>
+                                    <input type="text" id="report-title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="report-type" data-i18n="reports.type">Report Type:</label>
+                                    <select id="report-type" required>
+                                        <option value="" data-i18n="reports.selectType">Select Type</option>
+                                        <option value="engineering" data-i18n="reports.engineering">Engineering</option>
+                                        <option value="financial" data-i18n="reports.financial">Financial</option>
+                                        <option value="inventory" data-i18n="reports.inventory">Inventory</option>
+                                        <option value="project" data-i18n="reports.project">Project</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 data-i18n="reports.template">Select Template</h3>
+                            <div class="report-templates">
+                                <div class="template-card" data-template-type="standard">
+                                    <i class="fas fa-file-alt"></i>
+                                    <h4 data-i18n="reports.standardTemplate">Standard</h4>
+                                    <p data-i18n="reports.standardTemplateDesc">Basic report template</p>
+                                </div>
+                                <div class="template-card" data-template-type="detailed">
+                                    <i class="fas fa-file-contract"></i>
+                                    <h4 data-i18n="reports.detailedTemplate">Detailed</h4>
+                                    <p data-i18n="reports.detailedTemplateDesc">Comprehensive report with sections</p>
+                                </div>
+                                <div class="template-card" data-template-type="summary">
+                                    <i class="fas fa-file-chart-line"></i>
+                                    <h4 data-i18n="reports.summaryTemplate">Summary</h4>
+                                    <p data-i18n="reports.summaryTemplateDesc">Executive summary report</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section" id="project-info">
+                            <h3 data-i18n="reports.projectDetails">Project Details</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="project-name" data-i18n="reports.projectName">Project Name:</label>
+                                    <input type="text" id="project-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-code" data-i18n="reports.projectCode">Project Code:</label>
+                                    <input type="text" id="project-code">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section" id="client-info">
+                            <h3 data-i18n="reports.clientDetails">Client Details</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="client-name" data-i18n="reports.clientName">Client Name:</label>
+                                    <input type="text" id="client-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="client-contact" data-i18n="reports.clientContact">Contact
+                                        Person:</label>
+                                    <input type="text" id="client-contact">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-editor-actions">
+                            <button type="button" id="save-report-btn" class="btn-save" data-i18n="common.save">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button type="button" id="preview-report-btn" class="btn-preview"
+                                data-i18n="reports.preview">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                            <button type="button" id="cancel-editor-btn" class="btn-cancel" data-i18n="common.cancel">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Report Preview -->
+                <div id="report-preview" class="report-preview" style="display: none;">
+                    <div class="preview-header">
+                        <h2 data-i18n="reports.previewTitle">Report Preview</h2>
+                        <button id="close-preview-btn" class="btn-cancel" data-i18n="common.close">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                    <div class="preview-content">
+                        <i class="fas fa-file-pdf"></i>
+                        <p data-i18n="reports.previewPlaceholder">Report preview will be displayed here</p>
+                        <p style="font-size: 0.9rem; color: #999;" data-i18n="reports.previewInstructions">Preview is
+                            for
+                            display purposes only. Final report will be generated in PDF format.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="shared/js/theme-manager.js"></script>
+        <script src="shared/js/i18n.js"></script>
+        <script src="shared/js/auth.js"></script>
+        <script src="shared/js/page-init.js"></script>
+        <script src="shared/js/utils.js"></script>
+        <script type="module" src="shared/js/reports-app.js"></script>
+
+        <script>
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', function () {
+                // Load user data
+                authService.init();
+
+                // Initialize reports
+                if (typeof reportsApp !== 'undefined') {
+                    reportsApp.initialize();
+                }
+            });
+        </script>
+</body>
+
+</html>

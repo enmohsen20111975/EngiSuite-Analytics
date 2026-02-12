@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title data-i18n="ai.pageTitle">AI Assistant - EngiSuite Analytics Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="shared/css/universal-theme.css">
+    <link rel="stylesheet" href="shared/css/mobile-responsive.css">
+    <script src="shared/js/tailwind-config.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans antialiased text-brand-text bg-gray-50 h-screen flex overflow-hidden">
+
+    <!-- Sidebar (loaded dynamically) -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-50">
+
+        <!-- Header (loaded dynamically) -->
+        <div id="header-container"></div>
+
+        <!-- AI Assistant Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex flex-col">
+            <div class="max-w-5xl mx-auto w-full flex-1 flex flex-col space-y-6">
+
+                <!-- Chat Interface -->
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden min-h-[500px]">
+                    <!-- Header -->
+                    <div class="p-4 border-b border-gray-100 bg-brand-light/30 flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-dark flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-slate-800" data-i18n="ai.header">Engineering AI Assistant</h2>
+                            <p class="text-xs text-slate-500">Powered by EngiSuite Intelligence</p>
+                        </div>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50" id="chatMessages">
+                        <!-- Welcome Message -->
+                        <div class="flex items-start gap-4 max-w-[85%]">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-brand-blue shadow-sm flex-shrink-0">
+                                <i class="fas fa-robot text-sm"></i>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100">
+                                <h3 class="font-bold text-slate-800 mb-1" data-i18n="ai.welcomeTitle">Welcome to
+                                    EngiSuite AI!</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed" data-i18n="ai.welcomeMessage">I am an
+                                    engineering AI assistant specialized in engineering calculations. How can I help you
+                                    today?</p>
+                                <div class="mt-2 text-[10px] text-slate-400 font-medium" data-i18n="ai.now">Just now
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="p-4 bg-white border-t border-gray-100">
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1 relative">
+                                <textarea id="chatInput"
+                                    class="w-full pl-4 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all resize-none text-slate-700 max-h-32 min-h-[50px]"
+                                    data-i18n-placeholder="ai.inputPlaceholder"
+                                    placeholder="Ask about calculations, data analysis, or reports..." rows="1"
+                                    onkeypress="handleKeyPress(event)"></textarea>
+                                <button
+                                    class="absolute right-3 bottom-3 text-slate-400 hover:text-brand-blue transition-colors p-1">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <button id="sendBtn"
+                                class="bg-brand-blue hover:bg-brand-dark text-white w-12 h-[50px] rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center transition-all transform hover:scale-105"
+                                onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="text-center mt-2">
+                            <p class="text-[10px] text-slate-400">AI can make mistakes. Please verify important
+                                engineering calculations.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="startFeature('analysis')"
+                        class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md hover:border-brand-blue/30 transition-all text-left group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-blue-50 text-brand-blue flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-comments text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1 group-hover:text-brand-blue transition-colors"
+                            data-i18n="ai.features.analysis.title">Calculations Analysis</h3>
+                        <p class="text-xs text-slate-500" data-i18n="ai.features.analysis.desc">Detailed explanation of
+                            engineering calculations</p>
+                    </button>
+
+                    <button onclick="startFeature('data')"
+                        class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md hover:border-brand-blue/30 transition-all text-left group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-lightbulb text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1 group-hover:text-purple-600 transition-colors"
+                            data-i18n="ai.features.data.title">Data Analysis</h3>
+                        <p class="text-xs text-slate-500" data-i18n="ai.features.data.desc">Analyze data and provide
+                            recommendations</p>
+                    </button>
+
+                    <button onclick="startFeature('report')"
+                        class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:shadow-md hover:border-brand-blue/30 transition-all text-left group">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-file-alt text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-1 group-hover:text-green-600 transition-colors"
+                            data-i18n="ai.features.report.title">Report Generation</h3>
+                        <p class="text-xs text-slate-500" data-i18n="ai.features.report.desc">Generate professional
+                            reports automatically</p>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- JS Files -->
+    <script src="shared/js/theme-manager.js"></script>
+    <script src="shared/js/i18n.js"></script>
+    <script src="shared/js/auth.js"></script>
+    <script src="shared/js/page-init.js"></script>
+    <script src="shared/js/ai-service.js"></script>
+    <script src="shared/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Load components
+            await utils.renderComponent('sidebar-container', 'shared/components/sidebar.html');
+            await utils.renderComponent('header-container', 'shared/components/header.html');
+
+            // Initialize common functionality
+            await utils.initCommonPage();
+
+            // Auto-resize textarea
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const chatMessages = document.getElementById('chatMessages');
+
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Disable input and button while sending
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.classList.add('opacity-50');
+
+            // Add user message
+            addMessage(chatMessages, message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            // Simulate AI response with delay
+            setTimeout(async function () {
+                try {
+                    const response = await aiService.chat(message);
+                    addMessage(chatMessages, response, 'ai');
+                } catch (error) {
+                    addMessage(chatMessages, i18n.getTranslation('ai.errors.chat') || "I'm having trouble connecting right now.", 'ai');
+                }
+
+                // Re-enable input and button
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.classList.remove('opacity-50');
+                chatInput.focus();
+            }, 1000);
+        }
+
+        function addMessage(container, content, type) {
+            const isUser = type === 'user';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-4 max-w-[85%] ${isUser ? 'ml-auto flex-row-reverse' : ''}`;
+
+            // Avatar
+            const avatar = document.createElement('div');
+            avatar.className = `w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center shadow-sm flex-shrink-0 ${isUser ? 'bg-brand-blue text-white' : 'bg-white text-brand-blue'}`;
+            avatar.innerHTML = isUser ? '<i class="fas fa-user text-xs"></i>' : '<i class="fas fa-robot text-xs"></i>';
+
+            // Message Bubble
+            const bubble = document.createElement('div');
+            bubble.className = `p-4 rounded-2xl shadow-sm border ${isUser ? 'bg-brand-blue text-white rounded-tr-none border-brand-blue' : 'bg-white text-slate-700 rounded-tl-none border-slate-100'}`;
+
+            // Content
+            const text = document.createElement('p');
+            text.className = 'text-sm leading-relaxed whitespace-pre-wrap';
+            text.textContent = content;
+
+            // Time
+            const time = document.createElement('div');
+            time.className = `mt-1 text-[10px] font-medium opacity-70 ${isUser ? 'text-blue-100' : 'text-slate-400'}`;
+            const now = new Date();
+            time.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(bubble);
+
+            container.appendChild(wrapper);
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function startFeature(featureType) {
+            const chatMessages = document.getElementById('chatMessages');
+            const predefinedQuestions = {
+                'analysis': i18n.getTranslation('ai.presets.analysis') || "Can you analyze this engineering calculation?",
+                'data': i18n.getTranslation('ai.presets.data') || "I need help analyzing this data set.",
+                'report': i18n.getTranslation('ai.presets.report') || "Please help me generate a report."
+            };
+
+            const question = predefinedQuestions[featureType];
+            if (question) {
+                // Add user message
+                addMessage(chatMessages, question, 'user');
+
+                // Simulate AI response
+                setTimeout(async function () {
+                    try {
+                        const response = await aiService.chat(question);
+                        addMessage(chatMessages, response, 'ai');
+                    } catch (error) {
+                        addMessage(chatMessages, i18n.getTranslation('ai.errors.chat') || "Error connecting to AI service.", 'ai');
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+
+</html>

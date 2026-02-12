@@ -1,0 +1,159 @@
+<!-- Mobile Sidebar Overlay -->
+<div class="fixed inset-0 bg-black/50 z-30 hidden transition-opacity duration-300 md:hidden" id="sidebar-overlay"></div>
+
+<!-- Sidebar -->
+<aside
+    class="w-64 bg-white dark:bg-slate-800 shadow-xl z-20 hidden md:flex flex-col transition-all duration-300 transform fixed md:relative h-full"
+    id="sidebar">
+    <!-- Logo Section -->
+    <div class="p-4 sm:p-6 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 bg-gradient-to-br from-brand-blue to-brand-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                <i class="fas fa-calculator text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xl text-brand-blue dark:text-white tracking-tight" data-i18n="app.shortName">
+                    EngiSuite</h1>
+                <p class="text-xs text-slate-400 font-medium" data-i18n="app.taglineShort">Pro Analytics</p>
+            </div>
+        </div>
+        <!-- Close button for mobile -->
+        <button id="close-sidebar-btn"
+            class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            <i class="fas fa-times text-slate-500 dark:text-slate-400"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto py-4 sm:py-6 px-2 sm:px-4 space-y-1">
+        <!-- Main Navigation -->
+        <a href="dashboard.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="dashboard">
+            <i class="fas fa-home w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.dashboard">Dashboard</span>
+        </a>
+        <!-- Analytics hidden for now -->
+        <!--
+        <a href="analytics.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="analytics">
+            <i class="fas fa-chart-bar w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.analytics">Analytics</span>
+        </a>
+        -->
+        <a href="calculators.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="calculators">
+            <i class="fas fa-calculator w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.calculators">Calculations</span>
+        </a>
+        <a href="unit-converter.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="unit-converter">
+            <i class="fas fa-exchange-alt w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Unit Converter</span>
+        </a>
+        <a href="engineering-calculator.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="engineering-calculator">
+            <i class="fas fa-square-root-alt w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium">Eng. Calculator</span>
+        </a>
+        <a href="workflows.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="workflows">
+            <i class="fas fa-project-diagram w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.workflows">Workflows</span>
+        </a>
+        <a href="visual-workflow.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="visual-workflow">
+            <i class="fas fa-bezier-curve w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.visualWorkflow">Visual Builder</span>
+        </a>
+        <a href="reports.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="reports">
+            <i class="fas fa-file-alt w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.reports">Reports</span>
+        </a>
+        <a href="ai-assistant.html"
+            class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+            data-nav="ai-assistant">
+            <i class="fas fa-robot w-5 text-center group-hover:scale-110 transition-transform"></i>
+            <span class="font-medium" data-i18n="nav.aiAssistant">AI Assistant</span>
+        </a>
+
+        <!-- Account Section -->
+        <div class="pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-gray-100 dark:border-slate-700">
+            <p class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2" data-i18n="nav.account">
+                Account</p>
+            <a href="profile.html"
+                class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+                data-nav="profile">
+                <i class="fas fa-user-circle w-5 text-center group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium" data-i18n="nav.profile">Profile</span>
+            </a>
+            <a href="pricing.html"
+                class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+                data-nav="pricing">
+                <i class="fas fa-crown w-5 text-center group-hover:scale-110 transition-transform text-amber-500"></i>
+                <span class="font-medium">Upgrade Plan</span>
+            </a>
+            <a href="settings.html"
+                class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-brand-blue dark:hover:text-white transition-all group"
+                data-nav="settings">
+                <i class="fas fa-cog w-5 text-center group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium" data-i18n="nav.settings">Settings</span>
+            </a>
+            <button onclick="authService.logout()"
+                class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-all group text-left">
+                <i class="fas fa-sign-out-alt w-5 text-center group-hover:scale-110 transition-transform"></i>
+                <span class="font-medium" data-i18n="common.logout">Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile App Version -->
+    <div class="p-4 border-t border-gray-100 dark:border-slate-700 md:hidden">
+        <p class="text-xs text-slate-400 text-center">EngiSuite Analytics Pro v1.0</p>
+    </div>
+</aside>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="bottom-nav md:hidden" id="mobile-bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item" data-nav="dashboard">
+        <span class="bottom-nav-icon">
+            <i class="fas fa-home"></i>
+        </span>
+        <span class="bottom-nav-label" data-i18n="nav.dashboard">Home</span>
+    </a>
+    <a href="calculators.html" class="bottom-nav-item" data-nav="calculators">
+        <span class="bottom-nav-icon">
+            <i class="fas fa-calculator"></i>
+        </span>
+        <span class="bottom-nav-label" data-i18n="nav.calculators">Calc</span>
+    </a>
+    <a href="workflows.html" class="bottom-nav-item" data-nav="workflows">
+        <span class="bottom-nav-icon">
+            <i class="fas fa-project-diagram"></i>
+        </span>
+        <span class="bottom-nav-label" data-i18n="nav.workflows">Workflows</span>
+    </a>
+    <a href="ai-assistant.html" class="bottom-nav-item" data-nav="ai-assistant">
+        <span class="bottom-nav-icon">
+            <i class="fas fa-robot"></i>
+        </span>
+        <span class="bottom-nav-label" data-i18n="nav.aiAssistant">AI</span>
+    </a>
+    <a href="pricing.html" class="bottom-nav-item" data-nav="pricing">
+        <span class="bottom-nav-icon">
+            <i class="fas fa-crown"></i>
+        </span>
+        <span class="bottom-nav-label">Upgrade</span>
+    </a>
+</nav>
+
+<script src="shared/js/sidebar.js"></script>
