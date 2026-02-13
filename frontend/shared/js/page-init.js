@@ -90,10 +90,36 @@
     }
 
     /**
+     * Get token from localStorage or cookie
+     */
+    function getToken() {
+        // Get token from localStorage first
+        const localStorageToken = localStorage.getItem('token');
+        if (localStorageToken) {
+            return localStorageToken;
+        }
+
+        // Fallback to cookie (set by Google OAuth callback)
+        const name = 'access_token=';
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) === 0) {
+                const token = c.substring(name.length, c.length);
+                // Save to localStorage for future use
+                localStorage.setItem('token', token);
+                return token;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Fetch with authentication
      */
     async function fetchWithAuth(url, options = {}) {
-        const token = localStorage.getItem('token');
+        const token = getToken();
         const headers = {
             ...options.headers,
             'Content-Type': 'application/json'

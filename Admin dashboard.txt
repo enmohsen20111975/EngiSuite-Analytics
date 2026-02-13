@@ -1,0 +1,959 @@
+I understand. You trust me and need a comprehensive admin panel. Here's the complete specification for your AI coder.
+
+---
+
+# Admin Dashboard Specification for EngiSuite Analytics
+
+## Core Purpose
+
+Full control panel for you (super admin) to manage users, monitor system health, track revenue, and control all platform features without touching code or database directly.
+
+---
+
+## Admin Access
+
+```
+URL: m2y.net/admin
+Authentication: Separate super-admin login (not Google OAuth)
+Security: 2FA recommended, IP whitelist optional
+```
+
+---
+
+## Admin Panel Structure
+
+```
+/admin
+├── Login (separate from user login)
+├── Dashboard (overview)
+├── Users Management
+├── Content Management
+├── Financial
+├── System Health
+├── AI/ML Monitoring
+└── Settings
+```
+
+---
+
+## 1. ADMIN AUTHENTICATION
+
+### Separate from User Auth
+
+```python
+# backend/admin/auth.py
+ADMIN_CREDENTIALS = {
+    "username": "admin",  # or your email
+    "password_hash": "bcrypt_hash",  # not plain text
+    "role": "super_admin",
+    "allowed_ips": ["your_home_ip", "your_office_ip"]  # optional
+}
+```
+
+### Login Page (`/admin/login.html`)
+
+- Simple form: username + password + 2FA (optional)
+- No Google OAuth (isolated from user system)
+- Session: 2 hours timeout
+- Failed attempts: Lockout after 5 tries, 30 minutes
+
+---
+
+## 2. MAIN DASHBOARD (`/admin/dashboard.html`)
+
+### KPI Cards (Top Row)
+
+| Metric | Value | Trend |
+|--------|-------|-------|
+| **Total Users** | 1,247 | +12% this week |
+| **Active Today** | 89 | +5% |
+| **New Signups Today** | 23 | -2% |
+| **Revenue This Month** | 4,970 EGP | +15% |
+| **AI API Cost** | $12.40 | -8% |
+
+### Charts (Middle Section)
+
+```javascript
+// Chart 1: User Growth (Line chart)
+- Daily signups (last 30 days)
+- Active users (daily)
+
+// Chart 2: Revenue (Bar chart)
+- Free vs Pro vs Team subscriptions
+- Monthly recurring revenue (MRR)
+
+// Chart 3: Calculator Usage (Pie chart)
+- Which calculators most used
+- Which disciplines popular
+
+// Chart 4: AI Usage (Line chart)
+- DeepSeek calls per day
+- Cost per day
+- Failed requests
+```
+
+### Recent Activity Feed (Bottom)
+
+```
+[10:23 AM] New user: ahmed@example.com (Pro plan)
+[10:15 AM] Calculator: Cable Sizing (user #452)
+[09:58 AM] Payment: 199 EGP from mohamed@example.com
+[09:45 AM] AI Error: DeepSeek timeout (user #123)
+[09:30 AM] New signup: engineer@company.com
+```
+
+---
+
+## 3. USERS MANAGEMENT (`/admin/users.html`)
+
+### User List Table
+
+| ID | Email | Name | Plan | Status | Joined | Last Active | Actions |
+|----|-------|------|------|--------|--------|-------------|---------|
+| 452 | ahmed@... | Ahmed H. | Pro | Active | 2025-01-15 | 2 min ago | View/Edit/Delete |
+| 451 | mohamed@... | Mohamed K. | Free | Active | 2025-02-01 | 1 hour ago | View/Edit/Delete |
+| 450 | sara@... | Sara M. | Team | Suspended | 2024-12-10 | 3 days ago | View/Edit/Delete |
+
+### Filters
+- Search by email/name
+- Filter by plan (Free/Pro/Team)
+- Filter by status (Active/Suspended/Deleted)
+- Date range (joined, last active)
+
+### User Detail Modal
+
+```
+User #452: Ahmed Hassan
+├── Profile
+│   ├── Email: ahmed@example.com
+│   ├── Name: Ahmed Hassan
+│   ├── Company: ABC Engineering
+│   ├── Phone: +20 10x xxxx xxx
+│   ├── Joined: 2025-01-15 10:23 AM
+│   └── Last IP: 156.204.x.x
+├── Subscription
+│   ├── Plan: Pro (199 EGP/month)
+│   ├── Status: Active
+│   ├── Started: 2025-01-15
+│   ├── Next billing: 2025-02-15
+│   ├── Total paid: 597 EGP (3 months)
+│   └── Payment method: Paymob (card ending 1234)
+├── Usage Stats
+│   ├── Calculations: 147 total
+│   ├── Last calculation: Cable Sizing (2 min ago)
+│   ├── AI calls: 89
+│   ├── Reports generated: 12
+│   └── Storage used: 45 MB
+├── Actions
+│   ├── Change plan
+│   ├── Add credits
+│   ├── Suspend account
+│   ├── Reset password
+│   ├── Login as user (impersonate)
+│   └── Delete account
+└── Activity Log (last 50 actions)
+```
+
+---
+
+## 4. CONTENT MANAGEMENT (`/admin/content.html`)
+
+### Calculators Management
+
+```
+Electrical Calculators (20 total)
+├── Cable Sizing [Edit] [Disable] [Analytics]
+├── Load Calculation [Edit] [Disable] [Analytics]
+├── Voltage Drop [Edit] [Disable] [Analytics]
+└── ...
+
+[Add New Calculator]
+```
+
+**Edit Calculator Modal:**
+- Name (AR/EN)
+- Description (AR/EN)
+- Input fields (add/remove/edit)
+- Formula (Python code view/edit)
+- Standards (IEC, Egyptian, etc.)
+- Prices (auto-update or manual)
+- Enable/Disable
+
+### Prices Management (`/admin/prices.html`)
+
+| Material | Current Price | Last Updated | Source | Auto-update | Actions |
+|----------|---------------|--------------|--------|-------------|---------|
+| PVC 2.5mm | 35 EGP/m | 2025-02-10 | Manual | Off | Edit/Update |
+| Steel 12mm | 24,500 EGP/ton | 2025-02-10 | Scraped | On | Edit/Refresh |
+
+**Bulk Update:**
+- Upload Excel/CSV with new prices
+- Manual edit single item
+- Trigger scraper for specific category
+
+### Pages/Content (`/admin/pages.html`)
+
+- Homepage content (editable sections)
+- FAQ management
+- Terms of service
+- Privacy policy
+- Email templates (welcome, payment, etc.)
+
+---
+
+## 5. FINANCIAL (`/admin/financial.html`)
+
+### Revenue Dashboard
+
+```
+This Month (February 2025)
+├── Total Revenue: 4,970 EGP
+├── New Subscriptions: 23
+├── Renewals: 18
+├── Churned: 3
+├── Refunds: 0
+└── Net Revenue: 4,970 EGP
+
+MRR (Monthly Recurring Revenue): 8,950 EGP
+ARR (Annual Run Rate): 107,400 EGP
+```
+
+### Transactions Table
+
+| ID | Date | User | Type | Amount | Status | Method | Actions |
+|----|------|------|------|--------|--------|--------|---------|
+| 892 | 2025-02-11 | ahmed@... | Subscription | 199 EGP | Success | Paymob | View/Refund |
+| 891 | 2025-02-11 | mohamed@... | Subscription | 199 EGP | Failed | Paymob | Retry/View |
+
+### Payouts/Withdrawals
+
+- Current balance (Paymob)
+- Withdraw to bank account
+- Transaction history
+- Fees breakdown
+
+---
+
+## 6. SYSTEM HEALTH (`/admin/system.html`)
+
+### Server Status
+
+| Service | Status | CPU | RAM | Uptime | Actions |
+|---------|--------|-----|-----|--------|---------|
+| EngiSuite App | ✅ Running | 12% | 340MB | 5 days | Restart/Logs |
+| n8n | ✅ Running | 5% | 400MB | 15 days | - |
+| OpenClaw | ✅ Running | 3% | 300MB | 10 days | - |
+| Nginx | ✅ Running | 1% | 50MB | 20 days | Reload |
+| Database | ✅ OK | - | 120MB | - | Backup |
+
+### Logs Viewer
+
+```
+[2025-02-11 10:23:45] INFO: User login successful: ahmed@example.com
+[2025-02-11 10:23:12] ERROR: DeepSeek API timeout (30s)
+[2025-02-11 10:22:08] WARNING: High memory usage (85%)
+[2025-02-11 10:20:33] INFO: New signup: mohamed@example.com
+```
+
+**Filters:**
+- Level (INFO/WARNING/ERROR/CRITICAL)
+- Service (App/AI/Payment/Auth)
+- Date range
+- User (specific)
+
+### Backup Management
+
+- Last backup: 2025-02-11 03:00 AM
+- Backup size: 45 MB
+- [Download Backup]
+- [Restore from Backup]
+- [Schedule: Daily at 3 AM]
+
+---
+
+## 7. AI/ML MONITORING (`/admin/ai.html`)
+
+### DeepSeek Usage
+
+```
+Today
+├── Requests: 1,247
+├── Tokens In: 45,230
+├── Tokens Out: 89,450
+├── Cost: $3.24
+├── Avg Response Time: 2.3s
+└── Failed Requests: 12 (0.9%)
+
+This Month
+├── Total Cost: $12.40
+├── Budget: $50.00
+└── Remaining: $37.60
+```
+
+### Prompts Analysis
+
+| Prompt Type | Count | Avg Tokens | Cost | Success Rate |
+|-------------|-------|------------|------|--------------|
+| Explain Calculation | 450 | 1,200 | $0.08 | 98% |
+| Generate Report | 120 | 2,500 | $0.18 | 95% |
+| Chat | 677 | 800 | $0.05 | 99% |
+
+### Failed Requests Log
+
+| Time | User | Error | Prompt (truncated) |
+|------|------|-------|-------------------|
+| 10:23 | #452 | Timeout | "Explain cable sizing for..." |
+| 09:15 | #123 | Rate limit | "Generate full report for..." |
+
+---
+
+## 8. SETTINGS (`/admin/settings.html`)
+
+### General
+
+- Site name: EngiSuite Analytics
+- Default language: Arabic
+- Maintenance mode: On/Off
+- User registration: Open/Closed/Invite only
+
+### AI Configuration
+
+- DeepSeek API Key: [••••••••] [Update]
+- Qwen API Key: [••••••••] [Update]
+- Default model: DeepSeek-V3
+- Fallback: Qwen-Max
+- Max tokens per request: 4000
+- Cost limit per user/month: $5.00
+
+### Payment
+
+- Paymob API Key: [••••••••] [Update]
+- Integration ID: [••••••••]
+- Currency: EGP
+- Tax rate: 14%
+
+### Email/SMTP
+
+- SMTP server
+- From email
+- Templates editor
+
+---
+
+## API ENDPOINTS FOR ADMIN
+
+```python
+# backend/admin/router.py
+
+GET    /admin/auth/login          # Admin login
+POST   /admin/auth/login
+POST   /admin/auth/logout
+
+GET    /admin/dashboard           # Dashboard data
+GET    /admin/users               # List users
+GET    /admin/users/{id}          # User detail
+PUT    /admin/users/{id}          # Update user
+DELETE /admin/users/{id}          # Delete user
+POST   /admin/users/{id}/impersonate  # Login as user
+
+GET    /admin/calculators         # List calculators
+PUT    /admin/calculators/{id}    # Update calculator
+POST   /admin/calculators/{id}/toggle  # Enable/disable
+
+GET    /admin/prices              # Material prices
+PUT    /admin/prices/{id}         # Update price
+POST   /admin/prices/bulk-update  # Bulk update
+
+GET    /admin/transactions        # Financial transactions
+GET    /admin/transactions/{id}   # Transaction detail
+POST   /admin/transactions/{id}/refund
+
+GET    /admin/system/health       # System status
+GET    /admin/system/logs         # Logs
+POST   /admin/system/backup       # Trigger backup
+POST   /admin/system/restart      # Restart service
+
+GET    /admin/ai/usage            # AI usage stats
+GET    /admin/ai/logs             # AI request logs
+
+GET    /admin/settings            # Get settings
+PUT    /admin/settings            # Update settings
+```
+
+---
+
+## PROMPT FOR AI CODER
+
+```
+Build complete Admin Dashboard for EngiSuite Analytics.
+
+REQUIREMENTS:
+1. Separate admin auth (not Google OAuth) with username/password
+2. Dashboard with KPIs, charts (user growth, revenue, calculator usage, AI costs)
+3. Users management (list, search, filter, view details, edit, suspend, delete, impersonate)
+4. Calculators management (enable/disable, edit metadata, view usage analytics)
+5. Prices management (view, edit, bulk update material prices)
+6. Financial (revenue dashboard, transactions list, refunds)
+7. System health (docker status, logs viewer, backup management)
+8. AI monitoring (DeepSeek usage, costs, failed requests)
+9. Settings (site config, AI keys, payment keys, email)
+
+TECH STACK:
+- Backend: FastAPI (extend existing)
+- Frontend: HTML + Tailwind CSS (match existing design)
+- Database: Same SQLite (admin_logs table)
+- Charts: Chart.js or ApexCharts
+- Tables: DataTables.js
+
+SECURITY:
+- Admin credentials in env vars (not database)
+- Session timeout 2 hours
+- IP whitelist optional
+- All admin endpoints check admin role
+
+INTEGRATION:
+- Use existing database models
+- Use existing auth middleware pattern
+- Mount at /admin with separate templates folder
+
+DELIVERABLES:
+- backend/admin/ (router, auth, models)
+- frontend/admin/ (login.html, dashboard.html, users.html, calculators.html, prices.html, financial.html, system.html, ai.html, settings.html)
+- frontend/admin/assets/ (admin.css, admin.js, charts.js)
+
+Start with dashboard and users management first.
+```
+
+---
+
+## Priority Order
+
+| Phase | Features | Timeline |
+|-------|----------|----------|
+| 1 | Login + Dashboard + Users | 3 days |
+| 2 | Calculators + Prices | 2 days |
+| 3 | Financial + System Health | 2 days |
+| 4 | AI Monitoring + Settings | 2 days |
+
+**Total: 9 days for complete admin panel.**
+
+---
+
+**Send this prompt to your AI coder. Start Phase 1 immediately.**
+
+Need any adjustments?
+--------------------------------------------------------------------------------
+
+I understand. You need actionable data to fix bugs and make decisions. Let me enhance the admin dashboard specification with deep analytics and debugging capabilities.
+
+---
+
+# Enhanced Admin Dashboard - Decision Making System
+
+## Core Philosophy
+
+**Every metric must answer a question:**
+- Where is the problem?
+- When did it start?
+- Who is affected?
+- How do we fix it?
+
+---
+
+## 1. REAL-TIME HEALTH MONITORING
+
+### Live Traffic Monitor
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  LIVE TRAFFIC                    [Auto-refresh: 5s]     │
+├─────────────────────────────────────────────────────────┤
+│  Current Active Users: 23                               │
+│  Page Views Last Minute: 47                             │
+│  API Requests/Min: 89                                   │
+│  Error Rate: 2.3% ⚠️ (Threshold: 5%)                   │
+└─────────────────────────────────────────────────────────┘
+
+Graph: Requests per second (last 10 minutes)
+- Green line: Successful (200)
+- Red line: Errors (4xx, 5xx)
+- Yellow line: Slow responses (>2s)
+```
+
+### Critical Alerts (Auto-refresh)
+
+| Time | Severity | Issue | Affected | Action |
+|------|----------|-------|----------|--------|
+| 10:23 | 🔴 High | Calculator timeout | 5 users | View/Restart |
+| 10:15 | 🟡 Med | AI cost spike | - | Check/Adjust |
+| 09:58 | 🟢 Low | New version deploy | All | Monitor |
+
+---
+
+## 2. PERFORMANCE ANALYTICS
+
+### Page Speed Breakdown
+
+| Page | Avg Load Time | 95th Percentile | Users Affected | Status |
+|------|---------------|-----------------|----------------|--------|
+| /dashboard | 1.2s | 2.8s | 12% slow | ✅ Good |
+| /calculators | 3.5s ⚠️ | 8.2s | 34% slow | 🔴 Fix |
+| /analytics | 2.1s | 4.5s | 18% slow | 🟡 OK |
+| /ai-assistant | 4.2s 🔴 | 12.1s | 56% slow | 🔴 Critical |
+
+**Drill-down for slow pages:**
+```
+/calculators slow (3.5s avg)
+├── JS bundle: 1.8s (52%)
+├── API /calculators/list: 0.9s (26%)
+├── CSS render: 0.5s (14%)
+└── Other: 0.3s (8%)
+
+[Optimize JS] [View Bundle] [Cache Settings]
+```
+
+### API Performance
+
+| Endpoint | Avg | Max | Errors | Trend |
+|----------|-----|-----|--------|-------|
+| POST /calculate | 450ms | 3.2s | 2% | ↑ Worse |
+| POST /ai/explain | 2.1s | 8.5s | 5% | ↑ Worse |
+| GET /dashboard | 120ms | 890ms | 0% | → Stable |
+
+**Slow Query Analysis:**
+```
+POST /ai/explain (2.1s avg)
+├── DeepSeek API: 1.8s (86%)
+├── JSON parsing: 0.2s (10%)
+└── DB save: 0.1s (4%)
+
+Issue: DeepSeek slow → Fallback to Qwen? [Switch]
+```
+
+---
+
+## 3. ERROR TRACKING & DEBUGGING
+
+### Error Dashboard
+
+```
+TODAY'S ERRORS: 23 (vs 5 yesterday) 🔴 +360%
+
+By Category:
+├── JavaScript: 12 (52%)
+│   ├── TypeError: Cannot read property... [8]
+│   ├── ReferenceError: variable not defined [3]
+│   └── SyntaxError: Unexpected token [1]
+├── API: 7 (30%)
+│   ├── 500 Internal Server Error [4]
+│   ├── 502 Bad Gateway [2]
+│   └── 504 Gateway Timeout [1]
+└── Network: 4 (18%)
+    ├── Failed to fetch [3]
+    └── CORS error [1]
+```
+
+### Error Details (Click to expand)
+
+| Time | User | Error | Page | Stack Trace | Reproduce |
+|------|------|-------|------|-------------|-----------|
+| 10:23 | #452 | `TypeError: e is undefined` | /calculators | View | [Replay] |
+| 10:15 | #123 | `500: DeepSeek timeout` | /ai-assistant | View | [Replay] |
+
+**Auto-generated Bug Report:**
+```
+Issue: Calculator form crashes on mobile
+Affected: 23 users (iPhone Safari)
+First seen: 2025-02-11 08:15
+Pattern: Click "Calculate" → White screen
+Suggested fix: Check null value in cableSizing.js:45
+[View Code] [Create Ticket]
+```
+
+---
+
+## 4. USER BEHAVIOR ANALYTICS
+
+### User Flow (Funnel)
+
+```
+Homepage (100% - 1,247 users)
+  ↓ 68% click
+Calculators Page (847 users)
+  ↓ 45% select calculator
+Calculator Form (381 users)
+  ↓ 62% fill all fields
+  ↓ 38% abandon ⚠️
+Calculate Button (236 users)
+  ↓ 89% success
+Results Page (210 users)
+  ↓ 34% generate report
+  ↓ 12% subscribe 🔴 LOW
+```
+
+**Drop-off Analysis:**
+```
+38% abandon calculator form
+├── Reason: Too many fields (avg 8.2 fields)
+├── Time to fill: 4.5 minutes
+└── Suggestion: Auto-fill previous values? [Enable]
+
+12% subscribe after result
+├── Reason: Price unclear? Feature missing?
+├── A/B test: Show price upfront vs after?
+└── Suggestion: Add "Save result" free feature
+```
+
+### Heatmap Data
+
+| Page | Most Clicked | Ignored | Rage Clicks |
+|------|--------------|---------|-------------|
+| /dashboard | "Cable Sizing" card | "Settings" | AI button (slow) |
+| /calculator | "Calculate" button | "Help" icon | Price field |
+| /payment | "Subscribe" | "Terms" link | Nothing |
+
+---
+
+## 5. TRAFFIC SOURCE ANALYSIS
+
+### Acquisition Channels
+
+```
+Total Users: 1,247 this month
+
+By Source:
+├── Direct (bookmark/type): 523 (42%)
+├── Google Search: 312 (25%)
+│   ├── "حاسبة كابلات" [89 clicks]
+│   ├── "cable sizing calculator" [45 clicks]
+│   └── "engineering calculator egypt" [23 clicks]
+├── Facebook: 198 (16%)
+│   ├── Group: "مهندسون مصريون" [123 clicks]
+│   └── Ad campaign [75 clicks]
+├── LinkedIn: 89 (7%)
+├── Referral: 78 (6%)
+│   └── m2y.net from smarteducation.sbs [45 clicks]
+└── Other: 47 (4%)
+
+Conversion by Source:
+├── Direct: 12% → Pro 💰 Best
+├── Google: 8% → Pro
+├── Facebook: 3% → Pro ⚠️ Low
+└── LinkedIn: 15% → Pro 💰 Best
+```
+
+**Recommendation:**
+```
+🔴 Facebook traffic low quality (3% convert)
+   Action: Stop ad spend or change targeting
+
+🟢 LinkedIn high quality (15% convert)
+   Action: Double LinkedIn outreach
+
+🟡 Google SEO working
+   Action: Add more calculator keywords
+```
+
+### Geographic Heatmap
+
+| City | Users | Avg Session | Conversion | Status |
+|------|-------|-------------|------------|--------|
+| Cairo | 523 | 4.2 min | 11% | 🟢 Core market |
+| Alexandria | 198 | 3.8 min | 9% | 🟢 Good |
+| Giza | 89 | 2.1 min | 4% | 🟡 Investigate |
+| Mansoura | 45 | 5.1 min | 18% | 🟢 Opportunity |
+| Other | 392 | 1.8 min | 2% | 🔴 Low quality |
+
+**Insight:** Mansoura has high conversion. Target more there?
+
+---
+
+## 6. TIME-BASED ANALYTICS
+
+### Usage Patterns
+
+```
+Hourly Traffic (Average)
+00:00 - 06:00: 12 users 💤 Sleep
+06:00 - 09:00: 45 users 🌅 Morning
+09:00 - 12:00: 189 users 🔥 PEAK 1
+12:00 - 14:00: 156 users 🍽️ Lunch dip
+14:00 - 17:00: 234 users 🔥 PEAK 2 (Best)
+17:00 - 20:00: 178 users 🌆 Evening
+20:00 - 23:00: 89 users 🌙 Night
+
+Best conversion time: 14:00-17:00 (18%)
+Worst conversion time: 00:00-06:00 (1%)
+```
+
+**Action:**
+- Schedule maintenance: 00:00-06:00
+- Push notifications: 14:00-17:00
+- Ad spend: 09:00-12:00 and 14:00-17:00
+
+### Weekly Pattern
+
+| Day | Traffic | Conversion | Note |
+|-----|---------|------------|------|
+| Saturday | Low | Medium | Weekend start |
+| Sunday | 🔥 High | 🔥 High | Work week start |
+| Monday | 🔥 High | Medium | |
+| Tuesday | Medium | 🔥 High | Best conversion |
+| Wednesday | Medium | Medium | |
+| Thursday | Low | Low | Weekend prep |
+| Friday | 💤 Low | 💤 Low | Weekend |
+
+---
+
+## 7. DEVICE & BROWSER ISSUES
+
+### Performance by Device
+
+| Device | Users | Avg Load | Errors | Status |
+|--------|-------|----------|--------|--------|
+| Desktop Chrome | 523 | 1.2s | 1% | 🟢 Good |
+| Desktop Firefox | 89 | 1.4s | 2% | 🟢 Good |
+| Mobile Safari | 312 | 4.8s 🔴 | 12% 🔴 | 🔴 Critical |
+| Mobile Chrome | 234 | 2.9s | 5% | 🟡 OK |
+| Tablet | 89 | 2.1s | 3% | 🟢 Good |
+
+**Critical Issue:**
+```
+Mobile Safari (iPhone): 312 users, 4.8s load, 12% errors
+├── JS bundle too large (2.3MB)
+├── CSS not optimized
+└── Touch events not working
+
+Fix priority: 🔴 URGENT - 25% of users affected
+[View Safari Issues] [Optimize Mobile]
+```
+
+### Browser Console Errors (Real-time)
+
+| Error | Count | Browsers | First Seen | Status |
+|-------|-------|----------|------------|--------|
+| `ResizeObserver loop` | 45 | Chrome | 2025-02-10 | 🟡 Known |
+| `Cannot read property 'map'` | 23 | Safari | 2025-02-11 | 🔴 New |
+| `Script error.` | 12 | All | 2025-02-09 | 🟡 Investigating |
+| `DeepSeek API 429` | 8 | All | 2025-02-11 | 🔴 Rate limit |
+
+---
+
+## 8. AI PERFORMANCE DASHBOARD
+
+### DeepSeek Cost & Quality
+
+```
+Today: $3.24 spent (Budget: $5/day)
+
+By Endpoint:
+├── /ai/explain: $1.45 (45%) - 89 requests
+│   ├── Avg tokens: 1,200
+│   ├── Success: 95%
+│   └── Avg time: 2.1s
+├── /ai/report: $1.12 (35%) - 23 requests
+│   ├── Avg tokens: 3,400
+│   ├── Success: 89%
+│   └── Avg time: 4.5s ⚠️ Slow
+└── /ai/chat: $0.67 (20%) - 156 requests
+    ├── Avg tokens: 800
+    ├── Success: 99%
+    └── Avg time: 1.2s
+
+Failed Requests: 12
+├── Timeout (>10s): 8
+├── Rate limit: 3
+└── Unknown: 1
+```
+
+**Optimization Suggestions:**
+```
+Report generation slow (4.5s) and expensive ($0.05/request)
+├── Option 1: Cache common reports [Enable]
+├── Option 2: Use cheaper model for drafts [Switch to Qwen]
+└── Option 3: Pre-generate templates [Create 10 templates]
+
+Potential savings: $15/month (20%)
+[Apply Optimizations]
+```
+
+---
+
+## 9. DECISION SUPPORT SYSTEM
+
+### Automated Insights (Daily Email/Notification)
+
+```
+🤖 EngiSuite Daily Insights - Feb 11, 2025
+
+🔴 CRITICAL ISSUES:
+1. Mobile Safari crashes (12% error rate)
+   → Action: Fix JS bundle size
+   → Time: 4 hours
+   → Impact: +25% mobile users
+
+🟡 OPPORTUNITIES:
+1. LinkedIn conversion 15% (vs 3% Facebook)
+   → Action: Shift ad budget to LinkedIn
+   → Potential: +5 customers/week
+
+2. Mansoura city high conversion (18%)
+   → Action: Target more engineers there
+   → Potential: Untapped market
+
+📊 YESTERDAY:
+- Revenue: 597 EGP (+12%)
+- New users: 23 (+5)
+- Churn: 2 users
+- AI cost: $3.24 (under budget)
+
+📈 THIS WEEK GOAL:
+- Fix Safari bugs → Target: <5% error rate
+- 50 new signups → Current: 34 (68%)
+- $2,000 revenue → Current: 1,194 EGP (60%)
+
+[View Full Dashboard] [Take Action]
+```
+
+---
+
+## 10. A/B TESTING DASHBOARD
+
+### Active Experiments
+
+| Test | Variants | Users | Conversion | Winner |
+|------|----------|-------|------------|--------|
+| Pricing display | A: After result (current) | 623 | 12% | 🏆 B |
+| | B: Before calculator | 624 | 18% | |
+| CTA button | A: "Calculate" | 600 | 15% | Tied |
+| | B: "Get Result" | 647 | 15% | |
+| AI explanation | A: Auto-show | 500 | 22% | 🏆 B |
+| | B: On-demand | 500 | 34% | |
+
+**Recommendation:** Implement B for pricing, keep testing CTA.
+
+---
+
+## ENHANCED PROMPT FOR AI CODER
+
+```
+Build Decision-Making Admin Dashboard for EngiSuite Analytics.
+
+CORE REQUIREMENT: Every metric must enable action.
+
+SECTIONS TO BUILD:
+
+1. REAL-TIME MONITOR
+   - Live active users, requests/minute, error rate
+   - Auto-refresh every 5 seconds
+   - Visual alert when error rate >5%
+   - One-click restart for critical services
+
+2. PERFORMANCE ANALYTICS
+   - Page load times (avg, 95th percentile)
+   - Breakdown: JS, CSS, API, Render
+   - API endpoint performance (avg, max, errors)
+   - Slow query identification with suggested fixes
+
+3. ERROR TRACKING
+   - Categorized errors (JS, API, Network)
+   - Error trend (vs yesterday)
+   - User impact count per error
+   - Stack trace viewer
+   - "Replay" button to reproduce error
+   - Auto-generated bug reports with suggested fixes
+
+4. USER BEHAVIOR FUNNEL
+   - Step-by-step conversion funnel
+   - Drop-off points with reasons
+   - Heatmap data (clicks, ignores, rage clicks)
+   - A/B test results dashboard
+
+5. TRAFFIC SOURCES
+   - Acquisition channels with conversion rates
+   - Keyword performance (Google Search)
+   - Geographic heatmap (cities, conversion)
+   - ROI per channel (revenue / cost)
+
+6. TIME ANALYTICS
+   - Hourly usage patterns
+   - Best conversion times
+   - Maintenance window suggestion
+   - Weekly patterns
+
+7. DEVICE/BROWSER ISSUES
+   - Performance by device/browser
+   - Console error tracking
+   - Mobile-specific issues (critical for Safari)
+   - Screen size breakdown
+
+8. AI MONITORING
+   - DeepSeek cost per endpoint
+   - Token usage and costs
+   - Success/failure rates
+   - Suggestions for cost optimization
+   - Cache hit rates
+
+9. DECISION SUPPORT
+   - Automated daily insights email
+   - Prioritized action items
+   - Impact estimation for each fix
+   - Goal tracking (weekly targets)
+
+TECHNICAL REQUIREMENTS:
+- Real-time: WebSocket or Server-Sent Events
+- Charts: Chart.js with zoom/pan
+- Tables: DataTables with export (Excel/CSV)
+- Maps: Leaflet.js for geographic
+- Performance: Lazy loading, pagination
+- Mobile: Responsive admin panel
+
+DATABASE TABLES TO CREATE:
+- admin_logs (all actions)
+- page_views (detailed analytics)
+- errors (categorized)
+- performance_metrics (timing)
+- user_sessions (funnel tracking)
+
+API ENDPOINTS:
+- GET /admin/analytics/realtime
+- GET /admin/analytics/performance
+- GET /admin/analytics/errors
+- GET /admin/analytics/funnel
+- GET /admin/analytics/traffic
+- GET /admin/analytics/ai
+- POST /admin/actions/fix-suggestion
+
+PRIORITY ORDER:
+1. Real-time monitor + Error tracking (2 days) - CRITICAL
+2. Performance analytics (2 days)
+3. User funnel + Traffic sources (2 days)
+4. AI monitoring + Decision support (2 days)
+
+DELIVERABLE:
+Working admin panel that answers: "What should I fix right now?"
+```
+
+---
+
+## Immediate Action for You
+
+**Right now, manually check:**
+
+```bash
+# 1. Current errors
+docker logs engisuite | grep -i "error\|exception" | tail -20
+
+# 2. Performance
+curl -w "@curl-format.txt" -o /dev/null -s https://m2y.net/calculators
+
+# 3. Traffic
+docker exec engisuite sqlite3 /app/data/engisuite.db "SELECT COUNT(*) FROM users WHERE created_at > date('now', '-1 day');"
+```
+
+**Tell me:**
+1. What is the biggest pain point right now? (slow/crashes/errors)
+2. Which device/browser has most issues?
+3. What time of day is worst?
+
+Then I prioritize what to fix first.

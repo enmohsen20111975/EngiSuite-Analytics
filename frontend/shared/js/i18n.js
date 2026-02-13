@@ -171,7 +171,7 @@ const i18n = {
      * Update all language selector dropdowns
      */
     updateLanguageSelectors() {
-        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select, #language-select-settings');
+        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select, #mobile-language-select, #language-select-settings');
         selectors.forEach(select => {
             if (select.value !== this.currentLang) {
                 select.value = this.currentLang;
@@ -247,7 +247,7 @@ const i18n = {
      * Setup event listeners for language selectors
      */
     setupLanguageSelectors() {
-        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select');
+        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select, #mobile-language-select');
         selectors.forEach(select => {
             select.addEventListener('change', (e) => {
                 this.setLanguage(e.target.value);

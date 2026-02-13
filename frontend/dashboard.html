@@ -163,6 +163,11 @@
             await utils.renderComponent('sidebar-container', 'shared/components/sidebar.html');
             await utils.renderComponent('header-container', 'shared/components/header.html');
 
+            // Setup theme toggle buttons after header is loaded
+            if (window.setupThemeToggleButtons) {
+                window.setupThemeToggleButtons();
+            }
+
             // Initialize common functionality (page-init.js handles auth check)
             currentUser = pageInit.getStoredUser();
             

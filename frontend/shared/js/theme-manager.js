@@ -101,7 +101,7 @@ class ThemeManager {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            await fetch('/api/auth/preferences', {
+            await fetch('/auth/preferences', {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -156,8 +156,10 @@ class ThemeManager {
         // Toggle dark class for Tailwind compatibility
         if (theme === 'dark') {
             document.documentElement.classList.add('dark');
+            document.body.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
+            document.body.classList.remove('dark');
         }
 
         // Update meta theme-color
@@ -170,6 +172,17 @@ class ThemeManager {
         if (this.preferences.customColors?.enabled) {
             this.applyCustomColors(this.preferences.customColors);
         }
+
+        // Force repaint for immediate effect
+        this.forceRepaint();
+    }
+
+    /**
+     * Force repaint to ensure CSS updates take effect immediately
+     */
+    forceRepaint() {
+        // Trigger reflow
+        void document.documentElement.offsetHeight;
     }
 
     /**
@@ -554,7 +567,7 @@ class ThemeManager {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const response = await fetch('/api/auth/preferences', {
+            const response = await fetch('/auth/preferences', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -650,7 +663,7 @@ function setupThemeToggleButtons() {
         toggle.removeEventListener('click', handleThemeToggle);
         toggle.addEventListener('click', handleThemeToggle);
     });
-    
+
     // Update initial icon state
     updateThemeToggleIcons();
 }
@@ -685,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (token) {
         themeManager.loadFromBackend();
     }
-    
+
     // Watch for dynamically added elements (like header component)
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -701,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
     observer.observe(document.body, { childList: true, subtree: true });
 });
 

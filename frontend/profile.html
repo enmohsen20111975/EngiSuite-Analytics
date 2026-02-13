@@ -245,14 +245,37 @@
     <script src="shared/js/auth.js"></script>
     <script src="shared/js/page-init.js"></script>
     <script src="shared/js/utils.js"></script>
+    <script src="shared/js/mobile-navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             // Load components
             await utils.renderComponent('sidebar-container', 'shared/components/sidebar.html');
             await utils.renderComponent('header-container', 'shared/components/header.html');
 
+            // Setup theme toggle buttons after header is loaded
+            if (window.setupThemeToggleButtons) {
+                window.setupThemeToggleButtons();
+            }
+
             // Initialize common functionality (includes themes)
             const user = await utils.initCommonPage();
+
+            // Initialize theme selector with themeManager
+            const themeSelect = document.getElementById('theme');
+            if (themeSelect && window.themeManager) {
+                const currentTheme = themeManager.getTheme();
+                themeSelect.value = currentTheme;
+                
+                // Listen for theme changes from header button
+                themeManager.on('themeChange', ({ theme }) => {
+                    themeSelect.value = theme;
+                });
+                
+                // Listen for changes in the dropdown
+                themeSelect.addEventListener('change', (e) => {
+                    themeManager.setTheme(e.target.value);
+                });
+            }
 
             if (user) {
                 // Update profile-specific elements if any
@@ -400,9 +423,14 @@
             const language = document.getElementById('language').value;
             const theme = document.getElementById('theme').value;
 
-            // Theme is already saved by the change listener in utils.js, but good to confirm
-            utils.applyTheme(theme);
-            i18n.setLanguage(language);
+            // Use themeManager instead of utils.applyTheme
+            if (window.themeManager) {
+                themeManager.setTheme(theme);
+            }
+            
+            if (window.i18n) {
+                i18n.setLanguage(language);
+            }
 
             const template = i18n.getTranslation('profile.alerts.settingsSaved') || 'Settings saved successfully.\nTheme: {theme}\nLanguage: {language}';
             alert(template

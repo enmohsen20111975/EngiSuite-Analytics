@@ -243,6 +243,17 @@ class AuthService {
         }
         return null;
     }
+
+    async init() {
+        // Initialize authentication service - check current auth status
+        if (this.isAuthenticated()) {
+            try {
+                await this.getCurrentUser();
+            } catch (e) {
+                console.warn('Auth init failed:', e);
+            }
+        }
+    }
 }
 
 // Initialize authentication service

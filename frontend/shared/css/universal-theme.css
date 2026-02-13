@@ -133,33 +133,40 @@
    ============================================ */
 
 [data-theme="dark"],
-.dark {
-    /* Dark mode backgrounds */
+.dark,
+html.dark {
+    /* Dark mode backgrounds - ensure better contrast */
     --bg-base: #0F172A;          /* Dark background */
+    --bg-primary: #0F172A;
     --bg-surface: #1E293B;       /* Dark cards */
+    --bg-secondary: #1E293B;
     --bg-surface-hover: #334155; /* Hover states */
     --bg-elevated: #1E293B;
     --bg-muted: #1E293B;
     --bg-subtle: #0F172A;
+    --card-bg: #1E293B;
 
     /* Dark mode borders */
     --border-default: #334155;   /* Dark borders */
     --border-muted: #1E293B;
     --border-strong: #475569;
 
-    /* Dark mode text */
-    --text-primary: #F1F5F9;     /* White-like text */
-    --text-secondary: #94A3B8;   /* Muted text */
-    --text-muted: #64748B;       /* More muted */
-    --text-disabled: #64748B;    /* Disabled text */
-    --text-inverse: #0F172A;
+    /* Dark mode text - HIGH CONTRAST */
+    --text-primary: #F1F5F9;     /* Almost white text for headings */
+    --text-secondary: #CBD5E1;   /* Light gray for secondary text */
+    --text-muted: #94A3B8;       /* Medium gray for muted text */
+    --text-disabled: #64748B;    /* Darker gray for disabled */
+    --text-inverse: #0F172A;     /* For use on light backgrounds */
 
-    /* Dark mode status colors (slightly lighter for contrast) */
+    /* Dark mode status colors (lighter for contrast) */
     --primary-light: #1E3A5F;
     --success-light: #064E3B;
     --warning-light: #78350F;
     --danger-light: #7F1D1D;
     --info-light: #1E3A5F;
+
+    /* Ensure brand text color is light */
+    --brand-text: #F1F5F9;
 
     /* Dark mode shadows (darker) */
     --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -168,6 +175,60 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
     --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+
+/* ============================================
+   Dark Mode Element Overrides for Contrast
+   ============================================ */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+    color: #F1F5F9;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] label,
+[data-theme="dark"] span:not([class*="text-"]),
+[data-theme="dark"] li,
+.dark p,
+.dark label,
+.dark span:not([class*="text-"]),
+.dark li,
+html.dark p,
+html.dark label,
+html.dark span:not([class*="text-"]),
+html.dark li {
+    color: #CBD5E1;
+}
+
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-gray-500,
+[data-theme="dark"] .text-gray-600,
+.dark .text-slate-500,
+.dark .text-slate-600,
+.dark .text-gray-500,
+.dark .text-gray-600,
+html.dark .text-slate-500,
+html.dark .text-slate-600,
+html.dark .text-gray-500,
+html.dark .text-gray-600 {
+    color: #CBD5E1 !important;
 }
 
 /* ============================================

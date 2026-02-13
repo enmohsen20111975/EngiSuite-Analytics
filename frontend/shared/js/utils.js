@@ -300,8 +300,8 @@ const utils = {
 
     // Initialize common page functionality
     async initCommonPage() {
-        // Initialize theme
-        this.initTheme();
+        // Theme is now handled by theme-manager.js globally
+        // Previously initialized theme handling removed to avoid conflicts
 
         // Initialize language selector
         this.initLanguageSelector();

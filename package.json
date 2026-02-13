@@ -1,0 +1,21 @@
+{
+    "name": "engisuite-analytics",
+    "version": "1.0.0",
+    "description": "Unified SaaS platform for engineering calculations and data analysis",
+    "scripts": {
+        "build:css": "npx tailwindcss -i ./frontend/shared/css/tailwind-input.css -o ./frontend/shared/css/tailwind-output.css --minify",
+        "watch:css": "npx tailwindcss -i ./frontend/shared/css/tailwind-input.css -o ./frontend/shared/css/tailwind-output.css --watch",
+        "build": "npm run build:css"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.1"
+    },
+    "keywords": [
+        "engineering",
+        "calculations",
+        "analytics",
+        "saas"
+    ],
+    "author": "EngiSuite",
+    "license": "MIT"
+}

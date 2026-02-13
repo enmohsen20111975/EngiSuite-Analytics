@@ -722,6 +722,11 @@
                 sidebarContainer.innerHTML = sidebarHtml;
                 headerContainer.innerHTML = headerHtml;
 
+                // Setup theme toggle buttons after header is loaded
+                if (window.setupThemeToggleButtons) {
+                    window.setupThemeToggleButtons();
+                }
+
                 // Initialize auth
                 if (window.authService) {
                     authService.initialize();
