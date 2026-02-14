@@ -7,6 +7,7 @@
 class ThemeManager {
     constructor() {
         this.STORAGE_KEY = 'engisuite_preferences';
+        this._isInternalChange = false; // Flag to prevent circular updates
         this.defaults = {
             theme: 'light',
             // Custom colors
@@ -319,7 +320,15 @@ class ThemeManager {
      */
     setLanguage(language) {
         this.preferences.language = language;
-        this.applyLanguage(language);
+        
+        // Set flag to prevent circular updates
+        this._isInternalChange = true;
+        try {
+            this.applyLanguage(language);
+        } finally {
+            this._isInternalChange = false;
+        }
+        
         this.savePreferences();
         this.emit('languageChange', { language });
     }
@@ -334,9 +343,12 @@ class ThemeManager {
         // Apply RTL if needed
         this.applyRTL();
 
-        // If i18n is available, trigger language change
-        if (window.i18n) {
-            window.i18n.setLanguage(language);
+        // If i18n is available, trigger language change (skip themeManager update to prevent circular call)
+        if (window.i18n && !this._isInternalChange) {
+            // Handle async setLanguage with error catching
+            window.i18n.setLanguage(language, true).catch(error => {
+                console.error('Failed to apply language in i18n:', error);
+            });
         }
     }
 

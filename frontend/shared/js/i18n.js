@@ -8,6 +8,7 @@ const i18n = {
     currentLang: 'en', // Default language
     supportedLangs: ['en', 'ar', 'fr'],
     rtlLangs: ['ar', 'he', 'fa', 'ur'],
+    _isInternalChange: false, // Flag to prevent circular updates
 
     async loadTranslations(lang) {
         try {
@@ -18,8 +19,23 @@ const i18n = {
             this.translations = await response.json();
             this.currentLang = lang;
 
-            // Save to localStorage
+            // Save to localStorage - use both keys for compatibility
             localStorage.setItem('lang', lang);
+            
+            // Also update themeManager preferences if available
+            if (window.themeManager && window.themeManager.preferences) {
+                window.themeManager.preferences.language = lang;
+                window.themeManager.savePreferences();
+            } else {
+                // Update engisuite_preferences directly if themeManager not loaded yet
+                try {
+                    const prefs = JSON.parse(localStorage.getItem('engisuite_preferences') || '{}');
+                    prefs.language = lang;
+                    localStorage.setItem('engisuite_preferences', JSON.stringify(prefs));
+                } catch (e) {
+                    console.warn('Failed to update engisuite_preferences:', e);
+                }
+            }
 
             // Apply translations
             this.applyTranslations();
@@ -119,20 +135,34 @@ const i18n = {
 
     /**
      * Set language - integrates with theme manager
+     * @param {string} lang - Language code to set
+     * @param {boolean} skipThemeManagerUpdate - If true, don't update themeManager (prevents circular updates)
+     * @returns {Promise<boolean>} - Returns true if language was changed successfully
      */
-    setLanguage(lang) {
+    async setLanguage(lang, skipThemeManagerUpdate = false) {
         if (!this.supportedLangs.includes(lang)) {
             console.warn(`Language ${lang} is not supported. Supported languages: ${this.supportedLangs.join(', ')}`);
-            return;
+            return false;
         }
 
-        // Update theme manager if available
-        if (window.themeManager) {
-            window.themeManager.setLanguage(lang);
+        // Prevent circular updates
+        if (this._isInternalChange) {
+            return false;
         }
 
-        // Load and apply translations
-        this.loadTranslations(lang);
+        // Update theme manager if available and not skipped
+        if (!skipThemeManagerUpdate && window.themeManager) {
+            this._isInternalChange = true;
+            try {
+                window.themeManager.setLanguage(lang);
+            } finally {
+                this._isInternalChange = false;
+            }
+        }
+
+        // Load and apply translations (await for proper async handling)
+        await this.loadTranslations(lang);
+        return true;
     },
 
     /**
@@ -223,13 +253,28 @@ const i18n = {
      * Initialize i18n - loads saved or browser language
      */
     async init() {
-        // Priority: 1. Theme Manager, 2. localStorage, 3. Browser language, 4. Default
+        // Priority: 1. Theme Manager, 2. localStorage (both keys), 3. Browser language, 4. Default
         let initialLang;
 
+        // First check themeManager (it has the most up-to-date preference)
         if (window.themeManager) {
-            initialLang = themeManager.getLanguage();
-        } else {
-            initialLang = localStorage.getItem('lang');
+            initialLang = window.themeManager.getLanguage();
+        }
+        
+        // Fallback to localStorage - check both keys for compatibility
+        if (!initialLang) {
+            // Check themeManager's storage key first (more reliable)
+            try {
+                const prefs = JSON.parse(localStorage.getItem('engisuite_preferences'));
+                if (prefs && prefs.language) {
+                    initialLang = prefs.language;
+                }
+            } catch (e) {}
+            
+            // Then check the simple 'lang' key
+            if (!initialLang) {
+                initialLang = localStorage.getItem('lang');
+            }
         }
 
         if (!initialLang) {
@@ -237,22 +282,112 @@ const i18n = {
             initialLang = this.supportedLangs.includes(browserLang) ? browserLang : 'en';
         }
 
+        // Ensure the language is valid
+        if (!this.supportedLangs.includes(initialLang)) {
+            initialLang = 'en';
+        }
+
         await this.loadTranslations(initialLang);
 
         // Listen for language selector changes
         this.setupLanguageSelectors();
+        
+        // Setup themeManager listener immediately if available
+        this.setupThemeManagerListener();
+    },
+
+    /**
+     * Setup listener for themeManager language changes
+     */
+    setupThemeManagerListener() {
+        if (window.themeManager) {
+            window.themeManager.on('languageChange', ({ language }) => {
+                if (language !== this.currentLang && !this._isInternalChange) {
+                    // Load translations without triggering themeManager update
+                    this.loadTranslations(language);
+                }
+            });
+        }
     },
 
     /**
      * Setup event listeners for language selectors
+     * Includes all selectors: header, mobile, and settings page
      */
     setupLanguageSelectors() {
-        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select, #mobile-language-select');
+        // Include all language selectors
+        const selectors = document.querySelectorAll('[data-i18n-lang], #language-select, #mobile-language-select, #language-select-settings');
+        
         selectors.forEach(select => {
-            select.addEventListener('change', (e) => {
-                this.setLanguage(e.target.value);
-            });
+            // Remove any existing listener to prevent duplicates
+            select.removeEventListener('change', this._handleLanguageChange);
+            
+            // Add new listener
+            select.addEventListener('change', this._handleLanguageChange.bind(this));
+            
+            // Set initial value
+            if (select.value !== this.currentLang) {
+                select.value = this.currentLang;
+            }
         });
+
+        // Setup mobile language popup
+        this.setupMobileLanguagePopup();
+    },
+
+    /**
+     * Handle language change from selector
+     */
+    _handleLanguageChange(e) {
+        const newLang = e.target.value;
+        if (newLang && this.supportedLangs.includes(newLang)) {
+            this.setLanguage(newLang);
+        }
+    },
+
+    /**
+     * Setup mobile language popup
+     */
+    setupMobileLanguagePopup() {
+        const mobileLangBtn = document.getElementById('mobile-lang-btn');
+        const mobileLangPopup = document.getElementById('mobile-lang-popup');
+        const closeMobileLang = document.getElementById('close-mobile-lang');
+        const mobileLangOptions = document.querySelectorAll('.mobile-lang-option');
+
+        if (mobileLangBtn && mobileLangPopup) {
+            // Open popup
+            mobileLangBtn.addEventListener('click', () => {
+                mobileLangPopup.classList.remove('hidden');
+                // Highlight current language
+                mobileLangOptions.forEach(opt => {
+                    opt.classList.toggle('bg-blue-50', opt.dataset.lang === this.currentLang);
+                    opt.classList.toggle('dark:bg-blue-900/30', opt.dataset.lang === this.currentLang);
+                });
+            });
+
+            // Close popup
+            closeMobileLang?.addEventListener('click', () => {
+                mobileLangPopup.classList.add('hidden');
+            });
+
+            // Close on backdrop click
+            mobileLangPopup.addEventListener('click', (e) => {
+                if (e.target === mobileLangPopup) {
+                    mobileLangPopup.classList.add('hidden');
+                }
+            });
+
+            // Handle language selection
+            mobileLangOptions.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const lang = opt.dataset.lang;
+                    if (lang && this.supportedLangs.includes(lang)) {
+                        this.setLanguage(lang);
+                        mobileLangPopup.classList.add('hidden');
+                    }
+                });
+            });
+        }
     }
 };
 
@@ -261,15 +396,24 @@ document.addEventListener('DOMContentLoaded', () => {
     i18n.init();
 });
 
-// Listen for theme manager language changes
+// Listen for theme manager language changes (with circular update prevention)
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.themeManager) {
-        themeManager.on('languageChange', ({ language }) => {
-            if (language !== i18n.currentLang) {
-                i18n.loadTranslations(language);
-            }
-        });
-    }
+    // Wait a bit for themeManager to be fully initialized
+    setTimeout(() => {
+        if (window.themeManager) {
+            window.themeManager.on('languageChange', ({ language }) => {
+                if (language !== i18n.currentLang && !i18n._isInternalChange) {
+                    // Load translations without triggering themeManager update
+                    i18n.loadTranslations(language);
+                }
+            });
+        }
+    }, 100);
+});
+
+// Re-setup selectors when new content is loaded (for SPA navigation)
+document.addEventListener('pageReady', () => {
+    i18n.setupLanguageSelectors();
 });
 
 // Export for module systems
