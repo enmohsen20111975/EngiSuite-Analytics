@@ -1,0 +1,9 @@
+export { default as AdminDashboardPage } from './AdminDashboardPage';
+export { default as AdminUsersPage } from './AdminUsersPage';
+export { default as AdminEquationsPage } from './AdminEquationsPage';
+export { default as AdminCalculatorsPage } from './AdminCalculatorsPage';
+export { default as AdminAIPage } from './AdminAIPage';
+export { default as AdminFinancialPage } from './AdminFinancialPage';
+export { default as AdminPricesPage } from './AdminPricesPage';
+export { default as AdminSettingsPage } from './AdminSettingsPage';
+export { default as AdminSystemPage } from './AdminSystemPage';
