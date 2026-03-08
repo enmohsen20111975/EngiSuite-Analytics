@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { subscriptionService } from '../services/subscriptionService';
-import { Button, Card, Loader, EmptyState } from '../components/ui';
+import { Button, Card, Loader, EmptyState, Input } from '../components/ui';
 import { 
   Check, X, CreditCard, Coins, History, Download,
   Crown, Zap, Building, ArrowRight, CircleAlert,
-  Calendar, DollarSign, TrendingUp
+  Calendar, DollarSign, TrendingUp, Wallet
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -31,9 +31,29 @@ const PLANS = [
     popular: false,
   },
   {
+    id: 'starter',
+    name: 'Starter',
+    price: 9.99,
+    priceEGP: 299,
+    period: 'month',
+    description: 'For individual engineers',
+    icon: Crown,
+    features: [
+      { text: '100 calculations per month', included: true },
+      { text: 'Full equations library', included: true },
+      { text: 'Export to PDF/Excel', included: true },
+      { text: 'Email support', included: true },
+      { text: 'Custom workflows', included: false },
+      { text: 'API access', included: false },
+    ],
+    cta: 'Get Starter',
+    popular: false,
+  },
+  {
     id: 'pro',
     name: 'Professional',
-    price: 19,
+    price: 29.99,
+    priceEGP: 899,
     period: 'month',
     description: 'For serious engineers',
     icon: Crown,
@@ -43,7 +63,7 @@ const PLANS = [
       { text: 'Export to PDF/Excel', included: true },
       { text: 'Priority support', included: true },
       { text: 'Custom workflows', included: true },
-      { text: 'API access', included: false },
+      { text: 'API access', included: true },
     ],
     cta: 'Upgrade to Pro',
     popular: true,
@@ -51,7 +71,8 @@ const PLANS = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 99,
+    price: 99.99,
+    priceEGP: 2999,
     period: 'month',
     description: 'For teams and organizations',
     icon: Building,
@@ -70,21 +91,30 @@ const PLANS = [
 
 // Credit packages
 const CREDIT_PACKAGES = [
-  { id: 'small', credits: 50, price: 4.99, bonus: 0 },
-  { id: 'medium', credits: 150, price: 12.99, bonus: 15 },
-  { id: 'large', credits: 500, price: 39.99, bonus: 75 },
-  { id: 'xl', credits: 1000, price: 74.99, bonus: 200 },
+  { id: 'small', credits: 50, price: 4.99, priceEGP: 150, bonus: 0 },
+  { id: 'medium', credits: 150, price: 12.99, priceEGP: 390, bonus: 15 },
+  { id: 'large', credits: 500, price: 39.99, priceEGP: 1200, bonus: 75 },
+  { id: 'xl', credits: 1000, price: 74.99, priceEGP: 2250, bonus: 200 },
 ];
 
 /**
  * Subscription Management Page
- * Manage subscriptions, credits, and billing
+ * Manage subscriptions, credits, and billing with Paymob support
  */
 export default function SubscriptionPage() {
   const queryClient = useQueryClient();
   const [billingPeriod, setBillingPeriod] = useState('monthly');
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const [showPaymobModal, setShowPaymobModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [billingData, setBillingData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+  });
+  const [paymentMethod, setPaymentMethod] = useState('paymob'); // 'paymob' or 'stripe'
 
   // Fetch current subscription
   const { data: subscription, isLoading: loadingSubscription } = useQuery({
@@ -126,6 +156,18 @@ export default function SubscriptionPage() {
     },
   });
 
+  // Paymob payment mutation
+  const paymobMutation = useMutation({
+    mutationFn: ({ tier, billingCycle, billingData }) => 
+      subscriptionService.createSubscriptionWithPaymob(tier, billingCycle, billingData),
+    onSuccess: (response) => {
+      // Redirect to Paymob payment page
+      if (response.data?.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
+    },
+  });
+
   // Purchase credits mutation
   const purchaseCreditsMutation = useMutation({
     mutationFn: ({ amount, paymentMethodId }) => 
@@ -138,6 +180,32 @@ export default function SubscriptionPage() {
   });
 
   const isLoading = loadingSubscription || loadingCredits || loadingHistory || loadingPayments;
+
+  // Handle plan selection
+  const handleSelectPlan = (plan) => {
+    if (plan.id === 'free') return;
+    
+    setSelectedPlan(plan);
+    if (paymentMethod === 'paymob') {
+      setShowPaymobModal(true);
+    } else {
+      subscribeMutation.mutate(plan.id);
+    }
+  };
+
+  // Handle Paymob payment
+  const handlePaymobPayment = () => {
+    if (!billingData.email || !billingData.phone) {
+      alert('Please fill in email and phone number');
+      return;
+    }
+
+    paymobMutation.mutate({
+      tier: selectedPlan.id,
+      billingCycle: billingPeriod === 'yearly' ? 'yearly' : 'monthly',
+      billingData,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -159,6 +227,44 @@ export default function SubscriptionPage() {
         </p>
       </div>
 
+      {/* Payment Method Toggle */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900 dark:text-white">Payment Method</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Choose your preferred payment method
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPaymentMethod('paymob')}
+              className={cn(
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
+                paymentMethod === 'paymob'
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+              )}
+            >
+              <Wallet className="w-4 h-4" />
+              Paymob (EGP)
+            </button>
+            <button
+              onClick={() => setPaymentMethod('stripe')}
+              className={cn(
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
+                paymentMethod === 'stripe'
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+              )}
+            >
+              <CreditCard className="w-4 h-4" />
+              Stripe (USD)
+            </button>
+          </div>
+        </div>
+      </Card>
+
       {/* Current Plan & Credits Overview */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Current Plan */}
@@ -179,6 +285,7 @@ export default function SubscriptionPage() {
               'p-3 rounded-full',
               subscription?.plan_id === 'pro' ? 'bg-purple-100 text-purple-600' :
               subscription?.plan_id === 'enterprise' ? 'bg-blue-100 text-blue-600' :
+              subscription?.plan_id === 'starter' ? 'bg-green-100 text-green-600' :
               'bg-gray-100 text-gray-600'
             )}>
               {subscription?.plan_id === 'pro' ? (
@@ -269,17 +376,20 @@ export default function SubscriptionPage() {
         </div>
 
         {/* Plans Grid */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANS.map((plan) => {
             const Icon = plan.icon;
             const isCurrentPlan = subscription?.plan_id === plan.id;
-            const price = billingPeriod === 'yearly' ? plan.price * 12 * 0.8 : plan.price;
+            const price = billingPeriod === 'yearly' 
+              ? (paymentMethod === 'paymob' ? plan.priceEGP * 12 * 0.8 : plan.price * 12 * 0.8)
+              : (paymentMethod === 'paymob' ? plan.priceEGP : plan.price);
+            const currency = paymentMethod === 'paymob' ? 'EGP' : 'USD';
             
             return (
               <Card
                 key={plan.id}
                 className={cn(
-                  'p-6 relative',
+                  'p-5 relative',
                   plan.popular && 'ring-2 ring-blue-500'
                 )}
               >
@@ -291,34 +401,34 @@ export default function SubscriptionPage() {
                   </div>
                 )}
                 
-                <div className="text-center mb-6">
+                <div className="text-center mb-4">
                   <div className={cn(
-                    'inline-flex p-3 rounded-full mb-4',
+                    'inline-flex p-3 rounded-full mb-3',
                     plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
                   )}>
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
                     {plan.name}
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">{plan.description}</p>
-                  <div className="mt-4">
-                    <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                      ${price.toFixed(2)}
+                  <p className="text-xs text-gray-500 mt-1">{plan.description}</p>
+                  <div className="mt-3">
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {currency === 'EGP' ? 'E£' : '$'}{price.toFixed(0)}
                     </span>
                     {plan.price > 0 && (
-                      <span className="text-gray-500">/{billingPeriod === 'yearly' ? 'year' : 'month'}</span>
+                      <span className="text-gray-500 text-sm">/{billingPeriod === 'yearly' ? 'year' : 'month'}</span>
                     )}
                   </div>
                 </div>
 
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm">
+                <ul className="space-y-2 mb-4">
+                  {plan.features.slice(0, 4).map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-xs">
                       {feature.included ? (
-                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
                       ) : (
-                        <X className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                        <X className="w-3 h-3 text-gray-300 flex-shrink-0" />
                       )}
                       <span className={feature.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400'}>
                         {feature.text}
@@ -329,9 +439,10 @@ export default function SubscriptionPage() {
 
                 <Button
                   className="w-full"
+                  size="sm"
                   variant={isCurrentPlan ? 'outline' : 'default'}
-                  disabled={isCurrentPlan || subscribeMutation.isPending}
-                  onClick={() => subscribeMutation.mutate(plan.id)}
+                  disabled={isCurrentPlan || subscribeMutation.isPending || paymobMutation.isPending}
+                  onClick={() => handleSelectPlan(plan)}
                 >
                   {isCurrentPlan ? 'Current Plan' : plan.cta}
                 </Button>
@@ -369,7 +480,7 @@ export default function SubscriptionPage() {
                 </p>
                 <p className="text-sm text-gray-500">credits</p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white mt-2">
-                  ${pkg.price}
+                  {paymentMethod === 'paymob' ? `E£${pkg.priceEGP}` : `$${pkg.price}`}
                 </p>
               </div>
             </Card>
@@ -498,7 +609,9 @@ export default function SubscriptionPage() {
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-gray-600 dark:text-gray-400">Total:</span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    ${selectedPackage.price}
+                    {paymentMethod === 'paymob' 
+                      ? `E£${selectedPackage.priceEGP}` 
+                      : `$${selectedPackage.price}`}
                   </span>
                 </div>
               </div>
@@ -510,12 +623,12 @@ export default function SubscriptionPage() {
                 onClick={() => {
                   purchaseCreditsMutation.mutate({
                     amount: selectedPackage?.credits + (selectedPackage?.bonus || 0),
-                    paymentMethodId: 'stripe',
+                    paymentMethodId: paymentMethod,
                   });
                 }}
                 disabled={purchaseCreditsMutation.isPending}
               >
-                {purchaseCreditsMutation.isPending ? 'Processing...' : 'Pay with Card'}
+                {purchaseCreditsMutation.isPending ? 'Processing...' : `Pay with ${paymentMethod === 'paymob' ? 'Paymob' : 'Card'}`}
               </Button>
               <Button
                 variant="outline"
@@ -528,6 +641,122 @@ export default function SubscriptionPage() {
                 Cancel
               </Button>
             </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Paymob Payment Modal */}
+      {showPaymobModal && selectedPlan && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg p-6 m-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Complete Payment with Paymob
+            </h3>
+            
+            {/* Plan Summary */}
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">{selectedPlan.name} Plan</p>
+                  <p className="text-sm text-gray-500">{billingPeriod === 'yearly' ? 'Yearly' : 'Monthly'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-600">
+                    E£{billingPeriod === 'yearly' 
+                      ? (selectedPlan.priceEGP * 12 * 0.8).toFixed(0) 
+                      : selectedPlan.priceEGP}
+                  </p>
+                  <p className="text-xs text-gray-500">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Data Form */}
+            <div className="space-y-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    First Name
+                  </label>
+                  <Input
+                    value={billingData.firstName}
+                    onChange={(e) => setBillingData({ ...billingData, firstName: e.target.value })}
+                    placeholder="First name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Last Name
+                  </label>
+                  <Input
+                    value={billingData.lastName}
+                    onChange={(e) => setBillingData({ ...billingData, lastName: e.target.value })}
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="email"
+                  value={billingData.email}
+                  onChange={(e) => setBillingData({ ...billingData, email: e.target.value })}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="tel"
+                  value={billingData.phone}
+                  onChange={(e) => setBillingData({ ...billingData, phone: e.target.value })}
+                  placeholder="+20 xxx xxx xxxx"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">Enter your Egyptian phone number</p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowPaymobModal(false);
+                  setSelectedPlan(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-green-600 hover:bg-green-700"
+                onClick={handlePaymobPayment}
+                disabled={paymobMutation.isPending || !billingData.email || !billingData.phone}
+              >
+                {paymobMutation.isPending ? (
+                  <>
+                    <Loader className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Wallet className="w-4 h-4 mr-2" />
+                    Pay with Paymob
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Security Note */}
+            <p className="text-xs text-gray-500 mt-4 text-center">
+              🔒 Your payment is secured by Paymob. You will be redirected to complete payment.
+            </p>
           </Card>
         </div>
       )}

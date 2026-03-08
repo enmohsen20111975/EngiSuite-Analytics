@@ -1,650 +1,796 @@
-import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { pipelinesService, DOMAIN_META, DIFFICULTY_COLORS } from '../services/pipelinesService';
-import { Card, Input, Loader, Button } from '../components/ui';
-import { 
-  Zap, Cog, Building2, Search, Clock, 
-  CircleAlert, ChevronRight, Play, Layers,
-  CircleCheck, ArrowRight
-} from 'lucide-react';
-import { cn } from '../lib/utils';
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 
-// Icon mapping
-const ICON_MAP = {
-  Zap,
-  Cog,
-  Building2,
+const API = '/api/local-pipelines';
+
+const DOMAINS = [
+  { key: 'all',        label: 'All',           icon: '🗂️',  color: '#607d8b' },
+  { key: 'electrical', label: 'Electrical',     icon: '⚡',  color: '#1565c0' },
+  { key: 'mechanical', label: 'Mechanical',     icon: '⚙️',  color: '#e65100' },
+  { key: 'civil',      label: 'Civil / Struct', icon: '🏗️',  color: '#2e7d32' },
+  { key: 'hvac',       label: 'HVAC',           icon: '🌬️',  color: '#00695c' },
+  { key: 'hydraulics', label: 'Hydraulics',     icon: '💧',  color: '#1565c0' },
+];
+
+const DOMAIN_META = {
+  electrical: { bg: '#e3f2fd', border: '#1565c0', badge: '#1565c0' },
+  mechanical:  { bg: '#fff3e0', border: '#e65100', badge: '#e65100' },
+  civil:       { bg: '#e8f5e9', border: '#2e7d32', badge: '#2e7d32' },
+  hvac:        { bg: '#e0f7fa', border: '#00695c', badge: '#00695c' },
+  hydraulics:  { bg: '#e8eaf6', border: '#3949ab', badge: '#3949ab' },
 };
 
-/**
- * Pipeline Card Component
- */
-function PipelineCard({ pipeline, onClick }) {
-  const domain = pipeline.domain || 'civil';
-  const meta = DOMAIN_META[domain] || DOMAIN_META.civil;
-  const IconComponent = ICON_MAP[meta.icon] || Layers;
-  const difficulty = pipeline.difficulty || pipeline.difficulty_level || 'beginner';
-  const difficultyStyle = DIFFICULTY_COLORS[difficulty] || DIFFICULTY_COLORS.beginner;
-  
-  return (
-    <Card
-      className="group cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
-      onClick={() => onClick(pipeline)}
-    >
-      <div className="p-5">
-        <div className="flex items-start gap-4">
-          {/* Icon */}
-          <div 
-            className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: `${meta.color}15` }}
-          >
-            <IconComponent 
-              className="w-6 h-6" 
-              style={{ color: meta.color }} 
-            />
-          </div>
-          
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
-              {pipeline.name}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-              {pipeline.description}
-            </p>
-            
-            {/* Meta info */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span 
-                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                style={{ 
-                  backgroundColor: `${meta.color}15`,
-                  color: meta.color 
-                }}
-              >
-                {meta.label}
-              </span>
-              <span className={cn(
-                "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                difficultyStyle.bg,
-                difficultyStyle.text
-              )}>
-                {difficulty}
-              </span>
-              {pipeline.step_count && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                  <Layers className="w-3 h-3 mr-1" />
-                  {pipeline.step_count} steps
-                </span>
-              )}
-              {pipeline.estimated_time && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {pipeline.estimated_time}
-                </span>
-              )}
-            </div>
-            
-            {/* Tags */}
-            {pipeline.tags && pipeline.tags.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1">
-                {pipeline.tags.slice(0, 3).map((tag, index) => (
-                  <span 
-                    key={index}
-                    className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2 py-0.5 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                {pipeline.tags.length > 3 && (
-                  <span className="text-xs text-gray-400">+{pipeline.tags.length - 3}</span>
-                )}
-              </div>
-            )}
-          </div>
-          
-          {/* Arrow */}
-          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </div>
-    </Card>
-  );
+const DIFFICULTY_META = {
+  beginner:     { bg: '#e8f5e9', color: '#1b5e20', label: '🟢 Beginner' },
+  intermediate: { bg: '#fff3e0', color: '#e65100', label: '🟡 Intermediate' },
+  advanced:     { bg: '#fce4ec', color: '#880e4f', label: '🔴 Advanced' },
+};
+
+const DIFFICULTIES = ['all', 'beginner', 'intermediate', 'advanced'];
+const SORT_OPTIONS = [
+  { value: 'name',       label: 'Name (A–Z)' },
+  { value: 'difficulty', label: 'Difficulty' },
+  { value: 'steps',      label: 'Steps count' },
+  { value: 'domain',     label: 'Domain' },
+];
+
+// ─── Inline Styles ────────────────────────────────────────────────────────────
+const S = {
+  page: { minHeight: '100vh', background: '#f4f6f9', fontFamily: "'Segoe UI', Arial, sans-serif" },
+  header: {
+    background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+    color: '#fff', padding: '32px 40px 24px',
+  },
+  headerRow: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 },
+  headerTitle: { fontSize: 26, fontWeight: 700, margin: 0 },
+  headerSub: { fontSize: 13, opacity: 0.85, marginTop: 6, maxWidth: 580 },
+  statChip: (color) => ({
+    background: 'rgba(255,255,255,0.15)', borderRadius: 20, padding: '4px 14px',
+    fontSize: 12, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.25)',
+  }),
+
+  // Filter bar
+  filterBar: {
+    background: '#fff', borderBottom: '1px solid #e0e0e0',
+    padding: '12px 32px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap',
+    position: 'sticky', top: 0, zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+  },
+  searchWrap: { position: 'relative', flex: '1 1 220px', maxWidth: 320 },
+  searchIcon: { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#999' },
+  searchInput: {
+    width: '100%', border: '1.5px solid #ddd', borderRadius: 8, padding: '8px 12px 8px 32px',
+    fontSize: 13, outline: 'none', boxSizing: 'border-box',
+  },
+  domainTabs: { display: 'flex', gap: 4, flexWrap: 'wrap' },
+  domainTab: (active, color) => ({
+    border: active ? `2px solid ${color}` : '2px solid #e0e0e0',
+    background: active ? color : '#fff',
+    color: active ? '#fff' : '#444',
+    borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600,
+    cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+  }),
+  diffPills: { display: 'flex', gap: 4 },
+  diffPill: (active, meta) => ({
+    border: active ? `2px solid ${meta?.color ?? '#607d8b'}` : '2px solid #e0e0e0',
+    background: active ? (meta?.bg ?? '#f5f5f5') : '#fff',
+    color: active ? (meta?.color ?? '#333') : '#666',
+    borderRadius: 20, padding: '5px 12px', fontSize: 12, fontWeight: 600,
+    cursor: 'pointer', transition: 'all 0.15s',
+  }),
+  sortSelect: {
+    border: '1.5px solid #ddd', borderRadius: 8, padding: '7px 10px', fontSize: 12,
+    background: '#fff', cursor: 'pointer', outline: 'none',
+  },
+  resultCount: { fontSize: 12, color: '#888', whiteSpace: 'nowrap' },
+
+  // Main body
+  body: { maxWidth: 1280, margin: '0 auto', padding: '24px 24px 48px' },
+
+  // Group header
+  groupHeader: {
+    display: 'flex', alignItems: 'center', gap: 10,
+    margin: '28px 0 14px', paddingBottom: 8, borderBottom: '2px solid #e0e0e0',
+  },
+  groupIcon: { fontSize: 22 },
+  groupTitle: { fontSize: 16, fontWeight: 700, color: '#1a1a2e' },
+  groupCount: { fontSize: 12, color: '#888', background: '#f5f5f5', borderRadius: 12, padding: '2px 10px' },
+
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 },
+  card: (domain) => ({
+    background: '#fff',
+    border: `2px solid ${DOMAIN_META[domain]?.border ?? '#ccc'}`,
+    borderRadius: 12, padding: 22, cursor: 'pointer',
+    transition: 'transform 0.15s, box-shadow 0.15s',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+  }),
+  cardIcon: { fontSize: 30, marginBottom: 8 },
+  cardTitle: { fontSize: 15, fontWeight: 700, margin: '0 0 6px', color: '#1a1a2e' },
+  cardDesc: { fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 12 },
+  cardMeta: { display: 'flex', gap: 6, flexWrap: 'wrap' },
+  badge: (bg, color) => ({
+    background: bg, color, fontSize: 10.5, fontWeight: 600,
+    padding: '2px 9px', borderRadius: 20,
+  }),
+  empty: { textAlign: 'center', color: '#aaa', padding: '60px 20px', fontSize: 14 },
+
+  // Modal overlay / wizard
+  overlay: {
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 1000,
+    display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+    overflowY: 'auto', padding: '24px 16px',
+  },
+  modal: {
+    background: '#fff', borderRadius: 14, width: '100%', maxWidth: 940,
+    boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: 500,
+    display: 'flex', flexDirection: 'column',
+  },
+  modalHeader: {
+    background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
+    color: '#fff', padding: '20px 28px', borderRadius: '14px 14px 0 0',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+  },
+  closeBtn: {
+    background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff',
+    width: 32, height: 32, borderRadius: 8, cursor: 'pointer',
+    fontSize: 18, lineHeight: '32px', textAlign: 'center',
+  },
+  progressBar: { height: 4, background: '#e0e0e0', borderRadius: 0 },
+  progressFill: (pct) => ({ height: 4, background: '#1565c0', width: `${pct}%`, transition: 'width 0.4s' }),
+  wizardBody: { display: 'flex', flex: 1, minHeight: 400 },
+  sidebar: {
+    width: 200, borderRight: '1px solid #e0e0e0', padding: '16px 0',
+    background: '#fafafa', flexShrink: 0, borderRadius: '0 0 0 14px',
+  },
+  sidebarItem: (active, done) => ({
+    padding: '10px 20px', cursor: 'pointer', fontSize: 13,
+    background: active ? '#e3f2fd' : 'transparent',
+    borderLeft: active ? '3px solid #1565c0' : '3px solid transparent',
+    color: active ? '#1565c0' : done ? '#2e7d32' : '#555',
+    fontWeight: active ? 600 : 400,
+  }),
+  stepContent: { flex: 1, padding: '24px 28px', overflowY: 'auto' },
+  stepTitle: { fontSize: 19, fontWeight: 700, color: '#1a1a2e', margin: '0 0 6px' },
+  stepDesc: { fontSize: 13, color: '#555', lineHeight: 1.6, margin: '0 0 20px' },
+  standardRef: {
+    display: 'inline-block', background: '#fff3e0', color: '#e65100',
+    border: '1px solid #ffe0b2', borderRadius: 20, padding: '2px 10px',
+    fontSize: 11, marginBottom: 16,
+  },
+  sectionLabel: {
+    fontSize: 12, fontWeight: 600, color: '#1565c0',
+    textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
+  },
+  inputGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 },
+  inputGroup: { display: 'flex', flexDirection: 'column', gap: 4 },
+  label: { fontSize: 12.5, fontWeight: 500, color: '#333' },
+  input: { border: '1.5px solid #ddd', borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none' },
+  inputAutoFilled: { border: '1.5px solid #1565c0', borderRadius: 7, padding: '8px 12px', fontSize: 13, background: '#e3f2fd' },
+  select: { border: '1.5px solid #ddd', borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none', background: '#fff' },
+  helpText: { fontSize: 11, color: '#999', lineHeight: 1.4 },
+  outputsBox: { background: '#f0f7ff', border: '1.5px solid #90caf9', borderRadius: 10, padding: '16px 20px', marginTop: 20 },
+  outputRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #e3f0ff' },
+  outputLabel: { fontSize: 13, color: '#333' },
+  outputValue: { fontSize: 13, fontWeight: 700, color: '#1565c0' },
+  outputPass: { fontSize: 13, fontWeight: 700, color: '#2e7d32' },
+  outputFail: { fontSize: 13, fontWeight: 700, color: '#c62828' },
+  warningBox: { background: '#fff3e0', border: '1.5px solid #ffb74d', borderRadius: 8, padding: '12px 16px', marginTop: 12 },
+  warningText: { color: '#e65100', fontSize: 12.5 },
+  formulaBox: { background: '#1a1a2e', borderRadius: 8, padding: '14px 18px', marginTop: 16 },
+  formulaLine: { color: '#a5d6a7', fontFamily: 'Courier New, monospace', fontSize: 12.5, lineHeight: 1.9, display: 'block' },
+  footer: { padding: '16px 28px', borderTop: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', gap: 8 },
+  calcBtn: {
+    background: 'linear-gradient(135deg, #1565c0, #0d47a1)', color: '#fff',
+    border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+  },
+  calcBtnDisabled: {
+    background: '#90caf9', color: '#fff',
+    border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'not-allowed', fontSize: 13, fontWeight: 600,
+  },
+  nextBtn: {
+    background: '#2e7d32', color: '#fff',
+    border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginLeft: 8,
+  },
+  reportBtn: {
+    background: 'linear-gradient(135deg, #6a1b9a, #4a148c)', color: '#fff',
+    border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginLeft: 8,
+  },
+  reportFrame: { width: '100%', border: 'none', minHeight: 600, borderRadius: '0 0 14px 14px' },
+  spinner: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200, color: '#1565c0', fontSize: 15 },
+  error: { background: '#ffebee', border: '1px solid #ef9a9a', borderRadius: 8, padding: '14px 18px', color: '#c62828', fontSize: 13 },
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatOutputValue(val, out) {
+  if (typeof val === 'boolean') {
+    return { text: val ? '✅ PASS' : '❌ FAIL', style: val ? S.outputPass : S.outputFail };
+  }
+  const num = typeof val === 'number' ? val.toFixed(out.precision ?? 2) : String(val);
+  return { text: `${num}${out.unit ? ' ' + out.unit : ''}`, style: S.outputValue };
 }
 
-/**
- * ListFilter Tab Component
- */
-function FilterTab({ label, count, active, onClick, color }) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'px-4 py-2 rounded-lg font-medium text-sm transition-all',
-        active 
-          ? 'text-white shadow-md' 
-          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-      )}
-      style={active ? { backgroundColor: color } : {}}
-    >
-      {label}
-      {count !== undefined && (
-        <span className={cn(
-          'ml-2 px-2 py-0.5 rounded-full text-xs',
-          active ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700'
-        )}>
-          {count}
-        </span>
-      )}
-    </button>
-  );
+function collectPreviousOutputs(stepOutputs, beforeStepNumber) {
+  const flat = {};
+  for (const [sNum, outs] of Object.entries(stepOutputs)) {
+    if (Number(sNum) < beforeStepNumber) Object.assign(flat, outs);
+  }
+  return flat;
 }
 
-/**
- * Pipeline Execution Modal
- */
-function PipelineModal({ pipeline, isOpen, onClose }) {
-  const [inputs, setInputs] = useState({});
-  const [currentStep, setCurrentStep] = useState(0);
-  const [outputs, setOutputs] = useState(null);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [error, setError] = useState(null);
-  
-  // Fetch pipeline details
-  const { data: pipelineDetails, isLoading: isLoadingDetails } = useQuery({
-    queryKey: ['pipeline-details', pipeline?.id],
-    queryFn: () => pipelinesService.getById(pipeline.id),
-    enabled: !!pipeline?.id && isOpen,
-  });
-  
-  // Reset state when pipeline changes
-  useState(() => {
-    setInputs({});
-    setOutputs(null);
-    setError(null);
-    setCurrentStep(0);
-  }, [pipeline?.id]);
-  
-  // Handle input change
-  const handleInputChange = (inputName, value) => {
-    setInputs(prev => ({
-      ...prev,
-      [inputName]: value === '' ? '' : parseFloat(value),
-    }));
+const DIFF_ORDER = { beginner: 0, intermediate: 1, advanced: 2 };
+
+function applyFilters(pipelines, { domain, difficulty, search, sort }) {
+  let list = [...pipelines];
+  if (domain !== 'all') list = list.filter(p => p.domain === domain);
+  if (difficulty !== 'all') list = list.filter(p => p.difficulty === difficulty);
+  if (search.trim()) {
+    const q = search.toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.domain.toLowerCase().includes(q)
+    );
+  }
+  switch (sort) {
+    case 'name':       list.sort((a, b) => a.name.localeCompare(b.name)); break;
+    case 'difficulty': list.sort((a, b) => DIFF_ORDER[a.difficulty] - DIFF_ORDER[b.difficulty]); break;
+    case 'steps':      list.sort((a, b) => (b.step_count ?? 0) - (a.step_count ?? 0)); break;
+    case 'domain':     list.sort((a, b) => a.domain.localeCompare(b.domain) || a.name.localeCompare(b.name)); break;
+    default: break;
+  }
+  return list;
+}
+
+function groupByDomain(pipelines) {
+  const groups = {};
+  for (const p of pipelines) {
+    if (!groups[p.domain]) groups[p.domain] = [];
+    groups[p.domain].push(p);
+  }
+  return groups;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function PipelinesPage() {
+  const [pipelines, setPipelines] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+
+  // Filter state
+  const [domainFilter, setDomainFilter] = useState('all');
+  const [diffFilter, setDiffFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('name');
+  const [groupByDomainFlag, setGroupByDomainFlag] = useState(false);
+
+  // Wizard state
+  const [activePipeline, setActivePipeline] = useState(null);
+  const [currentStepIdx, setCurrentStepIdx] = useState(0);
+  const [stepInputs, setStepInputs] = useState({});
+  const [stepOutputs, setStepOutputs] = useState({});
+  const [calculating, setCalculating] = useState(false);
+  const [calcError, setCalcError] = useState(null);
+  const [warnings, setWarnings] = useState({});
+  const [formulaDisplay, setFormulaDisplay] = useState({});
+  const [showReport, setShowReport] = useState(false);
+  const [reportHtml, setReportHtml] = useState(null);
+  const [reportJson, setReportJson] = useState(null);
+  const [generatingReport, setGeneratingReport] = useState(false);
+
+  useEffect(() => {
+    axios.get(API)
+      .then(r => setPipelines(r.data.data))
+      .catch(() => setFetchError('Failed to load pipelines. Make sure the server is running.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const buildDefaultInputs = (step, previousOutputs) => {
+    const vals = {};
+    step.inputs.forEach(inp => {
+      if (inp.default !== undefined) vals[inp.name] = inp.default;
+      if (previousOutputs[inp.name] !== undefined) vals[inp.name] = previousOutputs[inp.name];
+      if (inp.fromPreviousStep && previousOutputs[inp.fromPreviousStep] !== undefined) {
+        vals[inp.name] = previousOutputs[inp.fromPreviousStep];
+      }
+    });
+    return vals;
   };
-  
-  // Handle pipeline execution
-  const handleExecute = async () => {
-    if (!pipeline) return;
-    
-    setIsExecuting(true);
-    setError(null);
-    
+
+  const openPipeline = async (id) => {
     try {
-      const result = await pipelinesService.execute(pipeline.id, inputs);
-      setOutputs(result.outputs || result.results || result);
-      setCurrentStep((pipelineDetails?.steps?.length || 1) - 1);
-    } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Pipeline execution failed.');
-    } finally {
-      setIsExecuting(false);
+      const r = await axios.get(`${API}/${id}`);
+      const pl = r.data.data;
+      const defaults = buildDefaultInputs(pl.steps[0], {});
+      setActivePipeline(pl);
+      setCurrentStepIdx(0);
+      setStepInputs({ [pl.steps[0].stepNumber]: defaults });
+      setStepOutputs({});
+      setWarnings({});
+      setFormulaDisplay({});
+      setCalcError(null);
+      setReportHtml(null);
+      setReportJson(null);
+      setShowReport(false);
+    } catch {
+      alert('Failed to load pipeline details.');
     }
   };
-  
-  if (!isOpen || !pipeline) return null;
-  
-  const domain = pipeline.domain || 'civil';
-  const meta = DOMAIN_META[domain] || DOMAIN_META.civil;
-  const IconComponent = ICON_MAP[meta.icon] || Layers;
-  const details = pipelineDetails || pipeline;
-  
+
+  const closeWizard = () => { setActivePipeline(null); setShowReport(false); };
+
+  const currentStep = activePipeline?.steps?.[currentStepIdx];
+  const currentInputs = stepInputs[currentStep?.stepNumber] ?? {};
+  const currentOutputs = currentStep ? stepOutputs[currentStep.stepNumber] : undefined;
+  const isLastStep = activePipeline && currentStepIdx === activePipeline.steps.length - 1;
+  const allStepsDone = activePipeline && activePipeline.steps.every(s => stepOutputs[s.stepNumber]);
+
+  const setField = (field, value) => {
+    const sn = currentStep.stepNumber;
+    setStepInputs(prev => ({ ...prev, [sn]: { ...(prev[sn] ?? {}), [field]: value } }));
+    setStepOutputs(prev => { const n = { ...prev }; delete n[sn]; return n; });
+  };
+
+  const calculate = async () => {
+    if (!activePipeline || !currentStep) return;
+    setCalculating(true);
+    setCalcError(null);
+    try {
+      const r = await axios.post(
+        `${API}/${activePipeline.id}/steps/${currentStep.stepNumber}/calculate`,
+        { inputs: currentInputs }
+      );
+      const { outputs, formula_display, warnings: warns } = r.data.data;
+      const sn = currentStep.stepNumber;
+      setStepOutputs(prev => ({ ...prev, [sn]: outputs }));
+      setFormulaDisplay(prev => ({ ...prev, [sn]: formula_display }));
+      setWarnings(prev => ({ ...prev, [sn]: warns }));
+    } catch (err) {
+      setCalcError(err.response?.data?.error ?? 'Calculation failed. Check your inputs.');
+    } finally {
+      setCalculating(false);
+    }
+  };
+
+  const goToStep = (idx) => {
+    setCurrentStepIdx(idx);
+    setCalcError(null);
+    const step = activePipeline.steps[idx];
+    const prevOutputs = collectPreviousOutputs(stepOutputs, step.stepNumber);
+    const defaults = buildDefaultInputs(step, prevOutputs);
+    setStepInputs(prev => ({ ...prev, [step.stepNumber]: { ...defaults, ...(prev[step.stepNumber] ?? {}) } }));
+  };
+
+  const nextStep = () => {
+    const nextIdx = currentStepIdx + 1;
+    const ns = activePipeline.steps[nextIdx];
+    const prevOutputs = collectPreviousOutputs(stepOutputs, ns.stepNumber);
+    const defaults = buildDefaultInputs(ns, prevOutputs);
+    setStepInputs(prev => ({ ...prev, [ns.stepNumber]: defaults }));
+    setCurrentStepIdx(nextIdx);
+    setCalcError(null);
+  };
+
+  const generateReport = async () => {
+    setGeneratingReport(true);
+    try {
+      const stepResults = activePipeline.steps
+        .filter(s => stepOutputs[s.stepNumber])
+        .map(s => ({
+          stepNumber: s.stepNumber,
+          inputs: stepInputs[s.stepNumber] ?? {},
+          outputs: stepOutputs[s.stepNumber] ?? {}
+        }));
+      const r = await axios.post(`${API}/${activePipeline.id}/report`, { stepResults });
+      setReportHtml(r.data.data.html);
+      setReportJson(r.data.data.json);
+      setShowReport(true);
+    } catch {
+      alert('Failed to generate report.');
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
+
+  const downloadHtml = () => {
+    const blob = new Blob([reportHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${activePipeline.id}-report.html`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadJson = () => {
+    const blob = new Blob([JSON.stringify(reportJson, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${activePipeline.id}-report.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const progressPct = activePipeline
+    ? ((currentStepIdx + (currentOutputs ? 1 : 0)) / activePipeline.steps.length) * 100
+    : 0;
+
+  // ─── Filtered data ────────────────────────────────────────────────────────
+  const filtered = applyFilters(pipelines, { domain: domainFilter, difficulty: diffFilter, search, sort });
+  const groups = groupByDomain(filtered);
+  const domainOrder = ['electrical', 'mechanical', 'civil', 'hvac', 'hydraulics'];
+
+  // Domain tab counts (only from all pipelines, filtered by difficulty+search only)
+  const countFor = (d) => {
+    if (d === 'all') return pipelines.filter(p => {
+      const dm = DIFFICULTY_META[p.difficulty];
+      return (diffFilter === 'all' || p.difficulty === diffFilter) &&
+             (!search.trim() || p.name.toLowerCase().includes(search.toLowerCase()));
+    }).length;
+    return pipelines.filter(p =>
+      p.domain === d &&
+      (diffFilter === 'all' || p.difficulty === diffFilter) &&
+      (!search.trim() || p.name.toLowerCase().includes(search.toLowerCase()))
+    ).length;
+  };
+
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
-        {/* Backdrop */}
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
-        />
-        
-        {/* Modal */}
-        <Card className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-start gap-4">
-              <div 
-                className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: `${meta.color}15` }}
-              >
-                <IconComponent 
-                  className="w-6 h-6" 
-                  style={{ color: meta.color }} 
-                />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {pipeline.name}
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {pipeline.description}
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500"
-              >
-                ✕
-              </button>
-            </div>
+    <div style={S.page}>
+
+      {/* ─── Header ─────────────────────────────────────────────────────── */}
+      <div style={S.header}>
+        <div style={S.headerRow}>
+          <div>
+            <h1 style={S.headerTitle}>Engineering Calculation Pipelines</h1>
+            <p style={S.headerSub}>
+              Step-by-step workflows — enter inputs, get real calculations, outputs chain into next steps automatically, download a full technical report.
+            </p>
           </div>
-          
-          {/* Content */}
-          <div className="p-6 overflow-y-auto max-h-[60vh]">
-            {isLoadingDetails ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader className="w-8 h-8 animate-spin text-blue-500" />
+          {!loading && !fetchError && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignSelf: 'flex-start', marginTop: 4 }}>
+              <span style={S.statChip()}>{pipelines.length} Pipelines</span>
+              <span style={S.statChip()}>
+                {DOMAINS.filter(d => d.key !== 'all').filter(d => pipelines.some(p => p.domain === d.key)).length} Disciplines
+              </span>
+              <span style={S.statChip()}>
+                {pipelines.reduce((a, p) => a + (p.step_count ?? 0), 0)} Total Steps
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ─── Filter Bar ─────────────────────────────────────────────────── */}
+      <div style={S.filterBar}>
+        {/* Search */}
+        <div style={S.searchWrap}>
+          <span style={S.searchIcon}>🔍</span>
+          <input
+            type="text"
+            placeholder="Search pipelines…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={S.searchInput}
+          />
+        </div>
+
+        {/* Domain tabs */}
+        <div style={S.domainTabs}>
+          {DOMAINS.map(d => {
+            const cnt = countFor(d.key);
+            if (d.key !== 'all' && cnt === 0) return null;
+            return (
+              <button
+                key={d.key}
+                onClick={() => setDomainFilter(d.key)}
+                style={S.domainTab(domainFilter === d.key, d.color)}
+              >
+                {d.icon} {d.label} {cnt > 0 && <span style={{ opacity: 0.75, marginLeft: 4 }}>({cnt})</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Difficulty pills */}
+        <div style={S.diffPills}>
+          {DIFFICULTIES.map(d => {
+            const meta = DIFFICULTY_META[d];
+            return (
+              <button
+                key={d}
+                onClick={() => setDiffFilter(d)}
+                style={S.diffPill(diffFilter === d, meta)}
+              >
+                {d === 'all' ? 'All Levels' : meta?.label ?? d}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sort */}
+        <select value={sort} onChange={e => setSort(e.target.value)} style={S.sortSelect}>
+          {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+
+        {/* Group toggle */}
+        <button
+          onClick={() => setGroupByDomainFlag(f => !f)}
+          style={{
+            border: groupByDomainFlag ? '2px solid #1565c0' : '2px solid #e0e0e0',
+            background: groupByDomainFlag ? '#e3f2fd' : '#fff',
+            color: groupByDomainFlag ? '#1565c0' : '#666',
+            borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+          }}
+          title="Group by discipline"
+        >
+          🗂 Group
+        </button>
+
+        <span style={S.resultCount}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
+      </div>
+
+      {/* ─── Main Content ────────────────────────────────────────────────── */}
+      <div style={S.body}>
+        {loading && <div style={S.spinner}>Loading pipelines…</div>}
+        {fetchError && <div style={S.error}>{fetchError}</div>}
+
+        {!loading && !fetchError && filtered.length === 0 && (
+          <div style={S.empty}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+            <div>No pipelines match your filters.</div>
+            <button
+              onClick={() => { setSearch(''); setDomainFilter('all'); setDiffFilter('all'); }}
+              style={{ ...S.calcBtn, marginTop: 16, fontSize: 12 }}
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
+
+        {!loading && !fetchError && filtered.length > 0 && (
+          groupByDomainFlag ? (
+            // ── Grouped view ──────────────────────────────────────────────
+            domainOrder
+              .filter(d => groups[d]?.length)
+              .map(d => {
+                const dom = DOMAINS.find(x => x.key === d);
+                const meta = DOMAIN_META[d] ?? DOMAIN_META.electrical;
+                return (
+                  <div key={d}>
+                    <div style={S.groupHeader}>
+                      <span style={S.groupIcon}>{dom?.icon}</span>
+                      <span style={{ ...S.groupTitle, color: meta.border }}>{dom?.label ?? d}</span>
+                      <span style={S.groupCount}>{groups[d].length} pipeline{groups[d].length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div style={S.grid}>
+                      {groups[d].map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p.id)} />)}
+                    </div>
+                  </div>
+                );
+              })
+          ) : (
+            // ── Flat grid view ─────────────────────────────────────────────
+            <div style={S.grid}>
+              {filtered.map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p.id)} />)}
+            </div>
+          )
+        )}
+      </div>
+
+      {/* ─── Wizard Modal ─────────────────────────────────────────────────── */}
+      {activePipeline && (
+        <div style={S.overlay} onClick={e => e.target === e.currentTarget && closeWizard()}>
+          <div style={S.modal}>
+
+            <div style={S.modalHeader}>
+              <div>
+                <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 4 }}>
+                  {activePipeline.icon} {activePipeline.domain.toUpperCase()} PIPELINE
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700 }}>{activePipeline.name}</div>
+              </div>
+              <button style={S.closeBtn} onClick={closeWizard}>✕</button>
+            </div>
+
+            <div style={S.progressBar}>
+              <div style={S.progressFill(progressPct)} />
+            </div>
+
+            {showReport ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ padding: '14px 24px', borderBottom: '1px solid #e0e0e0', display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <button
+                    onClick={() => setShowReport(false)}
+                    style={{ background: '#e0e0e0', border: 'none', borderRadius: 7, padding: '7px 16px', cursor: 'pointer', fontSize: 13 }}
+                  >
+                    ← Back to Wizard
+                  </button>
+                  <button onClick={downloadHtml} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }}>
+                    ⬇ Download HTML Report
+                  </button>
+                  <button onClick={downloadJson} style={{ ...S.nextBtn, marginLeft: 0, padding: '7px 16px', fontSize: 13 }}>
+                    ⬇ Download JSON
+                  </button>
+                </div>
+                <iframe title="Engineering Report" srcDoc={reportHtml} style={S.reportFrame} sandbox="allow-same-origin" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left: Steps Flow */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Layers className="w-5 h-5" />
-                    Pipeline Steps
-                  </h3>
-                  
-                  <div className="space-y-3">
-                    {details.steps && details.steps.length > 0 ? (
-                      details.steps.map((step, index) => (
-                        <div 
-                          key={step.id || index}
-                          className={cn(
-                            "flex items-start gap-3 p-3 rounded-lg border transition-colors",
-                            index === currentStep 
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
-                              : index < currentStep
-                                ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                                : "border-gray-200 dark:border-gray-700"
-                          )}
-                        >
-                          <div className={cn(
-                            "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium",
-                            index === currentStep 
-                              ? "bg-blue-500 text-white" 
-                              : index < currentStep
-                                ? "bg-green-500 text-white"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-                          )}>
-                            {index < currentStep ? (
-                              <CircleCheck className="w-4 h-4" />
-                            ) : (
-                              index + 1
-                            )}
+              <>
+                <div style={S.wizardBody}>
+                  <div style={S.sidebar}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#999', padding: '0 20px 8px', textTransform: 'uppercase', letterSpacing: 0.5 }}>Steps</div>
+                    {activePipeline.steps.map((step, idx) => {
+                      const done = !!stepOutputs[step.stepNumber];
+                      const active = idx === currentStepIdx;
+                      return (
+                        <div key={step.stepNumber} style={S.sidebarItem(active, done)} onClick={() => goToStep(idx)}>
+                          <div style={{ fontSize: 11, marginBottom: 2 }}>
+                            {done ? '✅' : active ? '▶' : '○'} Step {step.stepNumber}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 dark:text-white text-sm">
-                              {step.name || `Step ${index + 1}`}
-                            </p>
-                            {step.description && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                                {step.description}
-                              </p>
-                            )}
-                          </div>
-                          {index < (details.steps?.length || 0) - 1 && (
-                            <ArrowRight className="w-4 h-4 text-gray-300 absolute left-3 -bottom-3" />
-                          )}
+                          <div style={{ fontSize: 12 }}>{step.name}</div>
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
-                        No steps defined for this pipeline.
-                      </p>
+                      );
+                    })}
+                    {allStepsDone && (
+                      <div style={{ padding: '12px 16px', marginTop: 8 }}>
+                        <button
+                          onClick={generateReport}
+                          disabled={generatingReport}
+                          style={{ ...S.reportBtn, width: '100%', marginLeft: 0, padding: '9px 12px', fontSize: 12 }}
+                        >
+                          {generatingReport ? '⏳ Generating…' : '📋 View Report'}
+                        </button>
+                      </div>
                     )}
                   </div>
-                </div>
-                
-                {/* Right: Inputs & Outputs */}
-                <div>
-                  {/* Inputs Section */}
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Play className="w-5 h-5" />
-                    Inputs
-                  </h3>
-                  
-                  {details.inputs && details.inputs.length > 0 ? (
-                    <div className="space-y-4 mb-6">
-                      {details.inputs.map((input, index) => (
-                        <div key={input.name || index}>
-                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {input.label || input.name}
-                            {input.unit && <span className="text-gray-400 ml-1">({input.unit})</span>}
-                          </label>
-                          
-                          {input.type === 'select' ? (
-                            <select
-                              value={inputs[input.name] || input.default || ''}
-                              onChange={(e) => handleInputChange(input.name, e.target.value)}
-                              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-                            >
-                              {input.options?.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          ) : (
-                            <Input
-                              type="number"
-                              placeholder={input.default?.toString() || `Enter ${input.name}`}
-                              value={inputs[input.name] ?? ''}
-                              onChange={(e) => handleInputChange(input.name, e.target.value)}
-                              step="any"
-                            />
-                          )}
-                          
-                          {input.help_text && (
-                            <p className="text-xs text-gray-500 mt-1">{input.help_text}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-                      No inputs required for this pipeline.
-                    </p>
-                  )}
-                  
-                  {/* Error */}
-                  {error && (
-                    <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
-                      <CircleAlert className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-                    </div>
-                  )}
-                  
-                  {/* Outputs */}
-                  {outputs && (
-                    <div className="mb-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-                        Results
-                      </h3>
-                      <div className="space-y-3">
-                        {Object.entries(outputs).map(([key, value]) => (
-                          !key.startsWith('_') && (
-                            <div 
-                              key={key}
-                              className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
-                            >
-                              <p className="text-xs text-green-600 dark:text-green-400 uppercase tracking-wider">
-                                {key.replace(/_/g, ' ')}
-                              </p>
-                              <p className="text-lg font-bold text-green-700 dark:text-green-300 mt-1">
-                                {typeof value === 'number' ? value.toFixed(4) : String(value)}
-                              </p>
+
+                  {currentStep && (
+                    <div style={S.stepContent}>
+                      <h2 style={S.stepTitle}>Step {currentStep.stepNumber}: {currentStep.name}</h2>
+                      <span style={S.standardRef}>{currentStep.standard_ref}</span>
+                      <p style={S.stepDesc}>{currentStep.description}</p>
+
+                      <div style={S.sectionLabel}>Inputs</div>
+                      <div style={S.inputGrid}>
+                        {currentStep.inputs.map(inp => {
+                          const prevOutputs = collectPreviousOutputs(stepOutputs, currentStep.stepNumber);
+                          const isAutoFilled =
+                            prevOutputs[inp.name] !== undefined ||
+                            (inp.fromPreviousStep && prevOutputs[inp.fromPreviousStep] !== undefined);
+                          const val = currentInputs[inp.name] ?? '';
+                          return (
+                            <div key={inp.name} style={S.inputGroup}>
+                              <label style={S.label}>
+                                {inp.label}
+                                {inp.unit ? <span style={{ color: '#1565c0', fontWeight: 400 }}> ({inp.unit})</span> : null}
+                                {isAutoFilled && (
+                                  <span style={{ fontSize: 10, color: '#1565c0', marginLeft: 6, background: '#e3f2fd', padding: '1px 6px', borderRadius: 10 }}>
+                                    auto-filled
+                                  </span>
+                                )}
+                              </label>
+                              {inp.type === 'select' ? (
+                                <select value={val} onChange={e => setField(inp.name, e.target.value)} style={S.select}>
+                                  {inp.options?.map(o => (
+                                    <option key={o.value} value={o.value}>{o.label}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  type="number"
+                                  value={val}
+                                  min={inp.min}
+                                  max={inp.max}
+                                  step="any"
+                                  onChange={e => setField(inp.name, e.target.value === '' ? '' : Number(e.target.value))}
+                                  style={isAutoFilled ? S.inputAutoFilled : S.input}
+                                />
+                              )}
+                              <span style={S.helpText}>{inp.help}</span>
                             </div>
-                          )
-                        ))}
+                          );
+                        })}
                       </div>
+
+                      {calcError && <div style={{ ...S.error, marginBottom: 12 }}>{calcError}</div>}
+
+                      {currentOutputs && (
+                        <>
+                          <div style={S.outputsBox}>
+                            <div style={{ ...S.sectionLabel, marginBottom: 10 }}>Calculated Results</div>
+                            {currentStep.outputs.map(out => {
+                              const val = currentOutputs[out.name];
+                              if (val === undefined) return null;
+                              const { text, style } = formatOutputValue(val, out);
+                              return (
+                                <div key={out.name} style={S.outputRow}>
+                                  <span style={S.outputLabel}>{out.label}{out.unit ? ` (${out.unit})` : ''}</span>
+                                  <span style={style}>{text}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {(warnings[currentStep.stepNumber] ?? []).length > 0 && (
+                            <div style={S.warningBox}>
+                              <div style={{ fontWeight: 600, color: '#e65100', fontSize: 13, marginBottom: 6 }}>⚠ Warnings</div>
+                              {warnings[currentStep.stepNumber].map((w, i) => (
+                                <div key={i} style={S.warningText}>• {w}</div>
+                              ))}
+                            </div>
+                          )}
+
+                          {(formulaDisplay[currentStep.stepNumber] ?? []).length > 0 && (
+                            <div style={S.formulaBox}>
+                              <div style={{ fontSize: 11, fontWeight: 600, color: '#90caf9', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 8 }}>
+                                Governing Equations
+                              </div>
+                              {formulaDisplay[currentStep.stepNumber].map((f, i) => (
+                                <code key={i} style={S.formulaLine}>{f}</code>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
-              </div>
+
+                <div style={S.footer}>
+                  {currentStepIdx > 0 && (
+                    <button
+                      onClick={() => goToStep(currentStepIdx - 1)}
+                      style={{ background: '#e0e0e0', border: 'none', borderRadius: 7, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}
+                    >
+                      ← Previous
+                    </button>
+                  )}
+                  <div style={{ flex: 1 }} />
+                  <button onClick={calculate} disabled={calculating} style={calculating ? S.calcBtnDisabled : S.calcBtn}>
+                    {calculating ? '⏳ Calculating…' : '⚡ Calculate'}
+                  </button>
+                  {currentOutputs && !isLastStep && (
+                    <button onClick={nextStep} style={S.nextBtn}>Next Step →</button>
+                  )}
+                  {currentOutputs && isLastStep && (
+                    <button onClick={generateReport} disabled={generatingReport} style={S.reportBtn}>
+                      {generatingReport ? '⏳ Generating…' : '📋 Generate Report'}
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
-          
-          {/* Footer */}
-          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-between">
-            <Button
-              variant="ghost"
-              onClick={onClose}
-            >
-              Close
-            </Button>
-            <Button
-              onClick={handleExecute}
-              disabled={isExecuting || isLoadingDetails}
-              className="flex items-center gap-2"
-            >
-              {isExecuting ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  Executing...
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  Run Pipeline
-                </>
-              )}
-            </Button>
-          </div>
-        </Card>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
 
-/**
- * Main Pipelines Page
- */
-export default function PipelinesPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeDomain, setActiveDomain] = useState('all');
-  const [activeDifficulty, setActiveDifficulty] = useState('all');
-  const [selectedPipeline, setSelectedPipeline] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // Fetch pipelines from backend
-  const { 
-    data: pipelines = [], 
-    isLoading, 
-    error,
-    refetch 
-  } = useQuery({
-    queryKey: ['pipelines', activeDomain !== 'all' ? activeDomain : null],
-    queryFn: () => pipelinesService.getAll(activeDomain !== 'all' ? activeDomain : null),
-  });
-  
-  // ListFilter pipelines
-  const filteredPipelines = useMemo(() => {
-    let result = pipelines;
-    
-    // ListFilter by difficulty
-    if (activeDifficulty !== 'all') {
-      result = result.filter(p => {
-        const difficulty = (p.difficulty || p.difficulty_level || '').toLowerCase();
-        return difficulty === activeDifficulty;
-      });
-    }
-    
-    // ListFilter by search query
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.name?.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query) ||
-        p.tags?.some(t => t.toLowerCase().includes(query))
-      );
-    }
-    
-    return result;
-  }, [pipelines, activeDifficulty, searchQuery]);
-  
-  // Count by domain
-  const domainCounts = useMemo(() => {
-    const counts = { all: pipelines.length };
-    pipelines.forEach(p => {
-      const domain = p.domain || 'general';
-      counts[domain] = (counts[domain] || 0) + 1;
-    });
-    return counts;
-  }, [pipelines]);
-  
-  // Handle pipeline click
-  const handlePipelineClick = (pipeline) => {
-    setSelectedPipeline(pipeline);
-    setIsModalOpen(true);
-  };
-  
-  // Close modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedPipeline(null);
-  };
-  
+// ─── Pipeline Card ────────────────────────────────────────────────────────────
+function PipelineCard({ p, onClick }) {
+  const dc = DOMAIN_META[p.domain] ?? DOMAIN_META.electrical;
+  const df = DIFFICULTY_META[p.difficulty] ?? DIFFICULTY_META.beginner;
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Engineering Pipelines
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {pipelines.length > 0 
-              ? `${pipelines.length} calculation pipelines available`
-              : 'Loading pipelines from database...'
-            }
-          </p>
-        </div>
-        
-        {/* Search */}
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search pipelines..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+    <div
+      style={S.card(p.domain)}
+      onClick={onClick}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = '';
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+      }}
+    >
+      <div style={S.cardIcon}>{p.icon}</div>
+      <h3 style={S.cardTitle}>{p.name}</h3>
+      <p style={S.cardDesc}>{p.description}</p>
+      <div style={S.cardMeta}>
+        <span style={S.badge(dc.bg, dc.badge)}>{p.domain.toUpperCase()}</span>
+        <span style={S.badge(df.bg, df.color)}>{df.label}</span>
+        <span style={S.badge('#f5f5f5', '#555')}>{p.step_count} steps</span>
+        <span style={S.badge('#f5f5f5', '#888')}>⏱ {p.estimated_time}</span>
       </div>
-      
-      {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 space-y-4">
-        {/* Domain ListFilter */}
-        <div>
-          <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">
-            Domain
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <FilterTab
-              label="All"
-              count={domainCounts.all}
-              active={activeDomain === 'all'}
-              onClick={() => setActiveDomain('all')}
-              color="#3b82f6"
-            />
-            {Object.entries(DOMAIN_META).map(([key, meta]) => (
-              <FilterTab
-                key={key}
-                label={meta.label}
-                count={domainCounts[key]}
-                active={activeDomain === key}
-                onClick={() => setActiveDomain(key)}
-                color={meta.color}
-              />
-            ))}
-          </div>
-        </div>
-        
-        {/* Difficulty ListFilter */}
-        <div>
-          <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">
-            Difficulty
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveDifficulty('all')}
-              className={cn(
-                "px-3 py-1.5 text-xs font-medium rounded-lg transition-colors",
-                activeDifficulty === 'all'
-                  ? "bg-gray-800 dark:bg-white text-white dark:text-gray-900"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-              )}
-            >
-              All Levels
-            </button>
-            {Object.entries(DIFFICULTY_COLORS).map(([level, style]) => (
-              <button
-                key={level}
-                onClick={() => setActiveDifficulty(level)}
-                className={cn(
-                  "px-3 py-1.5 text-xs font-medium rounded-lg transition-colors capitalize",
-                  activeDifficulty === level
-                    ? "ring-2 ring-offset-2 ring-gray-500"
-                    : "",
-                  style.bg,
-                  style.text
-                )}
-              >
-                {level}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader className="w-10 h-10 animate-spin text-blue-500" />
-          <p className="text-gray-500 dark:text-gray-400 mt-4">
-            Loading pipelines from database...
-          </p>
-        </div>
-      )}
-      
-      {/* Error State */}
-      {error && (
-        <Card className="p-8 text-center">
-          <CircleAlert className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Failed to Load Pipelines
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
-            {error.message || 'Unable to connect to the backend server.'}
-          </p>
-          <Button onClick={() => refetch()}>
-            Try Again
-          </Button>
-        </Card>
-      )}
-      
-      {/* Empty State */}
-      {!isLoading && !error && filteredPipelines.length === 0 && (
-        <Card className="p-8 text-center">
-          <Layers className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            No Pipelines Found
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400">
-            {searchQuery 
-              ? `No pipelines match "${searchQuery}"`
-              : 'No pipelines available for the selected filters.'
-            }
-          </p>
-        </Card>
-      )}
-      
-      {/* Pipeline Grid */}
-      {!isLoading && !error && filteredPipelines.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredPipelines.map((pipeline) => (
-            <PipelineCard
-              key={pipeline.id}
-              pipeline={pipeline}
-              onClick={handlePipelineClick}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Pipeline Modal */}
-      <PipelineModal
-        pipeline={selectedPipeline}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-      />
     </div>
   );
 }

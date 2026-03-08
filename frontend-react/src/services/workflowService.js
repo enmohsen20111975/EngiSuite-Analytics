@@ -9,7 +9,55 @@ export const workflowService = {
    * Get available equations for workflow palette
    */
   async getEquations(params = {}) {
-    const response = await api.get('/calculators/equations/catalog', { params });
+    const response = await api.get('/workflows/equations', { params });
+    return response.data;
+  },
+  
+  /**
+   * Get equation by ID with inputs and outputs
+   */
+  async getEquation(id) {
+    const response = await api.get(`/workflows/equations/${id}`);
+    return response.data;
+  },
+  
+  /**
+   * Get equation categories
+   */
+  async getEquationCategories() {
+    const response = await api.get('/workflows/equation-categories');
+    return response.data;
+  },
+  
+  /**
+   * Calculate equation result
+   */
+  async calculateEquation(id, inputs) {
+    const response = await api.post(`/workflows/equations/${id}/calculate`, { inputs });
+    return response.data;
+  },
+  
+  /**
+   * Get calculation pipelines
+   */
+  async getPipelines() {
+    const response = await api.get('/workflows/pipelines');
+    return response.data;
+  },
+  
+  /**
+   * Get pipeline by ID with steps
+   */
+  async getPipeline(id) {
+    const response = await api.get(`/workflows/pipelines/${id}`);
+    return response.data;
+  },
+  
+  /**
+   * Execute calculation pipeline
+   */
+  async executePipeline(id, inputs) {
+    const response = await api.post(`/workflows/pipelines/${id}/execute`, { inputs });
     return response.data;
   },
   
@@ -49,6 +97,14 @@ export const workflowService = {
   },
   
   /**
+   * Execute workflow by ID
+   */
+  async executeById(id, inputs) {
+    const response = await api.post(`/workflows/${id}/execute`, { inputs });
+    return response.data;
+  },
+  
+  /**
    * Get user workflows
    */
   async getUserWorkflows() {
@@ -61,6 +117,14 @@ export const workflowService = {
    */
   async delete(workflowId) {
     const response = await api.delete(`/workflows/${workflowId}`);
+    return response.data;
+  },
+  
+  /**
+   * Get engineering standards
+   */
+  async getStandards() {
+    const response = await api.get('/workflows/standards');
     return response.data;
   },
 };

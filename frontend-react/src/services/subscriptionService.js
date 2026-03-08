@@ -2,6 +2,7 @@ import apiClient from './apiClient';
 
 /**
  * Subscription and credits management service
+ * Supports both Stripe and Paymob payment gateways
  */
 export const subscriptionService = {
   // ==================== SUBSCRIPTION PLANS ====================
@@ -217,7 +218,27 @@ export const subscriptionService = {
   // ==================== PAYMOB (Egypt) ====================
   
   /**
-   * Get Paymob payment key
+   * Get Paymob configuration
+   */
+  async getPaymobConfig() {
+    const response = await apiClient.get('/payments/paymob/config');
+    return response.data;
+  },
+
+  /**
+   * Initiate Paymob payment for subscription
+   */
+  async initiatePaymobPayment(tier, billingCycle, billingData) {
+    const response = await apiClient.post('/payments/paymob/initiate', {
+      tier,
+      billingCycle,
+      billingData,
+    });
+    return response.data;
+  },
+
+  /**
+   * Get Paymob payment key (legacy method)
    */
   async getPaymobPaymentKey(amount, planId = null) {
     const response = await apiClient.post('/payments/paymob/key', {
@@ -232,6 +253,20 @@ export const subscriptionService = {
    */
   async processPaymobPayment(paymentData) {
     const response = await apiClient.post('/payments/paymob/process', paymentData);
+    return response.data;
+  },
+
+  /**
+   * Create subscription with Paymob
+   */
+  async createSubscriptionWithPaymob(tier, billingCycle, billingData) {
+    const response = await apiClient.post('/payments/create-subscription', {
+      tier,
+      billingCycle,
+      paymentMethod: 'paymob',
+      currency: 'EGP',
+      billingData,
+    });
     return response.data;
   },
 

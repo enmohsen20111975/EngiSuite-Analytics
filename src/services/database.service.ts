@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 // Database paths - relative to project root
 const DB_PATHS = {
   users: path.resolve(__dirname, '../../Databases/users.db'),
-  courses: path.resolve(__dirname, '../../Databases/courses.db'),
+  courses: path.resolve(__dirname, '../../Databases/engmastery.db'), // Updated to use engmastery.db
   workflows: path.resolve(__dirname, '../../Databases/workflows.db'),
 };
 

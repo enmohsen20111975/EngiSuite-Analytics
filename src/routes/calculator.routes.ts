@@ -1,13 +1,14 @@
 /**
  * Calculator Routes
  * Serves equations from workflows database
+ * Enhanced with engineering calculation functions from calculation engine service
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma, getWorkflowsDb } from '../services/database.service.js';
 import { AppError, ValidationError, NotFoundError } from '../middleware/error.middleware.js';
 import { calculationRateLimiter } from '../middleware/rateLimit.middleware.js';
-import { CalculatorRequest, CalculatorResponse } from '../types/index.js';
+import { evaluateFormula } from '../services/calculationEngine.service.js';
 
 const router = Router();
 
@@ -27,6 +28,8 @@ interface EquationRow {
   is_active: number;
   created_at: string;
   updated_at: string;
+  category_name?: string;
+  category_domain?: string;
 }
 
 interface EquationInputRow {
@@ -78,10 +81,38 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
       FROM equations e
       WHERE e.is_active = 1
       ORDER BY e.name ASC
-    `).all();
+    `).all() as EquationRow[];
 
-    // Return data directly for frontend compatibility
     res.json(equations);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/calculators/init
+ * Get calculator initialization status
+ */
+router.get('/init', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getWorkflowsDb();
+    const domainCounts = db.prepare(`
+      SELECT e.domain, COUNT(*) as count
+      FROM equations e
+      WHERE e.is_active = 1
+      GROUP BY e.domain
+    `).all() as { domain: string; count: number }[];
+
+    const totalCount = db.prepare(`
+      SELECT COUNT(*) as count FROM equations WHERE is_active = 1
+    `).get() as { count: number };
+
+    res.json({
+      initialized: true,
+      equationsCount: totalCount?.count || 0,
+      byDomain: domainCounts,
+      categories: ['electrical', 'mechanical', 'civil', 'scientific'],
+    });
   } catch (error) {
     next(error);
   }
@@ -94,25 +125,33 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 router.get('/equations/catalog', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const db = getWorkflowsDb();
-    const { category, domain, search } = req.query;
+    const { category, domain, search, limit, subcategory, difficulty } = req.query;
 
     let whereClause = 'WHERE e.is_active = 1';
     const params: (string | number)[] = [];
 
     if (category) {
-      whereClause += ' AND e.domain = ?';
-      params.push(String(category));
+      whereClause += ' AND e.category_id = (SELECT id FROM equation_categories WHERE name = ? OR id = ?)';
+      params.push(String(category), String(category));
     }
-
     if (domain) {
       whereClause += ' AND e.domain = ?';
       params.push(String(domain));
     }
-
     if (search) {
-      whereClause += ' AND (e.name LIKE ? OR e.description LIKE ?)';
+      whereClause += ` AND (e.name LIKE ? OR e.description LIKE ?)`;
       params.push(`%${search}%`, `%${search}%`);
     }
+    if (subcategory) {
+      whereClause += ' AND EXISTS (SELECT 1 FROM equation_categories ec WHERE ec.id = e.category_id AND ec.subcategory LIKE ?)';
+      params.push(`%${subcategory}%`);
+    }
+    if (difficulty) {
+      whereClause += ' AND e.difficulty_level = ?';
+      params.push(String(difficulty));
+    }
+
+    const limitClause = limit ? `LIMIT ${parseInt(String(limit), 10)}` : '';
 
     const equations = db.prepare(`
       SELECT e.*, ec.name as category_name, ec.domain as category_domain
@@ -120,6 +159,7 @@ router.get('/equations/catalog', async (req: Request, res: Response, next: NextF
       LEFT JOIN equation_categories ec ON e.category_id = ec.id
       ${whereClause}
       ORDER BY e.name ASC
+      ${limitClause}
     `).all(...params) as EquationRow[];
 
     // Get inputs and outputs for each equation
@@ -139,28 +179,14 @@ router.get('/equations/catalog', async (req: Request, res: Response, next: NextF
       return {
         ...eq,
         inputs,
-        outputs,
+        outputs
       };
     });
 
-    // Return data directly for frontend compatibility
     res.json(equationsWithDetails);
   } catch (error) {
     next(error);
   }
-});
-
-/**
- * GET /api/calculators/init
- * Get calculator initialization status
- */
-router.get('/init', (_req: Request, res: Response) => {
-  // Return data directly for frontend compatibility
-  res.json({
-    initialized: true,
-    equationsCount: 255,
-    categories: ['electrical', 'mechanical', 'civil', 'scientific'],
-  });
 });
 
 /**
@@ -177,7 +203,6 @@ router.get('/categories', async (_req: Request, res: Response, next: NextFunctio
       ORDER BY ec.display_order ASC
     `).all();
 
-    // Return data directly for frontend compatibility
     res.json(categories);
   } catch (error) {
     next(error);
@@ -190,12 +215,12 @@ router.get('/categories', async (_req: Request, res: Response, next: NextFunctio
  */
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = String(req.params.id);
+    const idParam = String(req.params.id);
     const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
-    const numericId = parseInt(id, 10);
+    const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
       equation = db.prepare(`
@@ -203,16 +228,17 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.id = ? AND e.is_active = 1
-      `).get(numericId) as EquationRow | undefined;
+      `).get(numericId) as EquationRow;
     }
 
     if (!equation) {
+      // Try to find by equation_id
       equation = db.prepare(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.equation_id = ? AND e.is_active = 1
-      `).get(id) as EquationRow | undefined;
+      `).get(idParam) as EquationRow;
     }
 
     if (!equation) {
@@ -244,24 +270,31 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
  */
 router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = String(req.params.id);
+    const idParam = String(req.params.id);
     const { inputs } = req.body;
     const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
-    const numericId = parseInt(id, 10);
+    const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
       equation = db.prepare(`
-        SELECT * FROM equations WHERE id = ? AND is_active = 1
-      `).get(numericId) as EquationRow | undefined;
+        SELECT e.*, ec.name as category_name, ec.domain as category_domain
+        FROM equations e
+        LEFT JOIN equation_categories ec ON e.category_id = ec.id
+        WHERE e.id = ? AND e.is_active = 1
+      `).get(numericId) as EquationRow;
     }
 
     if (!equation) {
+      // Try to find by equation_id
       equation = db.prepare(`
-        SELECT * FROM equations WHERE equation_id = ? AND is_active = 1
-      `).get(id) as EquationRow | undefined;
+        SELECT e.*, ec.name as category_name, ec.domain as category_domain
+        FROM equations e
+        LEFT JOIN equation_categories ec ON e.category_id = ec.id
+        WHERE e.equation_id = ? AND e.is_active = 1
+      `).get(idParam) as EquationRow;
     }
 
     if (!equation) {
@@ -269,11 +302,15 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
     }
 
     const equationInputs = db.prepare(`
-      SELECT * FROM equation_inputs WHERE equation_id = ? ORDER BY input_order ASC
+      SELECT * FROM equation_inputs
+      WHERE equation_id = ?
+      ORDER BY input_order ASC
     `).all(equation.id) as EquationInputRow[];
 
     const equationOutputs = db.prepare(`
-      SELECT * FROM equation_outputs WHERE equation_id = ? ORDER BY output_order ASC
+      SELECT * FROM equation_outputs
+      WHERE equation_id = ?
+      ORDER BY output_order ASC
     `).all(equation.id) as EquationOutputRow[];
 
     // Build context with input values
@@ -298,7 +335,7 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
       };
     }
 
-    // Evaluate the equation
+    // Evaluate the equation using enhanced evaluator
     const result = evaluateFormula(equation.equation, context);
 
     // Build output
@@ -331,7 +368,6 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
       }
     }
 
-    // Return data directly for frontend compatibility
     res.json({
       equationId: equation.equation_id,
       name: equation.name,
@@ -351,24 +387,31 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
  */
 router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = String(req.params.id);
+    const idParam = String(req.params.id);
     const { inputs } = req.body;
     const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
-    const numericId = parseInt(id, 10);
+    const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
       equation = db.prepare(`
-        SELECT * FROM equations WHERE id = ? AND is_active = 1
-      `).get(numericId) as EquationRow | undefined;
+        SELECT e.*, ec.name as category_name, ec.domain as category_domain
+        FROM equations e
+        LEFT JOIN equation_categories ec ON e.category_id = ec.id
+        WHERE e.id = ? AND e.is_active = 1
+      `).get(numericId) as EquationRow;
     }
 
     if (!equation) {
+      // Try to find by equation_id
       equation = db.prepare(`
-        SELECT * FROM equations WHERE equation_id = ? AND is_active = 1
-      `).get(id) as EquationRow | undefined;
+        SELECT e.*, ec.name as category_name, ec.domain as category_domain
+        FROM equations e
+        LEFT JOIN equation_categories ec ON e.category_id = ec.id
+        WHERE e.equation_id = ? AND e.is_active = 1
+      `).get(idParam) as EquationRow;
     }
 
     if (!equation) {
@@ -376,11 +419,15 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
     }
 
     const equationInputs = db.prepare(`
-      SELECT * FROM equation_inputs WHERE equation_id = ? ORDER BY input_order ASC
+      SELECT * FROM equation_inputs
+      WHERE equation_id = ?
+      ORDER BY input_order ASC
     `).all(equation.id) as EquationInputRow[];
 
     const equationOutputs = db.prepare(`
-      SELECT * FROM equation_outputs WHERE equation_id = ? ORDER BY output_order ASC
+      SELECT * FROM equation_outputs
+      WHERE equation_id = ?
+      ORDER BY output_order ASC
     `).all(equation.id) as EquationOutputRow[];
 
     // Build context with input values
@@ -405,7 +452,7 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
       };
     }
 
-    // Evaluate the equation
+    // Evaluate the equation using enhanced evaluator
     const result = evaluateFormula(equation.equation, context);
 
     // Build output
@@ -417,7 +464,6 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
       };
     }
 
-    // Return data directly for frontend compatibility
     res.json({
       equationId: equation.equation_id,
       name: equation.name,
@@ -431,40 +477,5 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
     next(error);
   }
 });
-
-/**
- * Simple formula evaluator
- */
-function evaluateFormula(formula: string, context: Record<string, unknown>): number {
-  // Replace variable names with values
-  let evaluableFormula = formula;
-  for (const [key, value] of Object.entries(context)) {
-    evaluableFormula = evaluableFormula.replace(new RegExp(`\\b${key}\\b`, 'g'), String(value));
-  }
-
-  // Clean up the formula for basic arithmetic
-  evaluableFormula = evaluableFormula
-    .replace(/\^/g, '**')  // Handle exponent notation
-    .replace(/×/g, '*')    // Handle multiplication sign
-    .replace(/÷/g, '/')    // Handle division sign
-    .replace(/π/g, 'Math.PI')  // Handle pi
-    .replace(/sqrt/g, 'Math.sqrt')
-    .replace(/sin/g, 'Math.sin')
-    .replace(/cos/g, 'Math.cos')
-    .replace(/tan/g, 'Math.tan')
-    .replace(/log/g, 'Math.log')
-    .replace(/ln/g, 'Math.log')
-    .replace(/abs/g, 'Math.abs')
-    .replace(/exp/g, 'Math.exp');
-
-  try {
-    // Basic arithmetic evaluation
-    const result = new Function(`return (${evaluableFormula})`)();
-    return Number(result) || 0;
-  } catch (e) {
-    console.error('Formula evaluation error:', e);
-    return 0;
-  }
-}
 
 export default router;

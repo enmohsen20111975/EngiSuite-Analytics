@@ -7,80 +7,116 @@ import {
   CircleCheck, CirclePlay, FileText, FlaskConical, Award,
   Zap, Building2, Cog, Wrench, Atom, Calculator, Search,
   ArrowLeft, Target, Lightbulb, PenTool, Bookmark, ChartColumn,
-  Lock, LockOpen, Star, Play, Pause, RotateCcw, Menu, X
+  Lock, LockOpen, Star, Play, Pause, RotateCcw, Menu, X, Plane,
+  Settings, Activity
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import InteractiveSimulation from '../components/learning/InteractiveSimulation';
+import { SINAMICS_COURSE, SINAMICS_MODULES } from '../data/sinamicsCourseData';
+import SinamicsMotorLab from '../components/learning/simulations/SinamicsMotorLab';
+import SinamicsPIDLab from '../components/learning/simulations/SinamicsPIDLab';
+import SinamicsInverterFlow from '../components/learning/simulations/SinamicsInverterFlow';
+
+// Inline wrapper for rendering interactive simulation blocks found in lesson markdown
+function InteractiveBlock({ config }) {
+  const [open, setOpen] = useState(false);
+  const type = config && config.type ? config.type : null;
+
+  return (
+    <div className="my-4">
+      <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
+        <FlaskConical className="w-8 h-8 mx-auto mb-2 text-purple-500" />
+        <p className="text-sm text-gray-600 dark:text-gray-400">Interactive Simulation</p>
+        <div className="mt-2 flex items-center justify-center gap-2">
+          <Button size="sm" onClick={() => setOpen((s) => !s)}>
+            {open ? 'Close Simulation' : 'Launch Simulation'}
+          </Button>
+          {type && <span className="text-xs text-gray-500">{type}</span>}
+        </div>
+      </div>
+      {open && type && (
+        <div className="mt-4">
+          <InteractiveSimulation type={type} config={config} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Discipline icons mapping
 const disciplineIcons = {
   electrical: Zap,
   civil: Building2,
   mechanical: Cog,
-  chemical: Atom,
-  mathematics: Calculator,
+  chemical: FlaskConical,
+  aerospace: Plane,
   general: BookOpen,
+  sinamics: Zap,
 };
 
+// Type colors for lesson types
+const typeColors = {
+  reading: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+  video: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+  interactive: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  quiz: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
+};
+
+// Level colors for difficulty levels
 const levelColors = {
-  beginner: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  intermediate: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  advanced: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  beginner: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+  intermediate: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
+  advanced: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
 };
 
-// Progress storage key
-const PROGRESS_KEY = 'engisuite_learning_progress';
-
-// Get stored progress
-const getStoredProgress = () => {
-  try {
-    const stored = localStorage.getItem(PROGRESS_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-};
-
-// Save progress to localStorage
-const saveProgress = (progress) => {
-  try {
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-  } catch (e) {
-    console.error('Failed to save progress:', e);
-  }
-};
-
-/**
- * Learning Center Page - Redesigned with Chapters, Lessons, Articles
- */
 export default function LearningPage() {
-  const [view, setView] = useState('disciplines'); // disciplines, chapters, lessons, lesson
-  const [selectedDiscipline, setSelectedDiscipline] = useState(null);
+  // State management
+  const [view, setView] = useState('courses');
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedModule, setSelectedModule] = useState(null);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [progress, setProgress] = useState(getStoredProgress());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [progress, setProgress] = useState(() => {
+    const saved = localStorage.getItem('learning-progress');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const queryClient = useQueryClient();
 
-  // Fetch disciplines
-  const { data: disciplinesData, isLoading: disciplinesLoading } = useQuery({
-    queryKey: ['learning-disciplines'],
-    queryFn: () => learningService.getDisciplines(true, true),
+  // Save progress to localStorage
+  const saveProgress = (newProgress) => {
+    localStorage.setItem('learning-progress', JSON.stringify(newProgress));
+  };
+
+  // Fetch courses
+  const { data: coursesData, isLoading: coursesLoading } = useQuery({
+    queryKey: ['learning-courses'],
+    queryFn: () => learningService.getCourses(),
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch chapters when discipline is selected
+  // Fetch modules when course is selected
+  const { data: modulesData, isLoading: modulesLoading } = useQuery({
+    queryKey: ['learning-modules', selectedCourse],
+    queryFn: () => learningService.getModules(selectedCourse),
+    enabled: !!selectedCourse,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch chapters when module is selected
   const { data: chaptersData, isLoading: chaptersLoading } = useQuery({
-    queryKey: ['learning-chapters', selectedDiscipline],
-    queryFn: () => learningService.getChapters(selectedDiscipline, true),
-    enabled: !!selectedDiscipline,
+    queryKey: ['learning-chapters', selectedModule],
+    queryFn: () => learningService.getChaptersByModule(selectedModule),
+    enabled: !!selectedModule,
     staleTime: 5 * 60 * 1000,
   });
 
   // Fetch lessons when chapter is selected
   const { data: lessonsData, isLoading: lessonsLoading } = useQuery({
     queryKey: ['learning-lessons', selectedChapter],
-    queryFn: () => learningService.getLessons({ chapterId: selectedChapter, pageSize: 50 }),
+    queryFn: () => learningService.getLessonsByChapter(selectedChapter),
     enabled: !!selectedChapter,
     staleTime: 5 * 60 * 1000,
   });
@@ -93,28 +129,40 @@ export default function LearningPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch user progress
-  const { data: userProgress } = useQuery({
-    queryKey: ['learning-user-progress'],
-    queryFn: () => learningService.getUserProgress().catch(() => null),
+  // Fetch quiz when lesson is selected
+  const { data: quizData } = useQuery({
+    queryKey: ['learning-quiz', selectedLesson],
+    queryFn: () => learningService.getQuiz(selectedLesson),
+    enabled: !!selectedLesson,
     staleTime: 5 * 60 * 1000,
   });
 
-  const disciplines = disciplinesData?.data || [];
-  const chapters = chaptersData?.data || [];
-  const lessons = lessonsData?.data || [];
-  const currentLesson = lessonData?.data;
+  const courses = coursesData || [];
+  const modules = modulesData || [];
+  const chapters = chaptersData || [];
+  const lessons = lessonsData || [];
+  const currentLesson = lessonData;
+  const currentQuiz = quizData;
 
   // Calculate overall progress
   const overallProgress = useMemo(() => {
     const completedCount = Object.values(progress).filter(p => p.completed).length;
-    const totalLessons = disciplines.reduce((acc, d) => acc + (d.lessons_count || 0), 0);
+    const totalLessons = courses.reduce((acc, c) => acc + (c.totalLessons || 0), 0);
     return totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  }, [progress, disciplines]);
+  }, [progress, courses]);
 
-  // Handle discipline click
-  const handleDisciplineClick = (discipline) => {
-    setSelectedDiscipline(discipline.key);
+  // Handle course click
+  const handleCourseClick = (course) => {
+    setSelectedCourse(course.id);
+    setSelectedModule(null);
+    setSelectedChapter(null);
+    setSelectedLesson(null);
+    setView('modules');
+  };
+
+  // Handle module click
+  const handleModuleClick = (module) => {
+    setSelectedModule(module.id);
     setSelectedChapter(null);
     setSelectedLesson(null);
     setView('chapters');
@@ -142,8 +190,11 @@ export default function LearningPage() {
       setSelectedChapter(null);
       setView('chapters');
     } else if (view === 'chapters') {
-      setSelectedDiscipline(null);
-      setView('disciplines');
+      setSelectedModule(null);
+      setView('modules');
+    } else if (view === 'modules') {
+      setSelectedCourse(null);
+      setView('courses');
     }
   };
 
@@ -159,9 +210,6 @@ export default function LearningPage() {
     };
     setProgress(newProgress);
     saveProgress(newProgress);
-    
-    // Also sync with backend if available
-    learningService.updateLessonProgress(lessonId, { completed: true }).catch(() => {});
   };
 
   // Update lesson progress
@@ -176,9 +224,6 @@ export default function LearningPage() {
     };
     setProgress(newProgress);
     saveProgress(newProgress);
-    
-    // Also sync with backend if available
-    learningService.updateLessonProgress(lessonId, progressUpdate).catch(() => {});
   };
 
   // Render lesson content view
@@ -186,6 +231,7 @@ export default function LearningPage() {
     return (
       <LessonContentView
         lesson={currentLesson}
+        quiz={currentQuiz}
         onBack={handleBack}
         loading={lessonLoading}
         progress={progress[currentLesson.id] || {}}
@@ -198,18 +244,21 @@ export default function LearningPage() {
   return (
     <div className="flex gap-6">
       {/* Sidebar */}
-      {sidebarOpen && view !== 'disciplines' && (
+      {sidebarOpen && view !== 'courses' && (
         <div className="w-72 flex-shrink-0">
           <Card className="p-4 sticky top-4">
             <LearningSidebar
               view={view}
-              disciplines={disciplines}
+              courses={courses}
+              modules={modules}
               chapters={chapters}
               lessons={lessons}
-              selectedDiscipline={selectedDiscipline}
+              selectedCourse={selectedCourse}
+              selectedModule={selectedModule}
               selectedChapter={selectedChapter}
               selectedLesson={selectedLesson}
-              onDisciplineSelect={handleDisciplineClick}
+              onCourseSelect={handleCourseClick}
+              onModuleSelect={handleModuleClick}
               onChapterSelect={handleChapterClick}
               onLessonClick={handleLessonClick}
               progress={progress}
@@ -224,7 +273,7 @@ export default function LearningPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {!sidebarOpen && view !== 'disciplines' && (
+            {!sidebarOpen && view !== 'courses' && (
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
@@ -234,13 +283,15 @@ export default function LearningPage() {
             )}
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {view === 'disciplines' && 'Learning Center'}
-                {view === 'chapters' && disciplines.find(d => d.key === selectedDiscipline)?.name}
+                {view === 'courses' && 'Learning Center'}
+                {view === 'modules' && courses.find(c => c.id === selectedCourse)?.title}
+                {view === 'chapters' && modules.find(m => m.id === selectedModule)?.title}
                 {view === 'lessons' && chapters.find(c => c.id === selectedChapter)?.title}
               </h1>
               <p className="text-gray-500 dark:text-gray-400 mt-1">
-                {view === 'disciplines' && 'Master engineering concepts with interactive courses'}
-                {view === 'chapters' && 'Browse chapters and topics'}
+                {view === 'courses' && 'Master engineering concepts with interactive courses'}
+                {view === 'modules' && 'Select a module to explore topics'}
+                {view === 'chapters' && 'Select a chapter to view lessons'}
                 {view === 'lessons' && 'Select a lesson to begin'}
               </p>
             </div>
@@ -277,9 +328,9 @@ export default function LearningPage() {
                 <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Disciplines</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Courses</p>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  {disciplines.length}
+                  {courses.length}
                 </p>
               </div>
             </div>
@@ -290,9 +341,9 @@ export default function LearningPage() {
                 <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Chapters</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Lessons</p>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  {chapters.length || '---'}
+                  {courses.reduce((acc, c) => acc + (c.totalLessons || 0), 0)}
                 </p>
               </div>
             </div>
@@ -303,9 +354,9 @@ export default function LearningPage() {
                 <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Lessons</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  {lessons.length || '---'}
+                <p className="text-sm text-gray-500 dark:text-gray-400">Current View</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white capitalize">
+                  {view}
                 </p>
               </div>
             </div>
@@ -326,14 +377,21 @@ export default function LearningPage() {
         </div>
 
         {/* Content based on view */}
-        {disciplinesLoading || chaptersLoading || lessonsLoading ? (
+        {coursesLoading || modulesLoading || chaptersLoading || lessonsLoading ? (
           <div className="flex justify-center py-12">
             <Loader size="lg" />
           </div>
-        ) : view === 'disciplines' ? (
-          <DisciplineGridView
-            disciplines={disciplines}
-            onSelect={handleDisciplineClick}
+        ) : view === 'courses' ? (
+          <CourseGridView
+            courses={courses}
+            onSelect={handleCourseClick}
+            progress={progress}
+          />
+        ) : view === 'modules' ? (
+          <ModuleListView
+            modules={modules}
+            onSelect={handleModuleClick}
+            onBack={handleBack}
             progress={progress}
           />
         ) : view === 'chapters' ? (
@@ -361,13 +419,16 @@ export default function LearningPage() {
  */
 function LearningSidebar({
   view,
-  disciplines,
+  courses,
+  modules,
   chapters,
   lessons,
-  selectedDiscipline,
+  selectedCourse,
+  selectedModule,
   selectedChapter,
   selectedLesson,
-  onDisciplineSelect,
+  onCourseSelect,
+  onModuleSelect,
   onChapterSelect,
   onLessonClick,
   progress,
@@ -385,26 +446,58 @@ function LearningSidebar({
       {/* Breadcrumb */}
       <div className="space-y-1">
         <button
-          onClick={() => onDisciplineSelect(null)}
+          onClick={() => onCourseSelect(null)}
           className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
         >
-          All Disciplines
+          All Courses
         </button>
-        {selectedDiscipline && (
+        {selectedCourse && (
           <div className="flex items-center gap-1 text-sm">
             <ChevronRight className="w-3 h-3" />
             <span className="text-gray-700 dark:text-gray-300">
-              {disciplines.find(d => d.key === selectedDiscipline)?.name}
+              {courses.find(c => c.id === selectedCourse)?.title}
+            </span>
+          </div>
+        )}
+        {selectedModule && (
+          <div className="flex items-center gap-1 text-sm">
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-gray-700 dark:text-gray-300">
+              {modules.find(m => m.id === selectedModule)?.title}
             </span>
           </div>
         )}
       </div>
 
+      {/* Modules List */}
+      {view !== 'courses' && modules.length > 0 && (
+        <div className="space-y-1">
+          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Modules</h4>
+          {modules.slice(0, 10).map((module) => (
+            <button
+              key={module.id}
+              onClick={() => onModuleSelect(module)}
+              className={cn(
+                'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
+                selectedModule === module.id
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="truncate">{module.title}</span>
+                <ChevronRight className="w-4 h-4 flex-shrink-0" />
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Chapters List */}
-      {view !== 'disciplines' && chapters.length > 0 && (
+      {view !== 'courses' && view !== 'modules' && chapters.length > 0 && (
         <div className="space-y-1">
           <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Chapters</h4>
-          {chapters.map((chapter) => (
+          {chapters.slice(0, 10).map((chapter) => (
             <button
               key={chapter.id}
               onClick={() => onChapterSelect(chapter)}
@@ -459,23 +552,23 @@ function LearningSidebar({
 }
 
 /**
- * Discipline Grid View
+ * Course Grid View
  */
-function DisciplineGridView({ disciplines, onSelect, progress }) {
+function CourseGridView({ courses, onSelect, progress }) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {disciplines.map((discipline) => {
-          const Icon = disciplineIcons[discipline.key] || BookOpen;
+        {courses.map((course) => {
+          const Icon = disciplineIcons[course.discipline] || disciplineIcons[course.id] || BookOpen;
           const completedLessons = Object.keys(progress).filter(id => 
-            progress[id]?.completed && discipline.lessons?.some?.(l => l.id === id)
+            progress[id]?.completed
           ).length;
           
           return (
             <Card
-              key={discipline.id}
+              key={course.id}
               className="p-6 cursor-pointer hover:shadow-lg transition-all group"
-              onClick={() => onSelect(discipline)}
+              onClick={() => onSelect(course)}
             >
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl group-hover:scale-110 transition-transform">
@@ -483,24 +576,24 @@ function DisciplineGridView({ disciplines, onSelect, progress }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    {discipline.name}
+                    {course.title}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                    {discipline.description || 'Engineering fundamentals and advanced concepts'}
+                    {course.description || 'Engineering fundamentals and advanced concepts'}
                   </p>
                   
                   {/* Progress */}
                   <div className="mt-3">
                     <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      <span>{discipline.chapters_count || 0} chapters</span>
-                      <span>{completedLessons}/{discipline.lessons_count || 0} completed</span>
+                      <span>{course.totalLessons || 0} lessons</span>
+                      <span>{completedLessons}/{course.totalLessons || 0} completed</span>
                     </div>
                     <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-green-500 rounded-full transition-all"
                         style={{
-                          width: `${discipline.lessons_count > 0 
-                            ? (completedLessons / discipline.lessons_count) * 100 
+                          width: `${course.totalLessons > 0 
+                            ? (completedLessons / course.totalLessons) * 100 
                             : 0}%`
                         }}
                       />
@@ -526,7 +619,7 @@ function DisciplineGridView({ disciplines, onSelect, progress }) {
             title="Electrical Circuits Fundamentals"
             discipline="Electrical"
             level="beginner"
-            duration="45 min"
+            duration="25 min"
           />
           <RecommendedCard
             icon={Building2}
@@ -544,6 +637,157 @@ function DisciplineGridView({ disciplines, onSelect, progress }) {
           />
         </div>
       </Card>
+
+      {/* SINAMICS Masterclass Section */}
+      <Card className="p-6 border-2 border-cyan-200 dark:border-cyan-800">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="p-3 bg-cyan-100 dark:bg-cyan-900/30 rounded-xl">
+            <Zap className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              {SINAMICS_COURSE.title}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {SINAMICS_COURSE.description}
+            </p>
+            <div className="flex items-center gap-4 mt-3">
+              <span className="px-2 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
+                {SINAMICS_COURSE.level}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {SINAMICS_COURSE.duration}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {SINAMICS_COURSE.totalLessons} lessons
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* SINAMICS Features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {SINAMICS_COURSE.features.map((feature, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <CircleCheck className="w-4 h-4 text-green-500" />
+              {feature}
+            </div>
+          ))}
+        </div>
+
+        {/* SINAMICS Modules Preview */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+            Course Modules
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {SINAMICS_MODULES.slice(0, 6).map((module) => (
+              <div
+                key={module.id}
+                className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center gap-2">
+                  {module.type === 'SIMULATION_MOTOR' || module.type === 'SIMULATION_PID' || module.type === 'SIMULATION_INVERTER' ? (
+                    <FlaskConical className="w-4 h-4 text-purple-500" />
+                  ) : (
+                    <BookOpen className="w-4 h-4 text-blue-500" />
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {module.title}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+                  {module.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SINAMICS Quick Access Buttons */}
+        <div className="flex flex-wrap gap-3 mt-6">
+          <Button
+            onClick={() => {
+              // Navigate to SINAMICS course
+              onSelect({ id: 'sinamics-masterclass', title: SINAMICS_COURSE.title, description: SINAMICS_COURSE.description, totalLessons: SINAMICS_COURSE.totalLessons, discipline: 'sinamics' });
+            }}
+            className="bg-cyan-600 hover:bg-cyan-700"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Start Course
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              // Open Motor Lab directly - for now just start the course
+              onSelect({ id: 'sinamics-masterclass', title: SINAMICS_COURSE.title, description: SINAMICS_COURSE.description, totalLessons: SINAMICS_COURSE.totalLessons, discipline: 'sinamics' });
+            }}
+            className="border-cyan-300 dark:border-cyan-700 text-cyan-700 dark:text-cyan-300"
+          >
+            <FlaskConical className="w-4 h-4 mr-2" />
+            Try Motor Lab Demo
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/**
+ * Module List View
+ */
+function ModuleListView({ modules, onSelect, onBack, progress }) {
+  return (
+    <div className="space-y-4">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to Courses
+      </button>
+
+      <div className="space-y-3">
+        {modules.length === 0 ? (
+          <Card className="p-8 text-center">
+            <BookOpen className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500 dark:text-gray-400">No modules available for this course yet.</p>
+          </Card>
+        ) : (
+          modules.map((module, index) => {
+            const completedLessons = Object.keys(progress).filter(id => 
+              progress[id]?.completed
+            ).length;
+            
+            return (
+              <Card
+                key={module.id}
+                className="p-5 cursor-pointer hover:shadow-md transition-all"
+                onClick={() => onSelect(module)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {module.title}
+                    </h3>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        Multiple chapters
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </div>
+              </Card>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }
@@ -559,14 +803,14 @@ function ChapterListView({ chapters, onSelect, onBack, progress }) {
         className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Disciplines
+        Back to Modules
       </button>
 
       <div className="space-y-3">
         {chapters.length === 0 ? (
           <Card className="p-8 text-center">
             <BookOpen className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-500 dark:text-gray-400">No chapters available for this discipline yet.</p>
+            <p className="text-gray-500 dark:text-gray-400">No chapters available for this module yet.</p>
           </Card>
         ) : (
           chapters.map((chapter, index) => {
@@ -581,7 +825,7 @@ function ChapterListView({ chapters, onSelect, onBack, progress }) {
                 onClick={() => onSelect(chapter)}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-white font-bold text-lg">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -589,26 +833,20 @@ function ChapterListView({ chapters, onSelect, onBack, progress }) {
                       {chapter.title}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
-                      {chapter.description || `${chapter.lessons_count || 0} lessons`}
+                      {chapter.lesson_count || 0} lessons
                     </p>
                     <div className="flex items-center gap-4 mt-2">
                       <span className="text-xs text-gray-400 flex items-center gap-1">
                         <FileText className="w-3 h-3" />
-                        {chapter.lessons_count || 0} lessons
+                        {chapter.lesson_count || 0} lessons
                       </span>
                       <span className="text-xs text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {chapter.estimated_duration || '30 min'}
+                        ~{(chapter.lesson_count || 0) * 20} min
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                        {Math.round((completedLessons / (chapter.lessons_count || 1)) * 100)}%
-                      </p>
-                      <p className="text-xs text-gray-400">complete</p>
-                    </div>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
@@ -676,19 +914,16 @@ function LessonListView({ lessons, onSelect, onBack, progress }) {
                     <h4 className="font-medium text-gray-900 dark:text-white">
                       {lesson.title}
                     </h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
-                      {lesson.description}
-                    </p>
                     <div className="flex items-center gap-3 mt-2">
                       <span className={cn(
                         'px-2 py-0.5 text-xs rounded-full',
-                        levelColors[lesson.level] || levelColors.beginner
+                        typeColors[lesson.type] || typeColors.reading
                       )}>
-                        {lesson.level || 'Beginner'}
+                        {lesson.type || 'Reading'}
                       </span>
                       <span className="text-xs text-gray-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {lesson.duration || '15 min'}
+                        {lesson.duration || 15} min
                       </span>
                       {isStarted && !isCompleted && (
                         <span className="text-xs text-blue-500">In Progress</span>
@@ -738,9 +973,12 @@ function RecommendedCard({ icon: Icon, title, discipline, level, duration }) {
 /**
  * Lesson Content View Component
  */
-function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUpdateProgress }) {
-  const [activeSection, setActiveSection] = useState('article');
+function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete, onUpdateProgress }) {
+  const [activeSection, setActiveSection] = useState('content');
   const [readingProgress, setReadingProgress] = useState(progress.readingProgress || 0);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [quizResults, setQuizResults] = useState(null);
 
   useEffect(() => {
     // Mark as started when viewed
@@ -754,9 +992,31 @@ function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUp
     const element = e.target;
     const scrollPercent = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
     setReadingProgress(Math.round(scrollPercent));
+  };
+
+  // Handle quiz answer selection
+  const handleAnswerSelect = (questionIndex, selectedIndex) => {
+    setQuizAnswers(prev => ({
+      ...prev,
+      [questionIndex]: selectedIndex
+    }));
+  };
+
+  // Submit quiz
+  const submitQuiz = async () => {
+    if (!quiz) return;
     
-    if (scrollPercent > 90 && !progress.completed) {
-      // Auto-complete when scrolled to bottom
+    const answers = Object.entries(quizAnswers).map(([questionIndex, selectedIndex]) => ({
+      questionIndex: parseInt(questionIndex),
+      selectedIndex
+    }));
+
+    try {
+      const results = await learningService.submitQuiz(lesson.id, answers);
+      setQuizResults(results);
+      setQuizSubmitted(true);
+    } catch (error) {
+      console.error('Failed to submit quiz:', error);
     }
   };
 
@@ -787,41 +1047,31 @@ function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUp
 
           <nav className="space-y-1">
             <button
-              onClick={() => setActiveSection('article')}
+              onClick={() => setActiveSection('content')}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
-                activeSection === 'article'
+                activeSection === 'content'
                   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
               <FileText className="w-4 h-4" />
-              Article
+              Content
             </button>
-            <button
-              onClick={() => setActiveSection('practice')}
-              className={cn(
-                'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
-                activeSection === 'practice'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-              )}
-            >
-              <PenTool className="w-4 h-4" />
-              Practice
-            </button>
-            <button
-              onClick={() => setActiveSection('simulation')}
-              className={cn(
-                'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
-                activeSection === 'simulation'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-              )}
-            >
-              <FlaskConical className="w-4 h-4" />
-              Simulation
-            </button>
+            {quiz && quiz.questions && quiz.questions.length > 0 && (
+              <button
+                onClick={() => setActiveSection('quiz')}
+                className={cn(
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
+                  activeSection === 'quiz'
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                )}
+              >
+                <PenTool className="w-4 h-4" />
+                Quiz
+              </button>
+            )}
           </nav>
 
           {/* Progress */}
@@ -840,24 +1090,17 @@ function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUp
             </p>
           </div>
 
-          {/* Learning Objectives */}
-          {lesson.objectives && lesson.objectives.length > 0 && (
+          {/* Lesson Info */}
+          {lesson.courseTitle && (
             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <Target className="w-4 h-4" />
-                Learning Objectives
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                Course Path
               </h4>
-              <ul className="space-y-2">
-                {lesson.objectives.map((objective, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400"
-                  >
-                    <CircleCheck className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    {objective.text || objective}
-                  </li>
-                ))}
-              </ul>
+              <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                <p>{lesson.courseTitle}</p>
+                {lesson.moduleTitle && <p>→ {lesson.moduleTitle}</p>}
+                {lesson.chapterTitle && <p>→ {lesson.chapterTitle}</p>}
+              </div>
             </div>
           )}
 
@@ -880,6 +1123,26 @@ function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUp
               </p>
             </div>
           )}
+
+          {/* Navigation */}
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            {lesson.prevLesson && (
+              <button
+                onClick={() => window.location.reload()} // Simplified - would need proper navigation
+                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                ← Previous: {lesson.prevLesson.title}
+              </button>
+            )}
+            {lesson.nextLesson && (
+              <button
+                onClick={() => window.location.reload()} // Simplified - would need proper navigation
+                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                Next: {lesson.nextLesson.title} →
+              </button>
+            )}
+          </div>
         </Card>
       </div>
 
@@ -892,124 +1155,267 @@ function LessonContentView({ lesson, onBack, loading, progress, onComplete, onUp
               <div className="flex items-center gap-2 mb-2">
                 <span className={cn(
                   'px-2 py-1 text-xs rounded-full',
-                  levelColors[lesson.level] || levelColors.beginner
+                  typeColors[lesson.type] || typeColors.reading
                 )}>
-                  {lesson.level || 'Beginner'}
+                  {lesson.type || 'Reading'}
                 </span>
                 <span className="flex items-center gap-1 text-sm text-gray-500">
                   <Clock className="w-4 h-4" />
-                  {lesson.duration || '30 min'}
+                  {lesson.duration || 30} min
                 </span>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {lesson.title}
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                {lesson.description}
-              </p>
+              {lesson.chapterTitle && (
+                <p className="text-gray-500 dark:text-gray-400 mt-2">
+                  {lesson.chapterTitle}
+                </p>
+              )}
             </div>
           </div>
         </Card>
 
         {/* Content Section */}
-        {activeSection === 'article' && (
+        {activeSection === 'content' && (
           <Card className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Lightbulb className="w-5 h-5 text-yellow-500" />
-              Article
+              Lesson Content
             </h2>
             <div 
               className="prose dark:prose-invert max-w-none overflow-y-auto max-h-[600px]"
               onScroll={handleScroll}
             >
-              {lesson.article?.content ? (
-                <div dangerouslySetInnerHTML={{ __html: lesson.article.content }} />
+              {lesson.content ? (
+                <div className="whitespace-pre-wrap">
+                  {(() => {
+                    const lines = lesson.content.split('\n');
+                    const elems = [];
+                    for (let i = 0; i < lines.length; i++) {
+                      const line = lines[i];
+                      const key = `line-${i}`;
+
+                      if (line.startsWith('# ')) {
+                        elems.push(<h1 key={key} className="text-2xl font-bold mt-6 mb-4">{line.slice(2)}</h1>);
+                        continue;
+                      }
+                      if (line.startsWith('## ')) {
+                        elems.push(<h2 key={key} className="text-xl font-semibold mt-5 mb-3">{line.slice(3)}</h2>);
+                        continue;
+                      }
+                      if (line.startsWith('### ')) {
+                        elems.push(<h3 key={key} className="text-lg font-medium mt-4 mb-2">{line.slice(4)}</h3>);
+                        continue;
+                      }
+                      if (line.startsWith('- **') || line.startsWith('* **')) {
+                        const match = line.match(/[-*] \*\*(.+?)\*\*:?\s*(.*)/);
+                        if (match) {
+                          elems.push(
+                            <li key={key} className="ml-4 my-1">
+                              <strong>{match[1]}</strong>{match[2] ? `: ${match[2]}` : ''}
+                            </li>
+                          );
+                          continue;
+                        }
+                      }
+                      if (line.startsWith('- ') || line.startsWith('* ')) {
+                        elems.push(<li key={key} className="ml-4 my-1">{line.slice(2)}</li>);
+                        continue;
+                      }
+                      if (line.startsWith('> ')) {
+                        elems.push(
+                          <blockquote key={key} className="border-l-4 border-blue-500 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
+                            {line.slice(2)}
+                          </blockquote>
+                        );
+                        continue;
+                      }
+                      if (line.startsWith('**') && line.endsWith('**')) {
+                        elems.push(<p key={key} className="font-bold my-2">{line.slice(2, -2)}</p>);
+                        continue;
+                      }
+                      if (line.match(/^\d+\.\s/)) {
+                        elems.push(<li key={key} className="ml-4 my-1 list-decimal">{line.replace(/^\d+\.\s/, '')}</li>);
+                        continue;
+                      }
+
+                      // Interactive fence handling: read until closing ``` and parse JSON
+                      if (line.includes('```interactive')) {
+                        // collect block lines until closing fence
+                        const blockLines = [];
+                        i++; // move to next line after fence
+                        while (i < lines.length && !lines[i].includes('```')) {
+                          blockLines.push(lines[i]);
+                          i++;
+                        }
+                        // Parse JSON inside the fence
+                        let config = null;
+                        try {
+                          const jsonText = blockLines.join('\n').trim();
+                          if (jsonText) config = JSON.parse(jsonText);
+                        } catch (err) {
+                          console.error('Failed to parse interactive block JSON', err);
+                        }
+
+                        // Render interactive UI: Launch button toggles inline simulation
+                        const simId = `sim-${i}`;
+                        elems.push(
+                          <InteractiveBlock key={simId} config={config} />
+                        );
+                        continue;
+                      }
+
+                      if (line.trim() === '---') {
+                        elems.push(<hr key={key} className="my-6 border-gray-200 dark:border-gray-700" />);
+                        continue;
+                      }
+                      if (line.trim() === '') {
+                        elems.push(<br key={key} />);
+                        continue;
+                      }
+
+                      // Handle bold text inline - add as paragraph with potential bold formatting
+                      const boldLine = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                      if (boldLine !== line) {
+                        elems.push(<p key={key} className="my-2" dangerouslySetInnerHTML={{ __html: boldLine }} />);
+                      } else {
+                        elems.push(<p key={key} className="my-2">{line}</p>);
+                      }
+                    }
+                    return elems;
+                  })()}
+                </div>
               ) : (
                 <div className="text-gray-500 dark:text-gray-400">
                   <p className="mb-4">
                     This lesson covers fundamental concepts that will help you understand the core principles of engineering.
                   </p>
-                  <h3>Introduction</h3>
-                  <p>
-                    Engineering is the application of scientific and mathematical principles to design and build systems, 
-                    structures, and devices. Understanding these fundamentals is crucial for any engineering professional.
-                  </p>
-                  <h3>Key Concepts</h3>
-                  <ul>
-                    <li>Scientific principles and their applications</li>
-                    <li>Mathematical modeling and analysis</li>
-                    <li>Problem-solving methodologies</li>
-                    <li>Design thinking and optimization</li>
-                  </ul>
-                  <h3>Practical Applications</h3>
-                  <p>
-                    The concepts learned in this lesson can be applied to real-world engineering challenges, 
-                    from designing efficient systems to optimizing existing processes.
-                  </p>
+                  <p>No content available yet.</p>
                 </div>
               )}
             </div>
           </Card>
         )}
 
-        {activeSection === 'practice' && (
+        {activeSection === 'quiz' && quiz && quiz.questions && (
           <Card className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <PenTool className="w-5 h-5 text-purple-500" />
-              Practice Problems
+              Quiz
             </h2>
-            {lesson.problems && lesson.problems.length > 0 ? (
-              <div className="space-y-4">
-                {lesson.problems.map((problem, index) => (
+            
+            {!quizSubmitted ? (
+              <div className="space-y-6">
+                {quiz.questions.map((question, qIndex) => (
                   <div
-                    key={problem.id || index}
+                    key={qIndex}
                     className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
                   >
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                      Problem {index + 1}: {problem.question}
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                      {qIndex + 1}. {question.question}
                     </h4>
-                    {problem.choices && (
-                      <div className="space-y-2 mt-3">
-                        {problem.choices.map((choice, i) => (
-                          <label
-                            key={i}
-                            className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                          >
-                            <input type="radio" name={`problem-${index}`} className="text-blue-500" />
-                            <span className="text-gray-700 dark:text-gray-300">{choice.text}</span>
-                          </label>
-                        ))}
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      {question.options.map((option, oIndex) => (
+                        <label
+                          key={oIndex}
+                          className={cn(
+                            'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
+                            quizAnswers[qIndex] === oIndex
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            name={`question-${qIndex}`}
+                            checked={quizAnswers[qIndex] === oIndex}
+                            onChange={() => handleAnswerSelect(qIndex, oIndex)}
+                            className="text-blue-500"
+                          />
+                          <span className="text-gray-700 dark:text-gray-300">{option}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <PenTool className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No practice problems available for this lesson yet.</p>
-              </div>
-            )}
-          </Card>
-        )}
-
-        {activeSection === 'simulation' && (
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <FlaskConical className="w-5 h-5 text-green-500" />
-              Interactive Simulation
-            </h2>
-            {lesson.simulations && lesson.simulations.length > 0 ? (
-              <div className="text-center py-8">
-                <Button>
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Simulation
+                
+                <Button
+                  onClick={submitQuiz}
+                  disabled={Object.keys(quizAnswers).length < quiz.questions.length}
+                  className="w-full"
+                >
+                  Submit Quiz
                 </Button>
               </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <FlaskConical className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No simulations available for this lesson yet.</p>
+            ) : quizResults && (
+              <div className="space-y-6">
+                <div className={cn(
+                  'p-4 rounded-lg text-center',
+                  quizResults.score >= 70 
+                    ? 'bg-green-100 dark:bg-green-900/30' 
+                    : 'bg-yellow-100 dark:bg-yellow-900/30'
+                )}>
+                  <p className={cn(
+                    'text-4xl font-bold',
+                    quizResults.score >= 70 
+                      ? 'text-green-600 dark:text-green-400' 
+                      : 'text-yellow-600 dark:text-yellow-400'
+                  )}>
+                    {quizResults.score}%
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {quizResults.correctAnswers} out of {quizResults.totalQuestions} correct
+                  </p>
+                </div>
+
+                {quizResults.results.map((result, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      'p-4 border rounded-lg',
+                      result.isCorrect
+                        ? 'border-green-200 bg-green-50 dark:bg-green-900/10'
+                        : 'border-red-200 bg-red-50 dark:bg-red-900/10'
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      {result.isCorrect ? (
+                        <CircleCheck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      )}
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {result.question}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          Your answer: {quiz.questions[result.questionIndex]?.options[result.selectedIndex]}
+                        </p>
+                        {!result.isCorrect && (
+                          <p className="text-sm text-green-600 dark:text-green-400">
+                            Correct answer: {quiz.questions[result.questionIndex]?.options[result.correctAnswer]}
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 italic">
+                          {result.explanation}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <Button
+                  onClick={() => {
+                    setQuizSubmitted(false);
+                    setQuizAnswers({});
+                    setQuizResults(null);
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Retake Quiz
+                </Button>
               </div>
             )}
           </Card>

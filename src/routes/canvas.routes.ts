@@ -6,6 +6,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../services/database.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
+import { optionalAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -13,9 +14,9 @@ const router = Router();
  * GET /api/canvas
  * List user's canvas states
  */
-router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = 1; // TODO: Get from auth middleware
+    const userId = req.userId ?? 1;
 
     const canvases = await prisma.canvasState.findMany({
       where: { userId },
@@ -35,10 +36,11 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
  * POST /api/canvas
  * Save canvas state
  */
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = 1; // TODO: Get from auth middleware
-    const { name, type, data, thumbnail, isPublic } = req.body;
+    const userId = req.userId ?? 1;
+    const { name, type, data: dataField, state, thumbnail, isPublic } = req.body;
+    const data = dataField ?? state;
 
     if (!name || !type || !data) {
       throw new ValidationError('Name, type, and data are required');
@@ -90,13 +92,14 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 /**
- * PUT /api/canvas/:id
+ * PUT/PATCH /api/canvas/:id
  * Update canvas state
  */
-router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+const updateCanvas = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.id, 10);
-    const { name, data, thumbnail, isPublic } = req.body;
+    const { name, data: dataField, state, thumbnail, isPublic } = req.body;
+    const data = dataField ?? state;
 
     const canvas = await prisma.canvasState.update({
       where: { id },
@@ -115,7 +118,9 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error);
   }
-});
+};
+
+router.route('/:id').put(optionalAuth, updateCanvas).patch(optionalAuth, updateCanvas);
 
 /**
  * DELETE /api/canvas/:id

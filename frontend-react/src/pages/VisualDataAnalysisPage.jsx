@@ -447,34 +447,32 @@ function WidgetPalette({ onAddWidget }) {
 function DataUploadPanel({ onDataUpload, dataSources, activeSource, onSelectSource }) {
   const fileInputRef = useRef(null);
   
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        let data;
-        if (file.name.endsWith('.json')) {
-          data = JSON.parse(event.target.result);
-        } else if (file.name.endsWith('.csv')) {
-          // Simple CSV parsing
-          const lines = event.target.result.split('\n');
-          const headers = lines[0].split(',').map(h => h.trim());
-          data = lines.slice(1).filter(l => l.trim()).map(line => {
-            const values = line.split(',');
-            const row = {};
-            headers.forEach((h, i) => row[h] = values[i]?.trim());
-            return row;
-          });
-        }
-        
-        onDataUpload(file.name, data);
-      } catch (error) {
-        console.error('Error parsing file:', error);
+    try {
+      let data;
+      if (file.name.endsWith('.json')) {
+        const text = await file.text();
+        data = JSON.parse(text);
+      } else if (file.name.endsWith('.csv')) {
+        const { default: Papa } = await import('papaparse');
+        const text = await file.text();
+        const result = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true });
+        data = result.data;
+      } else if (file.name.match(/\.xlsx?$/)) {
+        const XLSX = await import('xlsx');
+        const buffer = await file.arrayBuffer();
+        const workbook = XLSX.read(buffer);
+        data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+      } else {
+        console.error('Unsupported file type');
+        return;
       }
-    };
-    reader.readAsText(file);
+      onDataUpload(file.name, data);
+    } catch (error) {
+      console.error('Error parsing file:', error);
+    }
   };
   
   return (
@@ -491,7 +489,7 @@ function DataUploadPanel({ onDataUpload, dataSources, activeSource, onSelectSour
         <input
           type="file"
           ref={fileInputRef}
-          accept=".csv,.json"
+          accept=".csv,.json,.xlsx,.xls"
           onChange={handleFileUpload}
           className="hidden"
         />
@@ -820,17 +818,15 @@ export default function VisualDataAnalysisPage() {
   // Load dashboard
   const handleLoad = useCallback(async (dashboard) => {
     try {
-      const data = await canvasService.get(dashboard.id);
-      
-      if (data.state) {
-        setViewport(data.state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
-        setWidgets(data.state.widgets || []);
-        setWidgetData(data.state.widgetData || {});
-        setDataSources(data.state.dataSources || dataSources);
-        setCurrentDashboard(data);
-        setSelectedWidgetId(null);
-        setStatus(`Loaded: ${data.name}`);
-      }
+      const canvas = await canvasService.get(dashboard.id);
+      const state = canvas.data?.state ?? canvas.data ?? {};
+      setViewport(state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
+      setWidgets(state.widgets || []);
+      setWidgetData(state.widgetData || {});
+      setDataSources(state.dataSources || dataSources);
+      setCurrentDashboard(canvas);
+      setSelectedWidgetId(null);
+      setStatus(`Loaded: ${canvas.name}`);
     } catch (error) {
       console.error('Load failed:', error);
       setStatus('Load failed');

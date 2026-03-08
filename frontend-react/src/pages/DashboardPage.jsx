@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { calculatorsService } from '../services/calculatorsService';
 import { pipelinesService } from '../services/pipelinesService';
 import projectService from '../services/projectService';
+import apiClient from '../services/apiClient';
 import { Card, Loader } from '../components/ui';
 import { 
   Zap, Cog, Building2, FileText, History, 
   Bolt, Bot, Newspaper, TrendingUp,
   GraduationCap, Wrench, GitBranch, Microchip,
-  FileSpreadsheet, ChevronRight, FolderKanban, SquareCheck
+  FileSpreadsheet, ChevronRight, FolderKanban, SquareCheck,
+  Calculator, Layers
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -136,6 +138,15 @@ export default function DashboardPage() {
     queryFn: pipelinesService.getAll,
   });
 
+  // Fetch equations stats from database
+  const { data: equationsStats } = useQuery({
+    queryKey: ['equations-stats'],
+    queryFn: async () => {
+      const response = await apiClient.get('/equations/stats');
+      return response.data;
+    },
+  });
+
   // Fetch project widgets (Pro/Enterprise only)
   const { data: projectWidgets } = useQuery({
     queryKey: ['project-dashboard-widgets'],
@@ -149,6 +160,8 @@ export default function DashboardPage() {
     mechanical: calculatorsData?.mechanical?.length || 0,
     civil: calculatorsData?.civil?.length || 0,
     pipelines: pipelinesData?.length || 0,
+    equations: equationsStats?.data?.total || 0,
+    equationCategories: equationsStats?.data?.categories || 0,
   };
   
   // Mock recent calculations (would come from API in production)
@@ -183,7 +196,7 @@ export default function DashboardPage() {
       </div>
       
       {/* Top Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           icon={Zap}
           iconColor="text-amber-500"
@@ -209,7 +222,15 @@ export default function DashboardPage() {
           bgColor="bg-emerald-500/10"
         />
         <StatCard
-          icon={FileText}
+          icon={Calculator}
+          iconColor="text-purple-500"
+          label="Equations"
+          value={stats.equations}
+          sublabel="Available"
+          bgColor="bg-purple-500/10"
+        />
+        <StatCard
+          icon={Layers}
           iconColor="text-violet-500"
           label="Pipelines"
           value={stats.pipelines}

@@ -4,8 +4,10 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
+import * as XLSX from 'xlsx';
 import { prisma } from '../services/database.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
+import { optionalAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -32,9 +34,10 @@ router.get('/datasets', async (_req: Request, res: Response, next: NextFunction)
  * POST /api/vda/upload
  * Upload data for VDA
  */
-router.post('/upload', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/upload', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, data, type } = req.body;
+    const userId = req.userId ?? 1;
+    const { name, data, type, dataType } = req.body;
 
     if (!name || !data) {
       throw new ValidationError('Name and data are required');
@@ -42,7 +45,18 @@ router.post('/upload', async (req: Request, res: Response, next: NextFunction) =
 
     // Parse and validate data
     let parsedData: Record<string, unknown>[];
-    if (typeof data === 'string') {
+    const effectiveType = dataType || type;
+
+    if (effectiveType === 'csv' && typeof data === 'string') {
+      const workbook = XLSX.read(data, { type: 'string' });
+      const sheetName = workbook.SheetNames[0];
+      parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]) as Record<string, unknown>[];
+    } else if (effectiveType === 'excel') {
+      const buffer = Buffer.from(data, 'base64');
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]) as Record<string, unknown>[];
+    } else if (typeof data === 'string') {
       parsedData = JSON.parse(data);
     } else {
       parsedData = data;
@@ -56,7 +70,7 @@ router.post('/upload', async (req: Request, res: Response, next: NextFunction) =
 
     const dataset = await prisma.analyticsDataset.create({
       data: {
-        userId: 1, // Placeholder
+        userId,
         name,
         description: `VDA dataset - ${type || 'unknown'}`,
         dataType: type || 'json',

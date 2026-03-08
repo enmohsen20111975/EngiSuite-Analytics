@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx vite build)"
+      "Bash(npx vite build)",
+      "Read(//d/My/ WebSite/ Applications/Mywebsite/ applications/ final/EngiSuite_node.js/engisuite-nodejs/src/routes/**)",
+      "Read(//d/My/ WebSite/ Applications/Mywebsite/ applications/ final/EngiSuite_node.js/engisuite-nodejs/prisma/**)",
+      "Read(//d/My/ WebSite/ Applications/Mywebsite/ applications/ final/EngiSuite_node.js/engisuite-nodejs/frontend-react/src/pages/**)",
+      "Read(//d/My WebSite Applications/Mywebsite applications final/EngiSuite_node.js/**)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :8000)",
+      "Bash(findstr LISTENING)",
+      "Bash(taskkill /PID 8728 /F)"
     ]
   }
 }

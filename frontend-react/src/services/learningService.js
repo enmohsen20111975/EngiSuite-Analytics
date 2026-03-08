@@ -3,37 +3,46 @@ import { api } from './apiClient';
 /**
  * Learning Management System Service
  * Connects to the backend learning API
+ * Based on https://github.com/enmohsen20111975/courses-for-my-app-
  */
 export const learningService = {
   /**
-   * Get all engineering disciplines
+   * Get all courses (new API)
    */
-  async getDisciplines() {
-    const response = await api.get('/learning/disciplines');
+  async getCourses() {
+    const response = await api.get('/learning/courses');
     return response.data;
   },
 
   /**
-   * Get a specific discipline by key
+   * Get a specific course by ID with modules
    */
-  async getDiscipline(disciplineKey) {
-    const response = await api.get(`/learning/disciplines/${disciplineKey}`);
+  async getCourse(courseId) {
+    const response = await api.get(`/learning/courses/${courseId}`);
     return response.data;
   },
 
   /**
-   * Get chapters for a discipline
+   * Get modules for a course
    */
-  async getChapters(disciplineKey) {
-    const response = await api.get(`/learning/chapters/${disciplineKey}`);
+  async getModules(courseId) {
+    const response = await api.get(`/learning/modules/${courseId}`);
+    return response.data;
+  },
+
+  /**
+   * Get chapters for a module
+   */
+  async getChaptersByModule(moduleId) {
+    const response = await api.get(`/learning/chapters/module/${moduleId}`);
     return response.data;
   },
 
   /**
    * Get lessons for a chapter
    */
-  async getLessons(chapterId) {
-    const response = await api.get(`/learning/lessons/${chapterId}`);
+  async getLessonsByChapter(chapterId) {
+    const response = await api.get(`/learning/lessons/chapter/${chapterId}`);
     return response.data;
   },
 
@@ -46,10 +55,10 @@ export const learningService = {
   },
 
   /**
-   * Get simulation details
+   * Get quiz for a lesson
    */
-  async getSimulation(simulationId) {
-    const response = await api.get(`/learning/simulation/${simulationId}`);
+  async getQuiz(lessonId) {
+    const response = await api.get(`/learning/quiz/${lessonId}`);
     return response.data;
   },
 
@@ -68,8 +77,67 @@ export const learningService = {
    * Search lessons
    */
   async searchLessons(query) {
-    const response = await api.get('/learning/search', { q: query });
+    const response = await api.get('/learning/search', { params: { q: query } });
     return response.data;
+  },
+
+  // ==========================================
+  // LEGACY COMPATIBILITY METHODS
+  // These maintain backward compatibility with existing frontend
+  // ==========================================
+
+  /**
+   * Get all engineering disciplines (legacy - maps to courses)
+   */
+  async getDisciplines() {
+    const response = await api.get('/learning/disciplines');
+    return response.data;
+  },
+
+  /**
+   * Get a specific discipline by key (legacy - maps to course)
+   */
+  async getDiscipline(disciplineKey) {
+    const response = await api.get(`/learning/disciplines/${disciplineKey}`);
+    return response.data;
+  },
+
+  /**
+   * Get chapters for a discipline (legacy - maps to modules)
+   */
+  async getChapters(disciplineKey) {
+    const response = await api.get(`/learning/chapters/${disciplineKey}`);
+    return response.data;
+  },
+
+  /**
+   * Get lessons for a chapter (legacy)
+   */
+  async getLessons(chapterId) {
+    const response = await api.get(`/learning/lessons/${chapterId}`);
+    return response.data;
+  },
+
+  /**
+   * Get simulation details (placeholder)
+   */
+  async getSimulation(simulationId) {
+    // Simulations are now embedded in lesson content
+    return { id: simulationId };
+  },
+
+  /**
+   * Get user progress (placeholder - uses localStorage)
+   */
+  async getUserProgress() {
+    return null;
+  },
+
+  /**
+   * Update lesson progress (placeholder - uses localStorage)
+   */
+  async updateLessonProgress(lessonId, progress) {
+    return { success: true };
   },
 };
 

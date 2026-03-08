@@ -1,6 +1,7 @@
 /**
  * Learning Routes
- * Uses the courses database for learning content
+ * Uses the engmastery database for learning content
+ * Based on https://github.com/enmohsen20111975/courses-for-my-app-
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
@@ -10,179 +11,167 @@ import { NotFoundError, ValidationError } from '../middleware/error.middleware.j
 const router = Router();
 
 // Type definitions for database rows
-interface DisciplineRow {
-  id: number;
-  key: string;
-  name: string;
-  icon: string | null;
-  color: string | null;
-  description: string | null;
-  order: number;
-  is_active: number;
-  created_at: string;
-  updated_at: string;
-  chapter_count?: number;
+interface CourseRow {
+  id: string;
+  discipline: string;
+  title: string;
+  description: string;
+  totalLessons?: number;
+}
+
+interface ModuleRow {
+  id: string;
+  course_id: string;
+  title: string;
+  order_index: number;
 }
 
 interface ChapterRow {
-  id: number;
-  discipline_id: number;
+  id: string;
+  module_id: string;
   title: string;
-  slug: string;
-  description: string | null;
-  icon: string | null;
-  order: number;
-  is_active: number;
-  created_at: string;
-  updated_at: string;
+  order_index: number;
   lesson_count?: number;
 }
 
 interface LessonRow {
-  id: number;
-  chapter_id: number;
+  id: string;
+  chapter_id: string;
   title: string;
-  slug: string;
-  duration_minutes: number | null;
-  level: string | null;
-  type: string | null;
-  order: number;
-  is_published: number;
-  created_at: string;
-  updated_at: string;
-  objective_count?: number;
-  simulation_count?: number;
-  problem_count?: number;
+  type: string;
+  duration: number;
+  content: string;
+  order_index: number;
+  courseTitle?: string;
+  moduleTitle?: string;
+  chapterTitle?: string;
+  discipline?: string;
+  prevLesson?: { id: string; title: string } | null;
+  nextLesson?: { id: string; title: string } | null;
 }
 
-interface SimulationRow {
-  id: number;
-  lesson_id: number;
-  name: string;
-  type: string | null;
-  description: string | null;
-  canvas_width: number | null;
-  canvas_height: number | null;
-  config: string | null;
-  created_at: string;
-  updated_at: string;
-  controls?: SimulationControlRow[];
+interface QuizRow {
+  id: string;
+  lesson_id: string;
+  questions: string; // JSON string
 }
 
-interface SimulationControlRow {
-  id: number;
-  simulation_id: number;
-  name: string;
-  label: string | null;
-  control_type: string;
-  min_value: number | null;
-  max_value: number | null;
-  default_value: number | null;
-  step: number | null;
-  unit: string | null;
-  order: number;
-}
-
-interface PracticeProblemRow {
-  id: number;
-  lesson_id: number;
-  title: string | null;
-  description: string | null;
-  difficulty: string | null;
-  problem_type: string | null;
-  correct_answer: string | null;
-  tolerance: number | null;
-  explanation: string | null;
-  solution_steps: string | null;
-  formula: string | null;
-  order: number;
-  created_at: string;
-  updated_at: string;
-  choices?: ProblemChoiceRow[];
-}
-
-interface ProblemChoiceRow {
-  id: number;
-  problem_id: number;
-  value: string;
-  text: string | null;
-  is_correct: number;
-  order: number;
+interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
 }
 
 /**
- * GET /api/learning/disciplines
- * List all disciplines
+ * GET /api/learning/courses
+ * List all courses with lesson counts
  */
-router.get('/disciplines', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/courses', async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const db = getCoursesDb();
-    const disciplines = db.prepare(`
-      SELECT d.*,
-        (SELECT COUNT(*) FROM chapters c WHERE c.discipline_id = d.id) as chapter_count
-      FROM disciplines d
-      WHERE d.is_active = 1
-      ORDER BY d.\`order\` ASC
-    `).all() as DisciplineRow[];
+    const courses = db.prepare(`
+      SELECT c.*,
+        (SELECT COUNT(*) FROM lessons l
+         JOIN chapters ch ON l.chapter_id = ch.id
+         JOIN modules m ON ch.module_id = m.id
+         WHERE m.course_id = c.id) as totalLessons
+      FROM courses c
+      ORDER BY c.id ASC
+    `).all() as CourseRow[];
 
-    // Return data directly for frontend compatibility
-    res.json(disciplines);
+    res.json(courses);
   } catch (error) {
     next(error);
   }
 });
 
 /**
- * GET /api/learning/disciplines/:key
- * Get discipline by key with chapters
+ * GET /api/learning/courses/:id
+ * Get course by ID with modules
  */
-router.get('/disciplines/:key', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/courses/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const key = String(req.params.key);
+    const courseId = String(req.params.id);
     const db = getCoursesDb();
 
-    const discipline = db.prepare(`
-      SELECT * FROM disciplines WHERE key = ? AND is_active = 1
-    `).get(key) as DisciplineRow | undefined;
+    const course = db.prepare(`
+      SELECT c.*,
+        (SELECT COUNT(*) FROM lessons l
+         JOIN chapters ch ON l.chapter_id = ch.id
+         JOIN modules m ON ch.module_id = m.id
+         WHERE m.course_id = c.id) as totalLessons
+      FROM courses c
+      WHERE c.id = ?
+    `).get(courseId) as CourseRow | undefined;
 
-    if (!discipline) {
-      throw new NotFoundError('Discipline not found');
+    if (!course) {
+      throw new NotFoundError('Course not found');
     }
 
-    const chapters = db.prepare(`
-      SELECT c.*,
-        (SELECT COUNT(*) FROM lessons l WHERE l.chapter_id = c.id) as lesson_count
-      FROM chapters c
-      WHERE c.discipline_id = ? AND c.is_active = 1
-      ORDER BY c.\`order\` ASC
-    `).all(discipline.id) as ChapterRow[];
+    const modules = db.prepare(`
+      SELECT * FROM modules
+      WHERE course_id = ?
+      ORDER BY order_index ASC
+    `).all(courseId) as ModuleRow[];
 
-    // Return data directly for frontend compatibility
-    res.json({ ...discipline, chapters });
+    // Get chapter and lesson counts for each module
+    for (const module of modules) {
+      const chapters = db.prepare(`
+        SELECT c.id,
+          (SELECT COUNT(*) FROM lessons l WHERE l.chapter_id = c.id) as lesson_count
+        FROM chapters c
+        WHERE c.module_id = ?
+        ORDER BY c.order_index ASC
+      `).all(module.id) as { id: string; lesson_count: number }[];
+
+      module.chapters = chapters;
+    }
+
+    res.json({ ...course, modules });
   } catch (error) {
     next(error);
   }
 });
 
 /**
- * GET /api/learning/chapters/:disciplineKey
- * List chapters for a discipline
+ * GET /api/learning/modules/:courseId
+ * List modules for a course
  */
-router.get('/chapters/:disciplineKey', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/modules/:courseId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const disciplineKey = String(req.params.disciplineKey);
+    const courseId = String(req.params.courseId);
+    const db = getCoursesDb();
+
+    const modules = db.prepare(`
+      SELECT * FROM modules
+      WHERE course_id = ?
+      ORDER BY order_index ASC
+    `).all(courseId) as ModuleRow[];
+
+    res.json(modules);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/learning/chapters/module/:moduleId
+ * List chapters for a module
+ */
+router.get('/chapters/module/:moduleId', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const moduleId = String(req.params.moduleId);
     const db = getCoursesDb();
 
     const chapters = db.prepare(`
       SELECT c.*,
         (SELECT COUNT(*) FROM lessons l WHERE l.chapter_id = c.id) as lesson_count
       FROM chapters c
-      JOIN disciplines d ON c.discipline_id = d.id
-      WHERE d.key = ? AND c.is_active = 1
-      ORDER BY c.\`order\` ASC
-    `).all(disciplineKey) as ChapterRow[];
+      WHERE c.module_id = ?
+      ORDER BY c.order_index ASC
+    `).all(moduleId) as ChapterRow[];
 
-    // Return data directly for frontend compatibility
     res.json(chapters);
   } catch (error) {
     next(error);
@@ -190,25 +179,21 @@ router.get('/chapters/:disciplineKey', async (req: Request, res: Response, next:
 });
 
 /**
- * GET /api/learning/lessons/:chapterId
+ * GET /api/learning/lessons/chapter/:chapterId
  * List lessons for a chapter
  */
-router.get('/lessons/:chapterId', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/lessons/chapter/:chapterId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const chapterId = parseInt(String(req.params.chapterId), 10);
+    const chapterId = String(req.params.chapterId);
     const db = getCoursesDb();
 
     const lessons = db.prepare(`
-      SELECT l.*,
-        (SELECT COUNT(*) FROM learning_objectives lo WHERE lo.lesson_id = l.id) as objective_count,
-        (SELECT COUNT(*) FROM simulations s WHERE s.lesson_id = l.id) as simulation_count,
-        (SELECT COUNT(*) FROM practice_problems pp WHERE pp.lesson_id = l.id) as problem_count
-      FROM lessons l
-      WHERE l.chapter_id = ? AND l.is_published = 1
-      ORDER BY l.\`order\` ASC
+      SELECT id, chapter_id, title, type, duration, order_index
+      FROM lessons
+      WHERE chapter_id = ?
+      ORDER BY order_index ASC
     `).all(chapterId) as LessonRow[];
 
-    // Return data directly for frontend compatibility
     res.json(lessons);
   } catch (error) {
     next(error);
@@ -217,66 +202,101 @@ router.get('/lessons/:chapterId', async (req: Request, res: Response, next: Next
 
 /**
  * GET /api/learning/lesson/:id
- * Get full lesson content
+ * Get full lesson content with navigation
  */
 router.get('/lesson/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(String(req.params.id), 10);
+    const lessonId = String(req.params.id);
     const db = getCoursesDb();
 
     const lesson = db.prepare(`
       SELECT * FROM lessons WHERE id = ?
-    `).get(id) as LessonRow | undefined;
+    `).get(lessonId) as LessonRow | undefined;
 
     if (!lesson) {
       throw new NotFoundError('Lesson not found');
     }
 
-    // Get learning objectives
-    const objectives = db.prepare(`
-      SELECT * FROM learning_objectives
-      WHERE lesson_id = ?
-      ORDER BY \`order\` ASC
-    `).all(id);
+    // Get chapter info
+    const chapter = db.prepare(`
+      SELECT * FROM chapters WHERE id = ?
+    `).get(lesson.chapter_id) as { id: string; module_id: string; title: string } | undefined;
 
-    // Get article content
-    const article = db.prepare(`
-      SELECT * FROM articles WHERE lesson_id = ?
-    `).get(id);
+    if (chapter) {
+      lesson.chapterTitle = chapter.title;
 
-    // Get simulations with controls
-    const simulations = db.prepare(`
-      SELECT * FROM simulations WHERE lesson_id = ? ORDER BY id
-    `).all(id) as SimulationRow[];
+      // Get module info
+      const module = db.prepare(`
+        SELECT * FROM modules WHERE id = ?
+      `).get(chapter.module_id) as { id: string; course_id: string; title: string } | undefined;
 
-    for (const sim of simulations) {
-      sim.controls = db.prepare(`
-        SELECT * FROM simulation_controls
-        WHERE simulation_id = ?
-        ORDER BY \`order\` ASC
-      `).all(sim.id) as SimulationControlRow[];
+      if (module) {
+        lesson.moduleTitle = module.title;
+
+        // Get course info
+        const course = db.prepare(`
+          SELECT * FROM courses WHERE id = ?
+        `).get(module.course_id) as { id: string; discipline: string; title: string } | undefined;
+
+        if (course) {
+          lesson.courseTitle = course.title;
+          lesson.discipline = course.discipline;
+        }
+      }
     }
 
-    // Get practice problems with choices
-    const practiceProblems = db.prepare(`
-      SELECT * FROM practice_problems WHERE lesson_id = ? ORDER BY \`order\` ASC
-    `).all(id) as PracticeProblemRow[];
+    // Get all lessons for navigation
+    const allModules = db.prepare(`
+      SELECT id FROM modules WHERE course_id = (SELECT course_id FROM modules WHERE id = ?)
+      ORDER BY order_index ASC
+    `).all(chapter?.module_id) as { id: string }[];
 
-    for (const problem of practiceProblems) {
-      problem.choices = db.prepare(`
-        SELECT * FROM problem_choices
-        WHERE problem_id = ?
-        ORDER BY \`order\` ASC
-      `).all(problem.id) as ProblemChoiceRow[];
+    let allLessons: { id: string; title: string }[] = [];
+    for (const m of allModules) {
+      const chapters = db.prepare(`
+        SELECT id FROM chapters WHERE module_id = ? ORDER BY order_index ASC
+      `).all(m.id) as { id: string }[];
+
+      for (const c of chapters) {
+        const lessons = db.prepare(`
+          SELECT id, title FROM lessons WHERE chapter_id = ? ORDER BY order_index ASC
+        `).all(c.id) as { id: string; title: string }[];
+        allLessons = allLessons.concat(lessons);
+      }
     }
 
-    // Return data directly for frontend compatibility
+    // Find prev/next lessons
+    const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+    lesson.prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
+    lesson.nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
+
+    res.json(lesson);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/learning/quiz/:lessonId
+ * Get quiz for a lesson
+ */
+router.get('/quiz/:lessonId', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const lessonId = String(req.params.lessonId);
+    const db = getCoursesDb();
+
+    const quiz = db.prepare(`
+      SELECT * FROM quizzes WHERE lesson_id = ?
+    `).get(lessonId) as QuizRow | undefined;
+
+    if (!quiz) {
+      return res.json(null);
+    }
+
     res.json({
-      ...lesson,
-      objectives,
-      article,
-      simulations,
-      practiceProblems,
+      id: quiz.id,
+      lesson_id: quiz.lesson_id,
+      questions: JSON.parse(quiz.questions)
     });
   } catch (error) {
     next(error);
@@ -284,44 +304,8 @@ router.get('/lesson/:id', async (req: Request, res: Response, next: NextFunction
 });
 
 /**
- * GET /api/learning/simulation/:id
- * Get simulation with controls
- */
-router.get('/simulation/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const id = parseInt(String(req.params.id), 10);
-    const db = getCoursesDb();
-
-    const simulation = db.prepare(`
-      SELECT * FROM simulations WHERE id = ?
-    `).get(id) as SimulationRow | undefined;
-
-    if (!simulation) {
-      throw new NotFoundError('Simulation not found');
-    }
-
-    const controls = db.prepare(`
-      SELECT * FROM simulation_controls
-      WHERE simulation_id = ?
-      ORDER BY \`order\` ASC
-    `).all(id) as SimulationControlRow[];
-
-    const results = db.prepare(`
-      SELECT * FROM simulation_results
-      WHERE simulation_id = ?
-      ORDER BY \`order\` ASC
-    `).all(id);
-
-    // Return data directly for frontend compatibility
-    res.json({ ...simulation, controls, results });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
  * POST /api/learning/quiz/submit
- * Submit quiz answers
+ * Submit quiz answers and get results
  */
 router.post('/quiz/submit', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -333,46 +317,43 @@ router.post('/quiz/submit', async (req: Request, res: Response, next: NextFuncti
 
     const db = getCoursesDb();
 
-    // Get all problems for this lesson
-    const problems = db.prepare(`
-      SELECT * FROM practice_problems 
-      WHERE lesson_id = ?
-      ORDER BY \`order\` ASC
-    `).all(lessonId) as PracticeProblemRow[];
+    // Get quiz for this lesson
+    const quiz = db.prepare(`
+      SELECT * FROM quizzes WHERE lesson_id = ?
+    `).get(lessonId) as QuizRow | undefined;
 
+    if (!quiz) {
+      throw new NotFoundError('Quiz not found for this lesson');
+    }
+
+    const questions: QuizQuestion[] = JSON.parse(quiz.questions);
     let correctAnswers = 0;
-    const results = answers.map(answer => {
-      const problem = problems.find(p => p.id === answer.problemId);
-      if (!problem) return null;
 
-      // Get choices for this problem
-      const choices = db.prepare(`
-        SELECT * FROM problem_choices WHERE problem_id = ?
-      `).all(problem.id) as ProblemChoiceRow[];
+    const results = answers.map((answer: { questionIndex: number; selectedIndex: number }) => {
+      const question = questions[answer.questionIndex];
+      if (!question) return null;
 
-      const correctChoice = choices.find(c => c.is_correct === 1);
-      const isCorrect = answer.choiceId === correctChoice?.id;
+      const isCorrect = answer.selectedIndex === question.correctAnswer;
       if (isCorrect) correctAnswers++;
 
       return {
-        problemId: problem.id,
-        question: problem.title || problem.description,
-        selectedChoice: answer.choiceId,
-        correctChoice: correctChoice?.id,
+        questionIndex: answer.questionIndex,
+        question: question.question,
+        selectedIndex: answer.selectedIndex,
+        correctAnswer: question.correctAnswer,
         isCorrect,
-        explanation: problem.explanation,
+        explanation: question.explanation
       };
     }).filter(Boolean);
 
-    const score = problems.length > 0 ? (correctAnswers / problems.length) * 100 : 0;
+    const score = questions.length > 0 ? Math.round((correctAnswers / questions.length) * 100) : 0;
 
-    // Return data directly for frontend compatibility
     res.json({
       lessonId,
       score,
       correctAnswers,
-      totalQuestions: problems.length,
-      results,
+      totalQuestions: questions.length,
+      results
     });
   } catch (error) {
     next(error);
@@ -394,17 +375,139 @@ router.get('/search', async (req: Request, res: Response, next: NextFunction) =>
     const searchTerm = `%${q}%`;
 
     const lessons = db.prepare(`
-      SELECT l.*, c.title as chapter_title, d.name as discipline_name, d.key as discipline_key
+      SELECT l.id, l.title, l.type, l.duration,
+        ch.title as chapterTitle,
+        m.title as moduleTitle,
+        c.title as courseTitle,
+        c.discipline
       FROM lessons l
-      JOIN chapters c ON l.chapter_id = c.id
-      JOIN disciplines d ON c.discipline_id = d.id
-      WHERE l.is_published = 1 
-        AND (l.title LIKE ? OR l.slug LIKE ?)
+      JOIN chapters ch ON l.chapter_id = ch.id
+      JOIN modules m ON ch.module_id = m.id
+      JOIN courses c ON m.course_id = c.id
+      WHERE l.title LIKE ? OR l.content LIKE ?
       ORDER BY l.title ASC
       LIMIT 20
-    `).all(searchTerm, searchTerm);
+    `).all(searchTerm, searchTerm) as LessonRow[];
 
-    // Return data directly for frontend compatibility
+    res.json(lessons);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ==========================================
+// LEGACY COMPATIBILITY ROUTES
+// These routes maintain backward compatibility with the old API
+// ==========================================
+
+/**
+ * GET /api/learning/disciplines (Legacy)
+ * Maps to courses - returns courses in the old discipline format
+ */
+router.get('/disciplines', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const db = getCoursesDb();
+    const courses = db.prepare(`
+      SELECT c.id as \`key\`, c.id, c.discipline, c.title as name, c.description,
+        (SELECT COUNT(*) FROM lessons l
+         JOIN chapters ch ON l.chapter_id = ch.id
+         JOIN modules m ON ch.module_id = m.id
+         WHERE m.course_id = c.id) as lessons_count,
+        (SELECT COUNT(DISTINCT ch.id) FROM chapters ch
+         JOIN modules m ON ch.module_id = m.id
+         WHERE m.course_id = c.id) as chapters_count
+      FROM courses c
+      ORDER BY c.id ASC
+    `).all();
+
+    res.json(courses);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/learning/disciplines/:key (Legacy)
+ * Get discipline (course) by key with modules as chapters
+ */
+router.get('/disciplines/:key', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const key = String(req.params.key);
+    const db = getCoursesDb();
+
+    const course = db.prepare(`
+      SELECT c.id as \`key\`, c.id, c.discipline, c.title as name, c.description
+      FROM courses c
+      WHERE c.id = ?
+    `).get(key);
+
+    if (!course) {
+      throw new NotFoundError('Discipline not found');
+    }
+
+    // Return modules as "chapters" for legacy compatibility
+    const modules = db.prepare(`
+      SELECT m.id, m.title, m.order_index as \`order\`,
+        (SELECT COUNT(*) FROM lessons l
+         JOIN chapters ch ON l.chapter_id = ch.id
+         WHERE ch.module_id = m.id) as lessons_count
+      FROM modules m
+      WHERE m.course_id = ?
+      ORDER BY m.order_index ASC
+    `).all(key);
+
+    res.json({ ...course, chapters: modules });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/learning/chapters/:disciplineKey (Legacy)
+ * Returns modules as chapters for a discipline
+ */
+router.get('/chapters/:disciplineKey', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const disciplineKey = String(req.params.disciplineKey);
+    const db = getCoursesDb();
+
+    // Return modules as "chapters" for legacy compatibility
+    const modules = db.prepare(`
+      SELECT m.id, m.title, m.order_index as \`order\`,
+        (SELECT COUNT(*) FROM lessons l
+         JOIN chapters ch ON l.chapter_id = ch.id
+         WHERE ch.module_id = m.id) as lessons_count
+      FROM modules m
+      WHERE m.course_id = ?
+      ORDER BY m.order_index ASC
+    `).all(disciplineKey);
+
+    res.json(modules);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/learning/lessons/:chapterId (Legacy)
+ * Returns lessons for a module (using chapter ID as module ID)
+ */
+router.get('/lessons/:chapterId', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // The "chapterId" in legacy is actually a module ID
+    const moduleId = String(req.params.chapterId);
+    const db = getCoursesDb();
+
+    // Get all lessons from all chapters in this module
+    const lessons = db.prepare(`
+      SELECT l.id, l.title, l.type, l.duration, l.order_index as \`order\`,
+        l.type as level
+      FROM lessons l
+      JOIN chapters ch ON l.chapter_id = ch.id
+      WHERE ch.module_id = ?
+      ORDER BY ch.order_index ASC, l.order_index ASC
+    `).all(moduleId);
+
     res.json(lessons);
   } catch (error) {
     next(error);

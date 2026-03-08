@@ -4,8 +4,10 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
+import * as XLSX from 'xlsx';
 import { prisma } from '../services/database.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
+import { optionalAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
@@ -13,10 +15,9 @@ const router = Router();
  * GET /api/analytics/datasets
  * List user's datasets
  */
-router.get('/datasets', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/datasets', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // TODO: Get userId from auth middleware
-    const userId = 1; // Placeholder
+    const userId = req.userId ?? 1;
 
     const datasets = await prisma.analyticsDataset.findMany({
       where: { userId },
@@ -39,9 +40,9 @@ router.get('/datasets', async (req: Request, res: Response, next: NextFunction) 
  * POST /api/analytics/datasets
  * Upload a new dataset
  */
-router.post('/datasets', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/datasets', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = 1; // Placeholder
+    const userId = req.userId ?? 1;
     const { name, description, dataType, data } = req.body;
 
     if (!name || !data) {
@@ -59,8 +60,26 @@ router.post('/datasets', async (req: Request, res: Response, next: NextFunction)
         type: typeof parsedData[0][key] === 'number' ? 'number' : 'string',
         nullable: true,
       }));
+    } else if (dataType === 'csv') {
+      const workbook = XLSX.read(data, { type: 'string' });
+      const sheetName = workbook.SheetNames[0];
+      parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]) as Record<string, unknown>[];
+      columns = Object.keys(parsedData[0] || {}).map(key => ({
+        name: key,
+        type: typeof parsedData[0][key] === 'number' ? 'number' : 'string',
+        nullable: true,
+      }));
+    } else if (dataType === 'excel') {
+      const buffer = Buffer.from(data, 'base64');
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      parsedData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]) as Record<string, unknown>[];
+      columns = Object.keys(parsedData[0] || {}).map(key => ({
+        name: key,
+        type: typeof parsedData[0][key] === 'number' ? 'number' : 'string',
+        nullable: true,
+      }));
     } else {
-      // CSV/Excel parsing would go here
       parsedData = [];
       columns = [];
     }

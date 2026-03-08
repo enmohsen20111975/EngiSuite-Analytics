@@ -17,7 +17,7 @@ export const canvasService = {
    */
   async create(data) {
     const response = await api.post(BASE_URL, data);
-    return response.data;
+    return response.data?.data ?? response.data;
   },
 
   /**
@@ -27,17 +27,22 @@ export const canvasService = {
    */
   async list(params = {}) {
     const response = await api.get(BASE_URL, { params });
-    return response.data;
+    return response.data?.data ?? response.data;
   },
 
   /**
    * Get a specific canvas
    * @param {number} id - Canvas ID
-   * @returns {Promise<Object>} Canvas data
+   * @returns {Promise<Object>} Canvas row
    */
   async get(id) {
     const response = await api.get(`${BASE_URL}/${id}`);
-    return response.data;
+    const canvas = response.data?.data ?? response.data;
+    // Parse stored JSON state back into an object for convenience
+    if (canvas && typeof canvas.data === 'string') {
+      try { canvas.data = JSON.parse(canvas.data); } catch { /* leave as string */ }
+    }
+    return canvas;
   },
 
   /**
@@ -48,7 +53,7 @@ export const canvasService = {
    */
   async update(id, data) {
     const response = await api.patch(`${BASE_URL}/${id}`, data);
-    return response.data;
+    return response.data?.data ?? response.data;
   },
 
   /**

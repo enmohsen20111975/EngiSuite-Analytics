@@ -34,6 +34,7 @@ import canvasRoutes from './routes/canvas.routes.js';
 import hostingerRoutes from './routes/hostinger.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import reportRoutes from './routes/report.routes.js';
+import localPipelinesRoutes from './routes/localPipelines.routes.js';
 
 // Import middleware
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
@@ -166,6 +167,9 @@ app.use(`${API_PREFIX}/admin`, adminRoutes);
 
 // Report routes
 app.use(`${API_PREFIX}/reports`, reportRoutes);
+
+// Local engineering pipeline routes (no DB dependency, real calculations)
+app.use(`${API_PREFIX}/local-pipelines`, localPipelinesRoutes);
 
 // ============================================
 // Static File Serving (Development)

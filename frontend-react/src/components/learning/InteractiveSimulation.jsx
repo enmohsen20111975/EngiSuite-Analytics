@@ -27,6 +27,12 @@ const GearRatio = lazy(() => import('./simulations/GearRatio'));
 const ProjectileMotion = lazy(() => import('./simulations/ProjectileMotion'));
 const HeatEngine = lazy(() => import('./simulations/HeatEngine'));
 const StressStrain = lazy(() => import('./simulations/StressStrain'));
+const Transformer3D = lazy(() => import('./simulations/Transformer3D'));
+
+// SINAMICS Drive Technology Simulations
+const SinamicsMotorLab = lazy(() => import('./simulations/SinamicsMotorLab'));
+const SinamicsPIDLab = lazy(() => import('./simulations/SinamicsPIDLab'));
+const SinamicsInverterFlow = lazy(() => import('./simulations/SinamicsInverterFlow'));
 
 // Loading fallback component
 const SimulationLoader = () => (
@@ -44,74 +50,73 @@ const SimulationLoader = () => (
  * @param {object} data - Optional data to pass to the simulation
  */
 const InteractiveSimulation = ({ type, config = {}, data = {} }) => {
-  const simulationProps = { ...config, ...data };
-
+  // Render the appropriate simulation based on type
   const renderSimulation = () => {
     switch (type) {
+      // Electrical Engineering
       case 'ohms-law':
-        return <OhmsLaw {...simulationProps} />;
-      
+        return <OhmsLaw {...config} {...data} />;
       case 'sine-wave':
-        return <SineWave {...simulationProps} />;
-      
+        return <SineWave {...config} {...data} />;
       case 'series-parallel':
-        return <SeriesParallel {...simulationProps} />;
-      
-      case 'atom-model':
-        return <AtomModel {...simulationProps} />;
-      
-      case 'logic-gate':
-        return <LogicGates {...simulationProps} />;
-      
-      case 'beam-deflection':
-        return <BeamDeflection {...simulationProps} />;
-      
-      case 'torque-sim':
-        return <TorqueSim {...simulationProps} />;
-      
-      case 'concrete-mix':
-        return <ConcreteMix {...simulationProps} />;
-      
-      case 'compression-test':
-        return <CompressionTest {...simulationProps} />;
-      
-      case 'fluid-flow':
-        return <FluidFlow {...simulationProps} />;
-      
-      case 'airfoil-lift':
-        return <AirfoilLift {...simulationProps} />;
-      
-      case 'reaction-rate':
-        return <ReactionRate {...simulationProps} />;
-      
-      case 'piston-sim':
-        return <PistonSim {...simulationProps} />;
-      
-      case 'data-plotter':
-        return <DataPlotter {...simulationProps} />;
-      
-      case 'gear-ratio':
-        return <GearRatio {...simulationProps} />;
-      
-      case 'projectile-motion':
-        return <ProjectileMotion {...simulationProps} />;
-      
-      case 'heat-engine':
-        return <HeatEngine {...simulationProps} />;
-      
-      case 'stress-strain':
-        return <StressStrain {...simulationProps} />;
-      
+        return <SeriesParallel {...config} {...data} />;
       case '3d-transformer':
-        // 3D transformer requires Three.js - lazy load separately
-        const Transformer3D = lazy(() => import('./simulations/Transformer3D'));
-        return <Transformer3D {...simulationProps} />;
-      
+        return <Transformer3D {...config} {...data} />;
+        
+      // Physics / General
+      case 'atom-model':
+        return <AtomModel {...config} {...data} />;
+      case 'logic-gate':
+      case 'logic-gates':
+        return <LogicGates {...config} {...data} />;
+      case 'data-plotter':
+        return <DataPlotter {...config} {...data} />;
+        
+      // Mechanical Engineering
+      case 'beam-deflection':
+        return <BeamDeflection {...config} {...data} />;
+      case 'torque-sim':
+        return <TorqueSim {...config} {...data} />;
+      case 'gear-ratio':
+        return <GearRatio {...config} {...data} />;
+      case 'projectile-motion':
+        return <ProjectileMotion {...config} {...data} />;
+      case 'piston-sim':
+        return <PistonSim {...config} {...data} />;
+      case 'heat-engine':
+        return <HeatEngine {...config} {...data} />;
+        
+      // Civil Engineering
+      case 'concrete-mix':
+        return <ConcreteMix {...config} {...data} />;
+      case 'compression-test':
+        return <CompressionTest {...config} {...data} />;
+      case 'stress-strain':
+        return <StressStrain {...config} {...data} />;
+        
+      // Fluid Mechanics / Aerospace
+      case 'fluid-flow':
+        return <FluidFlow {...config} {...data} />;
+      case 'airfoil-lift':
+        return <AirfoilLift {...config} {...data} />;
+        
+      // Chemical Engineering
+      case 'reaction-rate':
+        return <ReactionRate {...config} {...data} />;
+        
+      // SINAMICS Drive Technology
+      case 'sinamics-motor-lab':
+        return <SinamicsMotorLab {...config} {...data} />;
+      case 'sinamics-pid-lab':
+        return <SinamicsPIDLab {...config} {...data} />;
+      case 'sinamics-inverter-flow':
+        return <SinamicsInverterFlow {...config} {...data} />;
+        
       default:
         return (
-          <div className="p-6 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800">
-            <p className="font-medium">Unknown simulation type: {type}</p>
-            <p className="text-sm mt-1">Please check the simulation configuration.</p>
+          <div className="flex flex-col items-center justify-center h-48 bg-gray-100 dark:bg-slate-800 rounded-xl">
+            <p className="text-gray-500 dark:text-gray-400">Unknown simulation type: {type}</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Please check the simulation configuration.</p>
           </div>
         );
     }
@@ -122,31 +127,6 @@ const InteractiveSimulation = ({ type, config = {}, data = {} }) => {
       {renderSimulation()}
     </Suspense>
   );
-};
-
-export default InteractiveSimulation;
-
-// Export simulation types for reference
-export const SIMULATION_TYPES = {
-  OHMS_LAW: 'ohms-law',
-  SINE_WAVE: 'sine-wave',
-  SERIES_PARALLEL: 'series-parallel',
-  ATOM_MODEL: 'atom-model',
-  LOGIC_GATE: 'logic-gate',
-  BEAM_DEFLECTION: 'beam-deflection',
-  TORQUE_SIM: 'torque-sim',
-  CONCRETE_MIX: 'concrete-mix',
-  COMPRESSION_TEST: 'compression-test',
-  FLUID_FLOW: 'fluid-flow',
-  AIRFOIL_LIFT: 'airfoil-lift',
-  REACTION_RATE: 'reaction-rate',
-  PISTON_SIM: 'piston-sim',
-  DATA_PLOTTER: 'data-plotter',
-  GEAR_RATIO: 'gear-ratio',
-  PROJECTILE_MOTION: 'projectile-motion',
-  HEAT_ENGINE: 'heat-engine',
-  STRESS_STRAIN: 'stress-strain',
-  TRANSFORMER_3D: '3d-transformer'
 };
 
 // Simulation metadata for UI generation
@@ -198,18 +178,18 @@ export const SIMULATION_METADATA = {
   },
   'fluid-flow': {
     name: 'Fluid Flow',
-    category: 'Mechanical/Chemical',
-    description: 'Continuity equation demonstration'
+    category: 'Fluid Mechanics',
+    description: 'Visualize fluid dynamics'
   },
   'airfoil-lift': {
-    name: 'Airfoil Lift & Drag',
+    name: 'Airfoil Lift',
     category: 'Aerospace',
-    description: 'Adjust angle of attack to see coefficients'
+    description: 'Demonstrate lift generation'
   },
   'reaction-rate': {
     name: 'Reaction Rate',
     category: 'Chemical',
-    description: 'Arrhenius equation demonstration'
+    description: 'Chemical kinetics visualization'
   },
   'piston-sim': {
     name: 'Thermodynamic Piston',
@@ -245,5 +225,22 @@ export const SIMULATION_METADATA = {
     name: '3D Transformer Model',
     category: 'Electrical',
     description: 'Interactive 3D transformer visualization'
+  },
+  'sinamics-motor-lab': {
+    name: 'SINAMICS Motor Lab',
+    category: 'Drive Technology',
+    description: 'Compare V/f and Vector Control performance'
+  },
+  'sinamics-pid-lab': {
+    name: 'SINAMICS PID Tuning Lab',
+    category: 'Drive Technology',
+    description: 'Fine-tune PI speed controller parameters'
+  },
+  'sinamics-inverter-flow': {
+    name: 'SINAMICS Power Electronics',
+    category: 'Drive Technology',
+    description: 'Visualize AC-DC-AC power conversion'
   }
 };
+
+export default InteractiveSimulation;

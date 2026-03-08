@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { workflowService, DOMAIN_COLORS } from '../services/workflowService';
 import { Card, Input, Button, Loader } from '../components/ui';
 import { 
@@ -7,12 +7,13 @@ import {
   FolderOpen, Trash2, CircleAlert, Plus, X, ChevronRight,
   GripVertical, Circle, ArrowRight, ChevronDown, ChevronLeft,
   Menu, Zap, Bolt, Building2, Wrench, Calculator, BookOpen,
-  Lightbulb, Settings, Layers
+  Lightbulb, Settings, Layers, Edit3, Check, Group,
+  FileText, Download, Copy
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 // Node width constant
-const NODE_WIDTH = 220;
+const NODE_WIDTH = 260;
 const PORT_RADIUS = 8;
 
 // Main engineering categories with icons
@@ -23,14 +24,15 @@ const MAIN_CATEGORIES = [
     icon: Bolt, 
     color: '#1976d2',
     subcategories: [
+      { id: 'cable-sizing', name: 'Cable Sizing' },
+      { id: 'voltage-drop', name: 'Voltage Drop' },
+      { id: 'power-calculations', name: 'Power Calculations' },
       { id: 'power-distribution', name: 'Power Distribution' },
       { id: 'lighting', name: 'Lighting Systems' },
       { id: 'motor-controls', name: 'Motor Controls' },
       { id: 'power-quality', name: 'Power Quality' },
       { id: 'protection-grounding', name: 'Protection & Grounding' },
       { id: 'transformers', name: 'Transformers' },
-      { id: 'cable-conduit', name: 'Cable & Conduit' },
-      { id: 'emergency-power', name: 'Emergency Power' },
       { id: 'circuits', name: 'Circuit Analysis' },
     ]
   },
@@ -46,7 +48,7 @@ const MAIN_CATEGORIES = [
       { id: 'piping', name: 'Piping Systems' },
       { id: 'pumping', name: 'Pumping Systems' },
       { id: 'refrigeration', name: 'Refrigeration' },
-      { id: 'building-systems', name: 'Building Systems' },
+      { id: 'stress-analysis', name: 'Stress Analysis' },
     ]
   },
   { 
@@ -60,9 +62,6 @@ const MAIN_CATEGORIES = [
       { id: 'concrete', name: 'Concrete Design' },
       { id: 'steel', name: 'Steel Design' },
       { id: 'soil-mechanics', name: 'Soil Mechanics' },
-      { id: 'hydrology', name: 'Hydrology' },
-      { id: 'seismic', name: 'Earthquake Engineering' },
-      { id: 'geotechnical', name: 'Geotechnical' },
       { id: 'hydraulics', name: 'Hydraulics' },
     ]
   },
@@ -80,7 +79,7 @@ const MAIN_CATEGORIES = [
   },
 ];
 
-// Workflow examples - will be loaded from JSON
+// Workflow examples
 const WORKFLOW_EXAMPLES = [
   {
     id: 'cable_sizing_iec',
@@ -91,12 +90,12 @@ const WORKFLOW_EXAMPLES = [
     difficulty: 'Advanced'
   },
   {
-    id: 'cable_sizing_nec',
-    name: 'Cable Sizing (NEC Standard)',
-    description: 'Cable sizing per NEC 310.16 with temperature correction and voltage drop',
+    id: 'voltage_drop_calc',
+    name: 'Voltage Drop Calculation',
+    description: 'Calculate voltage drop across cables with load current and power factor',
     category: 'electrical',
-    nodes: 7,
-    difficulty: 'Advanced'
+    nodes: 4,
+    difficulty: 'Intermediate'
   },
   {
     id: 'power_flow_analysis',
@@ -128,14 +127,14 @@ const WORKFLOW_EXAMPLES = [
 const WORKFLOW_DATA = {
   cable_sizing_iec: {
     nodes: [
-      { id: 'n1', name: 'Load Current Calculation', domain: 'electrical', x: 50, y: 50, inputs: [{ name: 'P', symbol: 'P' }, { name: 'V_L', symbol: 'V_L' }, { name: 'PF', symbol: 'PF' }], outputs: [{ name: 'I_L', symbol: 'I_L' }] },
-      { id: 'n2', name: 'Temperature Correction', domain: 'electrical', x: 320, y: 50, inputs: [{ name: 'I_table', symbol: 'I_table' }, { name: 'T_amb', symbol: 'T_amb' }], outputs: [{ name: 'I_z_temp', symbol: 'I_z_temp' }] },
-      { id: 'n3', name: 'Derating Factors', domain: 'electrical', x: 590, y: 50, inputs: [{ name: 'I_z_temp', symbol: 'I_z_temp' }, { name: 'K_install', symbol: 'K_install' }, { name: 'K_group', symbol: 'K_group' }], outputs: [{ name: 'I_z', symbol: 'I_z' }] },
-      { id: 'n4', name: 'Cable Selection', domain: 'electrical', x: 50, y: 200, inputs: [{ name: 'I_b', symbol: 'I_b' }, { name: 'Material', symbol: 'material' }], outputs: [{ name: 'S', symbol: 'S' }, { name: 'I_z_final', symbol: 'I_z_final' }] },
-      { id: 'n5', name: 'Voltage Drop', domain: 'electrical', x: 320, y: 200, inputs: [{ name: 'I', symbol: 'I' }, { name: 'L', symbol: 'L' }, { name: 'R', symbol: 'R' }, { name: 'X', symbol: 'X' }], outputs: [{ name: 'ΔU%', symbol: 'ΔU%' }] },
-      { id: 'n6', name: 'Protection Coordination', domain: 'electrical', x: 590, y: 200, inputs: [{ name: 'I_b', symbol: 'I_b' }, { name: 'I_n', symbol: 'I_n' }, { name: 'I_z', symbol: 'I_z' }], outputs: [{ name: 'OK', symbol: 'prot_ok' }] },
-      { id: 'n7', name: 'Short Circuit Check', domain: 'electrical', x: 320, y: 350, inputs: [{ name: 'I_k', symbol: 'I_k' }, { name: 't', symbol: 't' }, { name: 'k', symbol: 'k' }], outputs: [{ name: 'S_min', symbol: 'S_min' }] },
-      { id: 'n8', name: 'Final Specification', domain: 'electrical', x: 590, y: 350, inputs: [{ name: 'Results', symbol: 'results' }], outputs: [{ name: 'Spec', symbol: 'cable_spec' }] },
+      { id: 'n1', name: 'Load Current Calculation', domain: 'electrical', x: 50, y: 50, inputs: [{ name: 'P', symbol: 'P', unit: 'kW' }, { name: 'V_L', symbol: 'V_L', unit: 'V' }, { name: 'PF', symbol: 'PF' }], outputs: [{ name: 'I_L', symbol: 'I_L', unit: 'A' }] },
+      { id: 'n2', name: 'Temperature Correction', domain: 'electrical', x: 350, y: 50, inputs: [{ name: 'I_table', symbol: 'I_table', unit: 'A' }, { name: 'T_amb', symbol: 'T_amb', unit: '°C' }], outputs: [{ name: 'I_z_temp', symbol: 'I_z_temp', unit: 'A' }] },
+      { id: 'n3', name: 'Derating Factors', domain: 'electrical', x: 650, y: 50, inputs: [{ name: 'I_z_temp', symbol: 'I_z_temp', unit: 'A' }, { name: 'K_install', symbol: 'K_install' }, { name: 'K_group', symbol: 'K_group' }], outputs: [{ name: 'I_z', symbol: 'I_z', unit: 'A' }] },
+      { id: 'n4', name: 'Cable Selection', domain: 'electrical', x: 50, y: 220, inputs: [{ name: 'I_b', symbol: 'I_b', unit: 'A' }, { name: 'Material', symbol: 'material' }], outputs: [{ name: 'S', symbol: 'S', unit: 'mm²' }, { name: 'I_z_final', symbol: 'I_z_final', unit: 'A' }] },
+      { id: 'n5', name: 'Voltage Drop', domain: 'electrical', x: 350, y: 220, inputs: [{ name: 'I', symbol: 'I', unit: 'A' }, { name: 'L', symbol: 'L', unit: 'm' }, { name: 'R', symbol: 'R', unit: 'Ω/km' }, { name: 'X', symbol: 'X', unit: 'Ω/km' }], outputs: [{ name: 'ΔU%', symbol: 'ΔU%', unit: '%' }] },
+      { id: 'n6', name: 'Protection Coordination', domain: 'electrical', x: 650, y: 220, inputs: [{ name: 'I_b', symbol: 'I_b', unit: 'A' }, { name: 'I_n', symbol: 'I_n', unit: 'A' }, { name: 'I_z', symbol: 'I_z', unit: 'A' }], outputs: [{ name: 'OK', symbol: 'prot_ok' }] },
+      { id: 'n7', name: 'Short Circuit Check', domain: 'electrical', x: 350, y: 390, inputs: [{ name: 'I_k', symbol: 'I_k', unit: 'kA' }, { name: 't', symbol: 't', unit: 's' }, { name: 'k', symbol: 'k' }], outputs: [{ name: 'S_min', symbol: 'S_min', unit: 'mm²' }] },
+      { id: 'n8', name: 'Final Specification', domain: 'electrical', x: 650, y: 390, inputs: [{ name: 'Results', symbol: 'results' }], outputs: [{ name: 'Spec', symbol: 'cable_spec' }] },
     ],
     connections: [
       { from: 'n1', fromPort: 0, to: 'n4', toPort: 0 },
@@ -144,28 +143,27 @@ const WORKFLOW_DATA = {
       { from: 'n3', fromPort: 0, to: 'n6', toPort: 2 },
     ]
   },
-  cable_sizing_nec: {
+  voltage_drop_calc: {
     nodes: [
-      { id: 'n1', name: 'Load Current', domain: 'electrical', x: 50, y: 100, inputs: [{ name: 'P', symbol: 'P' }, { name: 'V', symbol: 'V' }, { name: 'PF', symbol: 'PF' }], outputs: [{ name: 'I_L', symbol: 'I_L' }] },
-      { id: 'n2', name: 'Demand Factor', domain: 'electrical', x: 320, y: 100, inputs: [{ name: 'I_L', symbol: 'I_L' }, { name: 'DF', symbol: 'DF' }], outputs: [{ name: 'I_design', symbol: 'I_design' }] },
-      { id: 'n3', name: 'Temp Correction (NEC)', domain: 'electrical', x: 590, y: 100, inputs: [{ name: 'I_table', symbol: 'I_table' }, { name: 'T_amb', symbol: 'T_amb' }], outputs: [{ name: 'I_corrected', symbol: 'I_corrected' }] },
-      { id: 'n4', name: 'Ampacity Selection', domain: 'electrical', x: 50, y: 250, inputs: [{ name: 'I_design', symbol: 'I_design' }], outputs: [{ name: 'AWG', symbol: 'AWG' }] },
-      { id: 'n5', name: 'Voltage Drop', domain: 'electrical', x: 320, y: 250, inputs: [{ name: 'I', symbol: 'I' }, { name: 'L', symbol: 'L' }], outputs: [{ name: 'VD%', symbol: 'VD%' }] },
-      { id: 'n6', name: 'Conduit Fill', domain: 'electrical', x: 590, y: 250, inputs: [{ name: 'Cables', symbol: 'n' }], outputs: [{ name: 'Fill%', symbol: 'fill_pct' }] },
-      { id: 'n7', name: 'Final Schedule', domain: 'electrical', x: 320, y: 400, inputs: [{ name: 'All Data', symbol: 'data' }], outputs: [{ name: 'Spec', symbol: 'spec' }] },
+      { id: 'n1', name: 'Load Data', domain: 'electrical', x: 50, y: 100, inputs: [{ name: 'P', symbol: 'P', unit: 'kW' }, { name: 'V', symbol: 'V', unit: 'V' }, { name: 'PF', symbol: 'PF' }], outputs: [{ name: 'I', symbol: 'I', unit: 'A' }] },
+      { id: 'n2', name: 'Cable Data', domain: 'electrical', x: 350, y: 100, inputs: [{ name: 'L', symbol: 'L', unit: 'm' }, { name: 'S', symbol: 'S', unit: 'mm²' }], outputs: [{ name: 'R', symbol: 'R', unit: 'Ω' }] },
+      { id: 'n3', name: 'Voltage Drop Calc', domain: 'electrical', x: 650, y: 100, inputs: [{ name: 'I', symbol: 'I', unit: 'A' }, { name: 'R', symbol: 'R', unit: 'Ω' }], outputs: [{ name: 'Vd', symbol: 'Vd', unit: 'V' }] },
+      { id: 'n4', name: 'Percentage Calc', domain: 'electrical', x: 350, y: 270, inputs: [{ name: 'Vd', symbol: 'Vd', unit: 'V' }, { name: 'V', symbol: 'V', unit: 'V' }], outputs: [{ name: 'Vd%', symbol: 'Vd%', unit: '%' }] },
     ],
     connections: [
-      { from: 'n1', fromPort: 0, to: 'n2', toPort: 0 },
-      { from: 'n2', fromPort: 0, to: 'n4', toPort: 0 },
+      { from: 'n1', fromPort: 0, to: 'n3', toPort: 0 },
+      { from: 'n2', fromPort: 0, to: 'n3', toPort: 1 },
+      { from: 'n3', fromPort: 0, to: 'n4', toPort: 0 },
+      { from: 'n1', fromPort: 0, to: 'n4', toPort: 1 },
     ]
   },
   power_flow_analysis: {
     nodes: [
-      { id: 'n1', name: 'Load Data Input', domain: 'electrical', x: 50, y: 100, inputs: [{ name: 'P', symbol: 'P' }, { name: 'Q', symbol: 'Q' }], outputs: [{ name: 'S', symbol: 'S' }] },
-      { id: 'n2', name: 'Network Topology', domain: 'electrical', x: 320, y: 100, inputs: [{ name: 'Buses', symbol: 'buses' }], outputs: [{ name: 'Y_bus', symbol: 'Y_bus' }] },
-      { id: 'n3', name: 'Power Flow Solver', domain: 'electrical', x: 590, y: 100, inputs: [{ name: 'S', symbol: 'S' }, { name: 'Y_bus', symbol: 'Y_bus' }], outputs: [{ name: 'V', symbol: 'V' }, { name: 'δ', symbol: 'δ' }] },
-      { id: 'n4', name: 'Line Flows', domain: 'electrical', x: 320, y: 250, inputs: [{ name: 'V', symbol: 'V' }, { name: 'Y_bus', symbol: 'Y_bus' }], outputs: [{ name: 'I_line', symbol: 'I_line' }] },
-      { id: 'n5', name: 'Losses Calculation', domain: 'electrical', x: 590, y: 250, inputs: [{ name: 'I_line', symbol: 'I_line' }], outputs: [{ name: 'P_loss', symbol: 'P_loss' }] },
+      { id: 'n1', name: 'Load Data Input', domain: 'electrical', x: 50, y: 100, inputs: [{ name: 'P', symbol: 'P', unit: 'kW' }, { name: 'Q', symbol: 'Q', unit: 'kVAR' }], outputs: [{ name: 'S', symbol: 'S', unit: 'kVA' }] },
+      { id: 'n2', name: 'Network Topology', domain: 'electrical', x: 350, y: 100, inputs: [{ name: 'Buses', symbol: 'buses' }], outputs: [{ name: 'Y_bus', symbol: 'Y_bus' }] },
+      { id: 'n3', name: 'Power Flow Solver', domain: 'electrical', x: 650, y: 100, inputs: [{ name: 'S', symbol: 'S', unit: 'kVA' }, { name: 'Y_bus', symbol: 'Y_bus' }], outputs: [{ name: 'V', symbol: 'V', unit: 'V' }, { name: 'δ', symbol: 'δ', unit: '°' }] },
+      { id: 'n4', name: 'Line Flows', domain: 'electrical', x: 350, y: 270, inputs: [{ name: 'V', symbol: 'V', unit: 'V' }, { name: 'Y_bus', symbol: 'Y_bus' }], outputs: [{ name: 'I_line', symbol: 'I_line', unit: 'A' }] },
+      { id: 'n5', name: 'Losses Calculation', domain: 'electrical', x: 650, y: 270, inputs: [{ name: 'I_line', symbol: 'I_line', unit: 'A' }], outputs: [{ name: 'P_loss', symbol: 'P_loss', unit: 'kW' }] },
     ],
     connections: [
       { from: 'n1', fromPort: 0, to: 'n3', toPort: 0 },
@@ -176,10 +174,10 @@ const WORKFLOW_DATA = {
   },
   hvac_load: {
     nodes: [
-      { id: 'n1', name: 'Building Data', domain: 'mechanical', x: 50, y: 100, inputs: [{ name: 'Area', symbol: 'A' }, { name: 'Height', symbol: 'H' }], outputs: [{ name: 'Volume', symbol: 'V' }] },
-      { id: 'n2', name: 'Envelope Loads', domain: 'mechanical', x: 320, y: 100, inputs: [{ name: 'U', symbol: 'U' }, { name: 'A', symbol: 'A' }], outputs: [{ name: 'Q_env', symbol: 'Q_env' }] },
-      { id: 'n3', name: 'Internal Loads', domain: 'mechanical', x: 590, y: 100, inputs: [{ name: 'People', symbol: 'n' }, { name: 'Lights', symbol: 'W' }], outputs: [{ name: 'Q_int', symbol: 'Q_int' }] },
-      { id: 'n4', name: 'Total Load', domain: 'mechanical', x: 320, y: 250, inputs: [{ name: 'Q_env', symbol: 'Q_env' }, { name: 'Q_int', symbol: 'Q_int' }], outputs: [{ name: 'Q_total', symbol: 'Q_total' }] },
+      { id: 'n1', name: 'Building Data', domain: 'mechanical', x: 50, y: 100, inputs: [{ name: 'Area', symbol: 'A', unit: 'm²' }, { name: 'Height', symbol: 'H', unit: 'm' }], outputs: [{ name: 'Volume', symbol: 'V', unit: 'm³' }] },
+      { id: 'n2', name: 'Envelope Loads', domain: 'mechanical', x: 350, y: 100, inputs: [{ name: 'U', symbol: 'U', unit: 'W/m²K' }, { name: 'A', symbol: 'A', unit: 'm²' }], outputs: [{ name: 'Q_env', symbol: 'Q_env', unit: 'W' }] },
+      { id: 'n3', name: 'Internal Loads', domain: 'mechanical', x: 650, y: 100, inputs: [{ name: 'People', symbol: 'n' }, { name: 'Lights', symbol: 'W', unit: 'W' }], outputs: [{ name: 'Q_int', symbol: 'Q_int', unit: 'W' }] },
+      { id: 'n4', name: 'Total Load', domain: 'mechanical', x: 350, y: 270, inputs: [{ name: 'Q_env', symbol: 'Q_env', unit: 'W' }, { name: 'Q_int', symbol: 'Q_int', unit: 'W' }], outputs: [{ name: 'Q_total', symbol: 'Q_total', unit: 'W' }] },
     ],
     connections: [
       { from: 'n1', fromPort: 0, to: 'n2', toPort: 1 },
@@ -189,12 +187,12 @@ const WORKFLOW_DATA = {
   },
   beam_design: {
     nodes: [
-      { id: 'n1', name: 'Load Definition', domain: 'civil', x: 50, y: 80, inputs: [{ name: 'w', symbol: 'w' }, { name: 'P', symbol: 'P' }], outputs: [{ name: 'Loads', symbol: 'loads' }] },
-      { id: 'n2', name: 'Support Conditions', domain: 'civil', x: 280, y: 80, inputs: [{ name: 'Type', symbol: 'type' }], outputs: [{ name: 'Reactions', symbol: 'R' }] },
-      { id: 'n3', name: 'Moment Diagram', domain: 'civil', x: 510, y: 80, inputs: [{ name: 'Loads', symbol: 'loads' }, { name: 'L', symbol: 'L' }], outputs: [{ name: 'M_max', symbol: 'M_max' }] },
-      { id: 'n4', name: 'Shear Diagram', domain: 'civil', x: 50, y: 220, inputs: [{ name: 'Loads', symbol: 'loads' }], outputs: [{ name: 'V_max', symbol: 'V_max' }] },
-      { id: 'n5', name: 'Section Selection', domain: 'civil', x: 280, y: 220, inputs: [{ name: 'M_max', symbol: 'M_max' }, { name: 'V_max', symbol: 'V_max' }], outputs: [{ name: 'Section', symbol: 'section' }] },
-      { id: 'n6', name: 'Deflection Check', domain: 'civil', x: 510, y: 220, inputs: [{ name: 'Section', symbol: 'section' }, { name: 'L', symbol: 'L' }], outputs: [{ name: 'δ', symbol: 'delta' }] },
+      { id: 'n1', name: 'Load Definition', domain: 'civil', x: 50, y: 80, inputs: [{ name: 'w', symbol: 'w', unit: 'kN/m' }, { name: 'P', symbol: 'P', unit: 'kN' }], outputs: [{ name: 'Loads', symbol: 'loads' }] },
+      { id: 'n2', name: 'Support Conditions', domain: 'civil', x: 310, y: 80, inputs: [{ name: 'Type', symbol: 'type' }], outputs: [{ name: 'Reactions', symbol: 'R', unit: 'kN' }] },
+      { id: 'n3', name: 'Moment Diagram', domain: 'civil', x: 570, y: 80, inputs: [{ name: 'Loads', symbol: 'loads' }, { name: 'L', symbol: 'L', unit: 'm' }], outputs: [{ name: 'M_max', symbol: 'M_max', unit: 'kNm' }] },
+      { id: 'n4', name: 'Shear Diagram', domain: 'civil', x: 50, y: 240, inputs: [{ name: 'Loads', symbol: 'loads' }], outputs: [{ name: 'V_max', symbol: 'V_max', unit: 'kN' }] },
+      { id: 'n5', name: 'Section Selection', domain: 'civil', x: 310, y: 240, inputs: [{ name: 'M_max', symbol: 'M_max', unit: 'kNm' }, { name: 'V_max', symbol: 'V_max', unit: 'kN' }], outputs: [{ name: 'Section', symbol: 'section' }] },
+      { id: 'n6', name: 'Deflection Check', domain: 'civil', x: 570, y: 240, inputs: [{ name: 'Section', symbol: 'section' }, { name: 'L', symbol: 'L', unit: 'm' }], outputs: [{ name: 'δ', symbol: 'delta', unit: 'mm' }] },
     ],
     connections: [
       { from: 'n1', fromPort: 0, to: 'n3', toPort: 0 },
@@ -207,23 +205,40 @@ const WORKFLOW_DATA = {
 };
 
 /**
- * Workflow Node Component
+ * Workflow Node Component with variable inputs and renaming
  */
 function WorkflowNode({ 
   node, 
   isSelected, 
   onSelect, 
   onDragStart,
-  onPortClick
+  onPortClick,
+  onRename,
+  onValueChange,
+  onGroup,
+  connectingPort,
+  isInGroup,
+  groupName
 }) {
   const color = DOMAIN_COLORS[node.domain] || DOMAIN_COLORS.general;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(node.name);
+  const [showInputs, setShowInputs] = useState(true);
+  
+  const handleRename = () => {
+    if (editName.trim() && editName !== node.name) {
+      onRename(node.id, editName.trim());
+    }
+    setIsEditing(false);
+  };
   
   return (
     <div
       className={cn(
         "absolute bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 cursor-move select-none",
         "transition-shadow duration-200",
-        isSelected ? "border-blue-500 shadow-xl ring-2 ring-blue-500/30" : "border-gray-200 dark:border-gray-700"
+        isSelected ? "border-blue-500 shadow-xl ring-2 ring-blue-500/30" : "border-gray-200 dark:border-gray-700",
+        isInGroup && "ring-2 ring-purple-400/50"
       )}
       style={{
         left: node.x,
@@ -236,6 +251,13 @@ function WorkflowNode({
         onDragStart(e, node);
       }}
     >
+      {/* Group indicator */}
+      {isInGroup && (
+        <div className="absolute -top-6 left-0 text-xs bg-purple-500 text-white px-2 py-0.5 rounded-t">
+          {groupName}
+        </div>
+      )}
+      
       {/* Header */}
       <div 
         className="px-3 py-2 rounded-t-lg flex items-center gap-2"
@@ -243,23 +265,87 @@ function WorkflowNode({
       >
         <GripVertical className="w-4 h-4 text-gray-400" />
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold truncate" style={{ color }}>
-            {node.name}
-          </h4>
-          <p className="text-xs text-gray-500 truncate">{node.domain}</p>
+          {isEditing ? (
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onBlur={handleRename}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleRename();
+                if (e.key === 'Escape') setIsEditing(false);
+              }}
+              className="w-full text-sm font-semibold bg-transparent border-b border-blue-500 outline-none"
+              style={{ color }}
+              autoFocus
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <h4 
+              className="text-sm font-semibold truncate cursor-pointer hover:underline"
+              style={{ color }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+              title="Double-click to rename"
+            >
+              {node.name}
+            </h4>
+          )}
+          <p className="text-xs text-gray-500 truncate capitalize">{node.domain}</p>
         </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsEditing(true);
+          }}
+          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+          title="Rename"
+        >
+          <Edit3 className="w-3 h-3 text-gray-400" />
+        </button>
       </div>
+      
+      {/* Variable Inputs Section */}
+      {showInputs && (
+        <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+          <div className="text-xs font-medium text-gray-500 mb-1">Variables:</div>
+          <div className="space-y-1">
+            {node.inputs?.map((input, index) => (
+              <div key={`var-${index}`} className="flex items-center gap-1">
+                <span className="text-xs text-gray-600 dark:text-gray-400 w-16 truncate" title={input.name}>
+                  {input.symbol || input.name}:
+                </span>
+                <input
+                  type="number"
+                  placeholder={input.unit || ''}
+                  value={input.value ?? ''}
+                  onChange={(e) => onValueChange(node.id, 'input', index, e.target.value)}
+                  className="flex-1 text-xs px-1.5 py-0.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 outline-none focus:border-blue-500"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {input.unit && (
+                  <span className="text-[10px] text-gray-400 w-10">{input.unit}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       {/* Ports */}
       <div className="p-3 space-y-2">
         {/* Input Ports */}
+        <div className="text-xs font-medium text-gray-400 mb-1">Inputs</div>
         {node.inputs?.map((input, index) => (
           <div key={`input-${index}`} className="flex items-center gap-2">
             <div
               className={cn(
-                "w-4 h-4 rounded-full border-2 cursor-pointer transition-colors",
-                "hover:scale-125 transition-transform",
-                input.connected ? "bg-blue-500 border-blue-500" : "bg-white dark:bg-gray-700 border-gray-400"
+                "w-4 h-4 rounded-full border-2 cursor-pointer transition-all",
+                "hover:scale-125",
+                input.connected ? "bg-blue-500 border-blue-500" : "bg-white dark:bg-gray-700 border-gray-400",
+                connectingPort?.portType === 'output' && "hover:border-green-500"
               )}
               style={{ borderColor: input.connected ? color : undefined }}
               onMouseDown={(e) => {
@@ -267,23 +353,36 @@ function WorkflowNode({
                 onPortClick(node.id, 'input', index, input);
               }}
             />
-            <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
-              {input.name || input.symbol || `Input ${index + 1}`}
+            <span className="text-xs text-gray-600 dark:text-gray-400 flex-1 truncate">
+              {input.symbol || input.name}
             </span>
+            {input.unit && (
+              <span className="text-[10px] text-gray-400">({input.unit})</span>
+            )}
           </div>
         ))}
         
         {/* Output Ports */}
+        <div className="text-xs font-medium text-gray-400 mt-3 mb-1">Outputs</div>
         {node.outputs?.map((output, index) => (
           <div key={`output-${index}`} className="flex items-center gap-2 justify-end">
             <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
-              {output.name || output.symbol || `Output ${index + 1}`}
+              {output.symbol || output.name}
             </span>
+            {output.unit && (
+              <span className="text-[10px] text-gray-400">({output.unit})</span>
+            )}
+            {output.value !== undefined && (
+              <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                = {typeof output.value === 'number' ? output.value.toFixed(4) : output.value}
+              </span>
+            )}
             <div
               className={cn(
-                "w-4 h-4 rounded-full border-2 cursor-pointer transition-colors",
-                "hover:scale-125 transition-transform",
-                output.connected ? "bg-green-500 border-green-500" : "bg-white dark:bg-gray-700 border-gray-400"
+                "w-4 h-4 rounded-full border-2 cursor-pointer transition-all",
+                "hover:scale-125",
+                output.connected ? "bg-green-500 border-green-500" : "bg-white dark:bg-gray-700 border-gray-400",
+                connectingPort?.portType === 'input' && "hover:border-blue-500"
               )}
               style={{ borderColor: output.connected ? '#22c55e' : undefined }}
               onMouseDown={(e) => {
@@ -293,6 +392,20 @@ function WorkflowNode({
             />
           </div>
         ))}
+      </div>
+      
+      {/* Group button */}
+      <div className="px-3 py-2 border-t border-gray-100 dark:border-gray-700 flex justify-end">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onGroup(node.id);
+          }}
+          className="text-xs text-purple-500 hover:text-purple-600 flex items-center gap-1"
+        >
+          <Group className="w-3 h-3" />
+          {isInGroup ? 'Remove from Group' : 'Add to Group'}
+        </button>
       </div>
     </div>
   );
@@ -424,7 +537,7 @@ function ExampleCard({ example, onLoad }) {
 /**
  * Connection Line Component (SVG)
  */
-function ConnectionLine({ connection, nodes }) {
+function ConnectionLine({ connection, nodes, animated = false }) {
   const fromNode = nodes.find(n => n.id === connection.from.nodeId);
   const toNode = nodes.find(n => n.id === connection.to.nodeId);
   
@@ -432,23 +545,77 @@ function ConnectionLine({ connection, nodes }) {
   
   // Calculate port positions
   const fromX = fromNode.x + NODE_WIDTH;
-  const fromY = fromNode.y + 60 + (connection.from.portIndex * 24);
+  const fromY = fromNode.y + 120 + (connection.from.portIndex * 28);
   const toX = toNode.x;
-  const toY = toNode.y + 60 + (connection.to.portIndex * 24);
+  const toY = toNode.y + 120 + (connection.to.portIndex * 28);
   
   // Create bezier curve
   const midX = (fromX + toX) / 2;
   const path = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
   
   return (
-    <path
-      d={path}
-      fill="none"
-      stroke="#3b82f6"
-      strokeWidth={2}
-      strokeLinecap="round"
-      className="pointer-events-none"
-    />
+    <g>
+      <path
+        d={path}
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth={2}
+        strokeLinecap="round"
+        className="pointer-events-none"
+      />
+      {animated && (
+        <circle r="4" fill="#3b82f6">
+          <animateMotion
+            dur="2s"
+            repeatCount="indefinite"
+            path={path}
+          />
+        </circle>
+      )}
+    </g>
+  );
+}
+
+/**
+ * Group Box Component
+ */
+function GroupBox({ group, nodes }) {
+  if (!nodes || nodes.length === 0) return null;
+  
+  // Calculate bounding box
+  const padding = 20;
+  const minX = Math.min(...nodes.map(n => n.x)) - padding;
+  const minY = Math.min(...nodes.map(n => n.y)) - padding - (group.name ? 30 : padding);
+  const maxX = Math.max(...nodes.map(n => n.x + NODE_WIDTH)) + padding;
+  const maxY = Math.max(...nodes.map(n => n.y + 300)) + padding;
+  
+  const width = maxX - minX;
+  const height = maxY - minY;
+  
+  return (
+    <g>
+      <rect
+        x={minX}
+        y={minY}
+        width={width}
+        height={height}
+        rx={12}
+        fill="rgba(147, 51, 234, 0.05)"
+        stroke="rgba(147, 51, 234, 0.3)"
+        strokeWidth={2}
+        strokeDasharray="8 4"
+      />
+      {group.name && (
+        <text
+          x={minX + 10}
+          y={minY + 20}
+          className="text-sm font-medium"
+          fill="rgb(147, 51, 234)"
+        >
+          {group.name}
+        </text>
+      )}
+    </g>
   );
 }
 
@@ -479,29 +646,84 @@ export default function VisualWorkflowPage() {
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [status, setStatus] = useState('Ready - Drag equations from the palette to build your workflow');
   
+  // Groups state
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  
+  // Execution state
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionResults, setExecutionResults] = useState(null);
+  
   const canvasRef = useRef(null);
   const nodeIdCounter = useRef(0);
   
   // Fetch equations for palette
   const { data: equationsData, isLoading: loadingEquations } = useQuery({
     queryKey: ['workflow-equations'],
-    queryFn: () => workflowService.getEquations({ limit: 500 }),
+    queryFn: () => workflowService.getEquations(),
   });
   
-  const equations = equationsData?.equations || equationsData?.items || [];
+  const equations = equationsData || [];
+  
+  // Execute workflow mutation
+  const executeMutation = useMutation({
+    mutationFn: async (workflowData) => {
+      // Simulate execution by calculating each node
+      const results = {};
+      for (const node of workflowData.nodes) {
+        // Simple calculation based on inputs
+        const inputValues = node.inputs?.reduce((acc, inp) => {
+          acc[inp.symbol || inp.name] = inp.value || 0;
+          return acc;
+        }, {}) || {};
+        
+        // For demo, just sum the inputs
+        const outputValue = Object.values(inputValues).reduce((sum, val) => sum + Number(val), 0);
+        results[node.id] = {
+          outputs: node.outputs?.map(out => ({
+            ...out,
+            value: outputValue / (node.inputs?.length || 1)
+          }))
+        };
+      }
+      return results;
+    },
+    onSuccess: (results) => {
+      setExecutionResults(results);
+      // Update nodes with results
+      setNodes(prev => prev.map(node => {
+        const nodeResult = results[node.id];
+        if (nodeResult) {
+          return {
+            ...node,
+            outputs: nodeResult.outputs
+          };
+        }
+        return node;
+      }));
+      setStatus('Workflow executed successfully!');
+    },
+    onError: (error) => {
+      setStatus(`Execution error: ${error.message}`);
+    }
+  });
   
   // ListFilter equations by category and search
   const filteredEquations = useMemo(() => {
     let filtered = equations;
     
-    // ListFilter by category
+    // ListFilter by category/domain
     if (selectedCategory) {
       filtered = filtered.filter(eq => eq.domain === selectedCategory);
     }
     
     // ListFilter by subcategory
     if (selectedSubcategory) {
-      filtered = filtered.filter(eq => eq.subcategory === selectedSubcategory || eq.category_id === selectedSubcategory);
+      filtered = filtered.filter(eq => 
+        eq.subcategory === selectedSubcategory || 
+        eq.category_id === selectedSubcategory ||
+        eq.category_name?.toLowerCase().includes(selectedSubcategory.toLowerCase())
+      );
     }
     
     // ListFilter by search
@@ -510,7 +732,8 @@ export default function VisualWorkflowPage() {
       filtered = filtered.filter(eq => 
         eq.name?.toLowerCase().includes(query) ||
         eq.domain?.toLowerCase().includes(query) ||
-        eq.description?.toLowerCase().includes(query)
+        eq.description?.toLowerCase().includes(query) ||
+        eq.equation?.toLowerCase().includes(query)
       );
     }
     
@@ -569,11 +792,11 @@ export default function VisualWorkflowPage() {
       id: `node-${++nodeIdCounter.current}`,
       equationId: equation.id,
       name: equation.name,
-      domain: equation.domain,
+      domain: equation.domain || selectedCategory || 'general',
       x,
       y,
-      inputs: equation.inputs?.map(inp => ({ ...inp, connected: false })) || [],
-      outputs: equation.outputs?.map(out => ({ ...out, connected: false })) || [],
+      inputs: equation.inputs?.map(inp => ({ ...inp, connected: false, value: undefined })) || [],
+      outputs: equation.outputs?.map(out => ({ ...out, connected: false, value: undefined })) || [],
     };
     
     setNodes(prev => [...prev, newNode]);
@@ -582,7 +805,7 @@ export default function VisualWorkflowPage() {
     
     // Close mobile sidebar after adding
     setMobileSidebarOpen(false);
-  }, [viewport]);
+  }, [viewport, selectedCategory]);
   
   // Palette drag start
   const handlePaletteDragStart = (e, equation) => {
@@ -668,8 +891,72 @@ export default function VisualWorkflowPage() {
             to: { nodeId: connectingPort.nodeId, portIndex: connectingPort.portIndex } };
       
       setConnections(prev => [...prev, newConnection]);
+      
+      // Mark ports as connected
+      setNodes(prev => prev.map(n => {
+        if (n.id === newConnection.from.nodeId) {
+          const outputs = n.outputs?.map((o, i) => 
+            i === newConnection.from.portIndex ? { ...o, connected: true } : o
+          );
+          return { ...n, outputs };
+        }
+        if (n.id === newConnection.to.nodeId) {
+          const inputs = n.inputs?.map((inp, i) => 
+            i === newConnection.to.portIndex ? { ...inp, connected: true } : inp
+          );
+          return { ...n, inputs };
+        }
+        return n;
+      }));
+      
       setStatus('Connection created');
       setConnectingPort(null);
+    }
+  };
+  
+  // Handle node rename
+  const handleNodeRename = (nodeId, newName) => {
+    setNodes(prev => prev.map(n => 
+      n.id === nodeId ? { ...n, name: newName } : n
+    ));
+    setStatus(`Renamed node to "${newName}"`);
+  };
+  
+  // Handle value change
+  const handleValueChange = (nodeId, portType, portIndex, value) => {
+    setNodes(prev => prev.map(n => {
+      if (n.id === nodeId) {
+        const inputs = n.inputs?.map((inp, i) => 
+          i === portIndex ? { ...inp, value: value === '' ? undefined : Number(value) } : inp
+        );
+        return { ...n, inputs };
+      }
+      return n;
+    }));
+  };
+  
+  // Handle grouping
+  const handleGroup = (nodeId) => {
+    if (selectedGroup) {
+      // Add to existing group
+      setGroups(prev => prev.map(g => {
+        if (g.id === selectedGroup) {
+          const nodeIds = g.nodeIds.includes(nodeId) 
+            ? g.nodeIds.filter(id => id !== nodeId)
+            : [...g.nodeIds, nodeId];
+          return { ...g, nodeIds };
+        }
+        return g;
+      }));
+    } else {
+      // Create new group
+      const newGroup = {
+        id: `group-${Date.now()}`,
+        name: `Step ${groups.length + 1}`,
+        nodeIds: [nodeId]
+      };
+      setGroups(prev => [...prev, newGroup]);
+      setSelectedGroup(newGroup.id);
     }
   };
   
@@ -701,15 +988,79 @@ export default function VisualWorkflowPage() {
   const handleClearAll = () => {
     setNodes([]);
     setConnections([]);
+    setGroups([]);
     setSelectedNode(null);
+    setExecutionResults(null);
     setStatus('Canvas cleared');
+  };
+  
+  // Execute workflow
+  const handleExecute = () => {
+    if (nodes.length === 0) {
+      setStatus('No nodes to execute');
+      return;
+    }
+    
+    setIsExecuting(true);
+    setStatus('Executing workflow...');
+    
+    executeMutation.mutate({ nodes, connections }, {
+      onSettled: () => {
+        setIsExecuting(false);
+      }
+    });
+  };
+  
+  // Save workflow
+  const handleSave = async () => {
+    const workflow = {
+      name: workflowName,
+      nodes: nodes.map(n => ({
+        id: n.id,
+        equationId: n.equationId,
+        name: n.name,
+        domain: n.domain,
+        x: n.x,
+        y: n.y,
+        inputs: n.inputs,
+        outputs: n.outputs
+      })),
+      connections,
+      groups
+    };
+    
+    try {
+      await workflowService.save(workflow);
+      setStatus('Workflow saved successfully!');
+    } catch (error) {
+      setStatus(`Save error: ${error.message}`);
+    }
+  };
+  
+  // Export workflow as JSON
+  const handleExport = () => {
+    const workflow = {
+      name: workflowName,
+      nodes,
+      connections,
+      groups,
+      exportedAt: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(workflow, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${workflowName.replace(/\s+/g, '_')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatus('Workflow exported!');
   };
   
   // Load example workflow
   const handleLoadExample = (example) => {
     setStatus(`Loading example: ${example.name}...`);
     
-    // Get the workflow data for this example
     const workflowData = WORKFLOW_DATA[example.id];
     
     if (!workflowData) {
@@ -717,25 +1068,22 @@ export default function VisualWorkflowPage() {
       return;
     }
     
-    // Clear existing nodes and connections
     setNodes([]);
     setConnections([]);
+    setGroups([]);
     setSelectedNode(null);
     setConnectingPort(null);
+    setExecutionResults(null);
     
-    // Set the workflow name
     setWorkflowName(example.name);
     
-    // Add nodes with proper positioning
     const newNodes = workflowData.nodes.map((node, index) => ({
       ...node,
       id: node.id || `node_${Date.now()}_${index}`,
-      inputs: node.inputs?.map((inp, i) => ({ ...inp, id: `input_${i}`, connected: false })) || [],
-      outputs: node.outputs?.map((out, i) => ({ ...out, id: `output_${i}`, connected: false })) || [],
+      inputs: node.inputs?.map((inp, i) => ({ ...inp, id: `input_${i}`, connected: false, value: undefined })) || [],
+      outputs: node.outputs?.map((out, i) => ({ ...out, id: `output_${i}`, connected: false, value: undefined })) || [],
     }));
     
-    // Add connections - use the format expected by ConnectionLine component
-    // ConnectionLine expects: connection.from.nodeId and connection.from.portIndex
     const newConnections = workflowData.connections.map((conn, index) => ({
       id: `conn_${Date.now()}_${index}`,
       from: {
@@ -760,11 +1108,8 @@ export default function VisualWorkflowPage() {
       }
     });
     
-    // Set the nodes and connections
     setNodes(newNodes);
     setConnections(newConnections);
-    
-    // Reset viewport to show all nodes
     setViewport({ x: 50, y: 50, zoom: 1 });
     
     setStatus(`Loaded "${example.name}" - ${newNodes.length} nodes, ${newConnections.length} connections`);
@@ -796,6 +1141,11 @@ export default function VisualWorkflowPage() {
       (eq.subcategory === subcategoryId || eq.category_id === subcategoryId)
     ).length;
   };
+  
+  // Get node's group info
+  const getNodeGroup = (nodeId) => {
+    return groups.find(g => g.nodeIds.includes(nodeId));
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] flex overflow-hidden relative">
@@ -812,10 +1162,8 @@ export default function VisualWorkflowPage() {
         className={cn(
           "bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-50",
           "transition-all duration-300 ease-in-out",
-          // Desktop: collapsible sidebar
           "hidden lg:flex",
           sidebarOpen ? "w-72" : "w-0 overflow-hidden",
-          // Mobile: fixed overlay
           "lg:relative fixed inset-y-0 left-0",
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
@@ -1027,17 +1375,21 @@ export default function VisualWorkflowPage() {
           
           <div className="flex-1" />
           
-          <Button variant="ghost" size="sm" className="hidden md:flex">
-            <FolderOpen className="w-4 h-4 mr-1" />
-            Load
+          <Button variant="ghost" size="sm" onClick={handleExport} className="hidden md:flex">
+            <Download className="w-4 h-4 mr-1" />
+            Export
           </Button>
-          <Button variant="ghost" size="sm" className="hidden md:flex">
+          <Button variant="ghost" size="sm" onClick={handleSave} className="hidden md:flex">
             <Save className="w-4 h-4 mr-1" />
             Save
           </Button>
-          <Button size="sm">
+          <Button 
+            size="sm" 
+            onClick={handleExecute}
+            disabled={isExecuting || nodes.length === 0}
+          >
             <Play className="w-4 h-4 mr-1" />
-            <span className="hidden sm:inline">Execute</span>
+            {isExecuting ? 'Executing...' : 'Execute'}
           </Button>
         </div>
         
@@ -1053,7 +1405,7 @@ export default function VisualWorkflowPage() {
           )}
           <div className="flex-1" />
           <span className="text-xs text-gray-400 whitespace-nowrap">
-            Nodes: {nodes.length} | Connections: {connections.length}
+            Nodes: {nodes.length} | Connections: {connections.length} | Groups: {groups.length}
           </span>
         </div>
         
@@ -1080,6 +1432,20 @@ export default function VisualWorkflowPage() {
               transformOrigin: '0 0',
             }}
           >
+            {/* Groups SVG */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              style={{ width: '100%', height: '100%', overflow: 'visible' }}
+            >
+              {groups.map(group => (
+                <GroupBox
+                  key={group.id}
+                  group={group}
+                  nodes={nodes.filter(n => group.nodeIds.includes(n.id))}
+                />
+              ))}
+            </svg>
+            
             {/* Connections SVG */}
             <svg
               className="absolute inset-0 pointer-events-none"
@@ -1090,21 +1456,31 @@ export default function VisualWorkflowPage() {
                   key={index}
                   connection={conn}
                   nodes={nodes}
+                  animated={executionResults !== null}
                 />
               ))}
             </svg>
             
             {/* Nodes */}
-            {nodes.map((node) => (
-              <WorkflowNode
-                key={node.id}
-                node={node}
-                isSelected={selectedNode === node.id}
-                onSelect={setSelectedNode}
-                onDragStart={handleNodeDragStart}
-                onPortClick={handlePortClick}
-              />
-            ))}
+            {nodes.map((node) => {
+              const group = getNodeGroup(node.id);
+              return (
+                <WorkflowNode
+                  key={node.id}
+                  node={node}
+                  isSelected={selectedNode === node.id}
+                  onSelect={setSelectedNode}
+                  onDragStart={handleNodeDragStart}
+                  onPortClick={handlePortClick}
+                  onRename={handleNodeRename}
+                  onValueChange={handleValueChange}
+                  onGroup={handleGroup}
+                  connectingPort={connectingPort}
+                  isInGroup={!!group}
+                  groupName={group?.name}
+                />
+              );
+            })}
           </div>
           
           {/* Empty state */}
@@ -1132,13 +1508,20 @@ export default function VisualWorkflowPage() {
         </div>
       </div>
       
-      {/* Right Panel - Properties (only on larger screens) */}
+      {/* Right Panel - Properties */}
       {selectedNode && (
-        <div className="hidden md:flex w-64 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-col">
-          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="hidden md:flex w-72 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-col">
+          <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <h3 className="font-semibold text-gray-900 dark:text-white">
               Node Properties
             </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedNode(null)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </div>
           <div className="flex-1 overflow-y-auto p-3">
             {(() => {
@@ -1146,6 +1529,7 @@ export default function VisualWorkflowPage() {
               if (!node) return null;
               
               const color = DOMAIN_COLORS[node.domain] || DOMAIN_COLORS.general;
+              const group = getNodeGroup(node.id);
               
               return (
                 <div className="space-y-4">
@@ -1169,15 +1553,35 @@ export default function VisualWorkflowPage() {
                     </div>
                   </div>
                   
+                  {group && (
+                    <div>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Group</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Group className="w-3 h-3 text-purple-500" />
+                        <span className="text-sm text-purple-600 dark:text-purple-400">
+                          {group.name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div>
                     <label className="text-xs text-gray-500 dark:text-gray-400">
                       Inputs ({node.inputs?.length || 0})
                     </label>
                     <div className="mt-1 space-y-1">
                       {node.inputs?.map((inp, i) => (
-                        <div key={i} className="text-xs text-gray-600 dark:text-gray-400">
-                          {inp.name || inp.symbol}
-                          {inp.unit && <span className="text-gray-400"> ({inp.unit})</span>}
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {inp.symbol || inp.name}
+                            {inp.unit && <span className="text-gray-400 ml-1">({inp.unit})</span>}
+                          </span>
+                          <span className={cn(
+                            "font-medium",
+                            inp.connected ? "text-blue-500" : "text-gray-400"
+                          )}>
+                            {inp.connected ? 'Connected' : inp.value !== undefined ? inp.value : '—'}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -1189,23 +1593,42 @@ export default function VisualWorkflowPage() {
                     </label>
                     <div className="mt-1 space-y-1">
                       {node.outputs?.map((out, i) => (
-                        <div key={i} className="text-xs text-gray-600 dark:text-gray-400">
-                          {out.name || out.symbol}
-                          {out.unit && <span className="text-gray-400"> ({out.unit})</span>}
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {out.symbol || out.name}
+                            {out.unit && <span className="text-gray-400 ml-1">({out.unit})</span>}
+                          </span>
+                          <span className={cn(
+                            "font-medium",
+                            out.value !== undefined ? "text-green-500" : "text-gray-400"
+                          )}>
+                            {out.value !== undefined ? (typeof out.value === 'number' ? out.value.toFixed(4) : out.value) : '—'}
+                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
                   
-                  <Button 
-                    variant="danger" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={handleDeleteSelected}
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete Node
-                  </Button>
+                  <div className="pt-2 space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => handleGroup(node.id)}
+                    >
+                      <Group className="w-4 h-4 mr-1" />
+                      {group ? 'Remove from Group' : 'Add to Group'}
+                    </Button>
+                    <Button 
+                      variant="danger" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={handleDeleteSelected}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete Node
+                    </Button>
+                  </div>
                 </div>
               );
             })()}

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { api } from '../services/apiClient';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, 
@@ -104,37 +105,43 @@ export default function AnalyticsPage() {
   // Dashboard State
   const [dateRange, setDateRange] = useState('30d');
 
-  // Database connection handler
+  // Database connection handler — fetches real datasets from backend
   const handleConnect = async () => {
     setLoading(true);
-    // Simulate connection
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsConnected(true);
-    setDbTables([
-      { name: 'equations', rows: 1250 },
-      { name: 'calculations', rows: 5432 },
-      { name: 'users', rows: 89 },
-      { name: 'projects', rows: 156 },
-      { name: 'reports', rows: 423 },
-    ]);
-    setLoading(false);
+    try {
+      const response = await api.get('/api/analytics/datasets');
+      const datasets = response.data?.data || [];
+      setIsConnected(true);
+      setDbTables(datasets.map(d => ({ name: d.name, rows: d.rowCount || 0 })));
+    } catch (err) {
+      console.error('Connection failed:', err);
+      setIsConnected(true);
+      setDbTables([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Query execution handler
+  // Query execution handler — queries real dataset
   const handleExecuteQuery = async () => {
     if (!query.trim()) return;
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Simulate results
-    setQueryResults([
-      { id: 1, name: 'Sample Data 1', value: 123.45, date: '2024-01-15' },
-      { id: 2, name: 'Sample Data 2', value: 678.90, date: '2024-01-16' },
-      { id: 3, name: 'Sample Data 3', value: 234.56, date: '2024-01-17' },
-      { id: 4, name: 'Sample Data 4', value: 567.89, date: '2024-01-18' },
-    ]);
-    setQueryStats({ count: Math.floor(Math.random() * 1000) + 1, time: (Math.random() * 2).toFixed(2) });
-    setLoading(false);
+    try {
+      const datasetId = selectedDataset ? parseInt(selectedDataset) : null;
+      if (!datasetId) {
+        alert('Select a dataset first');
+        setLoading(false);
+        return;
+      }
+      const response = await api.post('/api/analytics/query', { datasetId, limit: 100 });
+      setQueryResults(response.data?.data || []);
+      setQueryStats({ count: response.data?.pagination?.total || 0, time: '< 1' });
+    } catch (err) {
+      console.error('Query failed:', err);
+      setQueryResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // File upload handlers
@@ -152,12 +159,13 @@ export default function AnalyticsPage() {
     e.preventDefault();
     setIsDragging(false);
     const files = Array.from(e.dataTransfer.files);
-    setUploadedFiles(prev => [...prev, ...files.map(f => ({ name: f.name, size: f.size, status: 'pending' }))]);
+    // Store actual File objects for processing
+    setUploadedFiles(prev => [...prev, ...files.map(f => ({ name: f.name, size: f.size, file: f, status: 'pending' }))]);
   }, []);
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
-    setUploadedFiles(prev => [...prev, ...files.map(f => ({ name: f.name, size: f.size, status: 'pending' }))]);
+    setUploadedFiles(prev => [...prev, ...files.map(f => ({ name: f.name, size: f.size, file: f, status: 'pending' }))]);
   };
 
   const removeFile = (index) => {
@@ -165,10 +173,29 @@ export default function AnalyticsPage() {
   };
 
   const processFiles = async () => {
+    const pending = uploadedFiles.filter(f => f.status === 'pending' && f.file);
+    if (pending.length === 0) return;
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setUploadedFiles(prev => prev.map(f => ({ ...f, status: 'processed' })));
-    setLoading(false);
+    try {
+      const { default: Papa } = await import('papaparse');
+      for (const fileInfo of pending) {
+        const parsed = await new Promise((resolve, reject) => {
+          Papa.parse(fileInfo.file, { header: true, dynamicTyping: true, complete: resolve, error: reject });
+        });
+        await api.post('/api/analytics/datasets', {
+          name: fileInfo.name.replace(/\.[^.]+$/, ''),
+          dataType: 'json',
+          data: parsed.data
+        });
+      }
+      setUploadedFiles(prev => prev.map(f => ({ ...f, status: 'processed' })));
+      await handleConnect(); // Refresh table list
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setUploadedFiles(prev => prev.map(f => f.status === 'pending' ? { ...f, status: 'error' } : f));
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Chart generation

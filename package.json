@@ -17,6 +17,7 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "seed:learning": "tsx scripts/seed-engmastery.ts",
     "lint": "eslint src --ext .ts",
     "test": "vitest"
   },

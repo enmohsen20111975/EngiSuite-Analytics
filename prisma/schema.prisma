@@ -621,7 +621,9 @@ model ProjectTemplate {
   slug        String   @unique
   description String?
   category    String?
-  config      String   // JSON configuration
+  icon        String?  @default("fa-folder")
+  color       String?  @default("#6B7280")
+  config      String?  // JSON configuration (optional)
   isPublic    Boolean  @default(false) @map("is_public")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

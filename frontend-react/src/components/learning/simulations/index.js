@@ -34,6 +34,11 @@ export { default as AirfoilLift } from './AirfoilLift';
 // Chemical Engineering
 export { default as ReactionRate } from './ReactionRate';
 
+// SINAMICS Drive Technology
+export { default as SinamicsMotorLab } from './SinamicsMotorLab';
+export { default as SinamicsPIDLab } from './SinamicsPIDLab';
+export { default as SinamicsInverterFlow } from './SinamicsInverterFlow';
+
 // Simulation type constants
 export const SIMULATION_TYPES = {
   // Electrical
@@ -65,7 +70,12 @@ export const SIMULATION_TYPES = {
   AIRFOIL_LIFT: 'airfoil-lift',
   
   // Chemical
-  REACTION_RATE: 'reaction-rate'
+  REACTION_RATE: 'reaction-rate',
+  
+  // SINAMICS Drive Technology
+  SINAMICS_MOTOR_LAB: 'sinamics-motor-lab',
+  SINAMICS_PID_LAB: 'sinamics-pid-lab',
+  SINAMICS_INVERTER_FLOW: 'sinamics-inverter-flow'
 };
 
 // Category mapping for UI organization
@@ -76,5 +86,6 @@ export const SIMULATION_CATEGORIES = {
   aerospace: ['airfoil-lift', 'fluid-flow', 'projectile-motion'],
   chemical: ['reaction-rate', 'fluid-flow', 'heat-engine', 'piston-sim'],
   computer: ['logic-gate'],
-  physics: ['atom-model', 'data-plotter']
+  physics: ['atom-model', 'data-plotter'],
+  sinamics: ['sinamics-motor-lab', 'sinamics-pid-lab', 'sinamics-inverter-flow']
 };

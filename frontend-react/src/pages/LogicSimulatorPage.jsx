@@ -61,7 +61,7 @@ const CATEGORY_COLORS = {
 /**
  * Component Renderer - Renders all gate types
  */
-function ComponentRenderer({ component, isSelected, onClick, onPortClick, onToggleInput, scale = 1 }) {
+function ComponentRenderer({ component, isSelected, onClick, onPortClick, onToggleInput, onDragStart, scale = 1 }) {
   const config = COMPONENT_TYPES[component.type];
   const color = CATEGORY_COLORS[config.category] || '#64748b';
   const width = 70 * scale;
@@ -346,6 +346,7 @@ function ComponentRenderer({ component, isSelected, onClick, onPortClick, onTogg
     <g
       transform={`translate(${component.x}, ${component.y})`}
       onClick={(e) => { e.stopPropagation(); onClick(component.id); }}
+      onMouseDown={(e) => { if (e.button === 0) onDragStart?.(component.id, e); }}
       className="cursor-move"
     >
       {/* Selection highlight */}
@@ -479,35 +480,35 @@ function SevenSegmentDisplay({ segments, x, y, width, height }) {
 /**
  * Wire with routing
  */
-function RoutedWire({ wire, components, scale = 1 }) {
+function RoutedWire({ wire, components, scale = 1, onDelete }) {
   const fromComp = components.find(c => c.id === wire.fromComponent);
   const toComp = components.find(c => c.id === wire.toComponent);
-  
+
   if (!fromComp || !toComp) return null;
-  
+
   const fromConfig = COMPONENT_TYPES[fromComp.type];
   const toConfig = COMPONENT_TYPES[toComp.type];
-  
+
   const fromWidth = 70 * scale;
   const fromHeight = Math.max(50, (Math.max(fromConfig.inputs, fromConfig.outputs) + 1) * 18) * scale;
   const toHeight = Math.max(50, (Math.max(toConfig.inputs, toConfig.outputs) + 1) * 18) * scale;
-  
+
   const x1 = fromComp.x + fromWidth + 15 * scale;
   const y1 = fromComp.y + ((wire.fromPort + 1) * fromHeight) / (fromConfig.outputs + 1);
   const x2 = toComp.x - 15 * scale;
   const y2 = toComp.y + ((wire.toPort + 1) * toHeight) / (toConfig.inputs + 1);
-  
-  // Simple routing - can be enhanced with A* or similar
+
   const midX = (x1 + x2) / 2;
   const path = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
-  
+
   return (
     <path
       d={path}
       fill="none"
       stroke={wire.value ? '#22c55e' : '#64748b'}
       strokeWidth={2}
-      className="pointer-events-none"
+      className="cursor-pointer hover:stroke-red-400"
+      onContextMenu={(e) => { e.preventDefault(); onDelete?.(wire.id); }}
     />
   );
 }
@@ -746,8 +747,10 @@ export default function LogicSimulatorPage() {
   const [status, setStatus] = useState('Ready');
   const [showTruthTable, setShowTruthTable] = useState(false);
   const [clockTick, setClockTick] = useState(0);
-  
+
   const canvasRef = useRef(null);
+  const dragRef = useRef(null);
+  const ffStateRef = useRef(new Map()); // Persists flip-flop Q state across steps
   const queryClient = useQueryClient();
 
   // Fetch circuits
@@ -837,83 +840,174 @@ export default function LogicSimulatorPage() {
     }));
   }, []);
 
+  // Component drag (move after placement)
+  const handleComponentDragStart = useCallback((id, e) => {
+    if (activeTool !== 'select') return;
+    const comp = components.find(c => c.id === id);
+    if (!comp) return;
+    e.stopPropagation();
+    dragRef.current = { id, startX: e.clientX, startY: e.clientY, origX: comp.x, origY: comp.y };
+  }, [components, activeTool]);
+
+  useEffect(() => {
+    const onMove = (e) => {
+      if (!dragRef.current) return;
+      const { id, startX, startY, origX, origY } = dragRef.current;
+      const dx = (e.clientX - startX) / viewport.zoom;
+      const dy = (e.clientY - startY) / viewport.zoom;
+      setComponents(prev => prev.map(c => c.id === id ? { ...c, x: origX + dx, y: origY + dy } : c));
+    };
+    const onUp = () => { dragRef.current = null; };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+  }, [viewport.zoom]);
+
+  // Delete wire
+  const handleDeleteWire = useCallback((wireId) => {
+    setWires(prev => prev.filter(w => w.id !== wireId));
+    setStatus('Wire removed');
+  }, []);
+
+  // Update component properties
+  const handleUpdateComponent = useCallback((id, updates) => {
+    setComponents(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+  }, []);
+
   // Simulate circuit step
   const simulateStep = useCallback(() => {
-    // Update clocks
     setClockTick(prev => prev + 1);
-    
-    // Propagate values through wires
-    const newComponents = [...components];
-    
-    // First, propagate through wires
-    wires.forEach(wire => {
+
+    const newComponents = components.map(c => ({ ...c }));
+
+    // Toggle CLOCK components on each step
+    newComponents.forEach(comp => {
+      if (comp.type === 'CLOCK') {
+        comp.outputValue = !comp.outputValue;
+      }
+    });
+
+    // Propagate through wires (use port index for multi-output components)
+    const newWires = wires.map(w => ({ ...w }));
+    newWires.forEach(wire => {
       const fromComp = newComponents.find(c => c.id === wire.fromComponent);
       if (fromComp) {
-        wire.value = fromComp.outputValue;
+        wire.value = fromComp.outputValues?.[wire.fromPort ?? 0] ?? fromComp.outputValue ?? false;
       }
     });
-    
+
     // Calculate component outputs
     newComponents.forEach(comp => {
-      if (comp.type === 'INPUT' || comp.type === 'SWITCH' || comp.type === 'OUTPUT' || comp.type === 'LED') return;
-      
-      const inputWires = wires.filter(w => w.toComponent === comp.id);
-      const inputs = inputWires.map(w => w.value);
-      
-      // Fill missing inputs with stored values
-      while (inputs.length < comp.inputs) {
-        inputs.push(comp.inputValues[inputs.length] || false);
-      }
-      
+      if (['INPUT', 'SWITCH', 'OUTPUT', 'LED', 'SEVEN_SEGMENT'].includes(comp.type)) return;
+
+      const inputWires = newWires.filter(w => w.toComponent === comp.id);
+      const inputs = Array(Math.max(comp.inputs || 2, 4)).fill(false);
+      inputWires.forEach(w => { inputs[w.toPort ?? 0] = w.value ?? false; });
+
       let output = false;
       switch (comp.type) {
-        case 'AND':
-          output = inputs.every(v => v);
+        case 'AND': output = inputs.slice(0, comp.inputs).every(v => v); break;
+        case 'OR':  output = inputs.slice(0, comp.inputs).some(v => v); break;
+        case 'NOT': output = !inputs[0]; break;
+        case 'NAND': output = !inputs.slice(0, comp.inputs).every(v => v); break;
+        case 'NOR':  output = !inputs.slice(0, comp.inputs).some(v => v); break;
+        case 'XOR':  output = inputs.slice(0, comp.inputs).filter(v => v).length % 2 === 1; break;
+        case 'XNOR': output = inputs.slice(0, comp.inputs).filter(v => v).length % 2 === 0; break;
+        case 'CLOCK': return; // already toggled above
+
+        case 'MUX': {
+          // 4-to-1 MUX: inputs[0..3]=data, inputs[4..5]=select
+          const sel = (inputs[5] ? 2 : 0) + (inputs[4] ? 1 : 0);
+          output = inputs[sel] ?? false;
           break;
-        case 'OR':
-          output = inputs.some(v => v);
-          break;
-        case 'NOT':
-          output = !inputs[0];
-          break;
-        case 'NAND':
-          output = !inputs.every(v => v);
-          break;
-        case 'NOR':
-          output = !inputs.some(v => v);
-          break;
-        case 'XOR':
-          output = inputs.filter(v => v).length % 2 === 1;
-          break;
-        case 'XNOR':
-          output = inputs.filter(v => v).length % 2 === 0;
-          break;
+        }
+        case 'DEMUX': {
+          // 1-to-4 DEMUX: inputs[0]=data, inputs[1..2]=select
+          const sel = (inputs[2] ? 2 : 0) + (inputs[1] ? 1 : 0);
+          comp.outputValues = [false, false, false, false];
+          comp.outputValues[sel] = inputs[0];
+          comp.outputValue = comp.outputValues[0];
+          return;
+        }
+        case 'ADDER': {
+          // Full adder: A + B + Cin → Sum, Cout
+          const sum = (inputs[0] ? 1 : 0) + (inputs[1] ? 1 : 0) + (inputs[2] ? 1 : 0);
+          comp.outputValues = [sum % 2 === 1, sum >= 2];
+          comp.outputValue = comp.outputValues[0];
+          return;
+        }
+
+        // Flip-flops — edge triggered on CLK rising edge
+        case 'D_FF': {
+          const D = inputs[0]; const CLK = inputs[1];
+          const ff = ffStateRef.current.get(comp.id) || { Q: false, prevCLK: false };
+          if (CLK && !ff.prevCLK) ff.Q = D;
+          ff.prevCLK = CLK;
+          ffStateRef.current.set(comp.id, ff);
+          comp.outputValues = [ff.Q, !ff.Q];
+          comp.outputValue = ff.Q;
+          return;
+        }
+        case 'T_FF': {
+          const T = inputs[0]; const CLK = inputs[1];
+          const ff = ffStateRef.current.get(comp.id) || { Q: false, prevCLK: false };
+          if (CLK && !ff.prevCLK && T) ff.Q = !ff.Q;
+          ff.prevCLK = CLK;
+          ffStateRef.current.set(comp.id, ff);
+          comp.outputValues = [ff.Q, !ff.Q];
+          comp.outputValue = ff.Q;
+          return;
+        }
+        case 'JK_FF': {
+          const J = inputs[0]; const K = inputs[1]; const CLK = inputs[2];
+          const ff = ffStateRef.current.get(comp.id) || { Q: false, prevCLK: false };
+          if (CLK && !ff.prevCLK) {
+            if (J && !K) ff.Q = true;
+            else if (!J && K) ff.Q = false;
+            else if (J && K) ff.Q = !ff.Q;
+          }
+          ff.prevCLK = CLK;
+          ffStateRef.current.set(comp.id, ff);
+          comp.outputValues = [ff.Q, !ff.Q];
+          comp.outputValue = ff.Q;
+          return;
+        }
+        case 'SR_FF': {
+          const S = inputs[0]; const R = inputs[1]; const CLK = inputs[2];
+          const ff = ffStateRef.current.get(comp.id) || { Q: false, prevCLK: false };
+          if (CLK && !ff.prevCLK) {
+            if (S && !R) ff.Q = true;
+            else if (!S && R) ff.Q = false;
+          }
+          ff.prevCLK = CLK;
+          ffStateRef.current.set(comp.id, ff);
+          comp.outputValues = [ff.Q, !ff.Q];
+          comp.outputValue = ff.Q;
+          return;
+        }
       }
-      
       comp.outputValue = output;
     });
-    
-    // Update output components
+
+    // Update output/LED/7-segment components from wires
     newComponents.forEach(comp => {
       if (comp.type === 'OUTPUT' || comp.type === 'LED') {
-        const inputWire = wires.find(w => w.toComponent === comp.id);
-        comp.inputValues = [inputWire?.value || false];
+        const inputWire = newWires.find(w => w.toComponent === comp.id);
+        comp.inputValues = [inputWire?.value ?? false];
       }
-    });
-    
-    // Update 7-segment displays
-    newComponents.forEach(comp => {
       if (comp.type === 'SEVEN_SEGMENT') {
-        const segmentWires = wires.filter(w => w.toComponent === comp.id);
         comp.segmentValues = Array(7).fill(false).map((_, i) => {
-          const wire = segmentWires.find(w => w.toPort === i);
-          return wire?.value || false;
+          const wire = newWires.find(w => w.toComponent === comp.id && w.toPort === i);
+          return wire?.value ?? false;
         });
       }
     });
-    
+
     setComponents(newComponents);
-    setWires([...wires]);
+    setWires(newWires);
   }, [components, wires]);
 
   // Run simulation
@@ -960,15 +1054,13 @@ export default function LogicSimulatorPage() {
   // Load circuit
   const handleLoad = useCallback(async (circuit) => {
     try {
-      const data = await canvasService.get(circuit.id);
-      
-      if (data.state) {
-        setViewport(data.state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
-        setComponents(data.state.components || []);
-        setWires(data.state.wires || []);
-        setCurrentCircuit(data);
-        setStatus(`Loaded: ${data.name}`);
-      }
+      const canvas = await canvasService.get(circuit.id);
+      const state = canvas.data?.state ?? canvas.data ?? {};
+      setViewport(state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
+      setComponents(state.components || []);
+      setWires(state.wires || []);
+      setCurrentCircuit(canvas);
+      setStatus(`Loaded: ${canvas.name}`);
     } catch (error) {
       console.error('Load failed:', error);
       setStatus('Load failed');
@@ -1129,9 +1221,15 @@ export default function LogicSimulatorPage() {
             <g transform={`translate(${viewport.offset.x}, ${viewport.offset.y}) scale(${viewport.zoom})`}>
               {/* Wires */}
               {wires.map(wire => (
-                <RoutedWire key={wire.id} wire={wire} components={components} scale={1} />
+                <RoutedWire
+                  key={wire.id}
+                  wire={wire}
+                  components={components}
+                  scale={1}
+                  onDelete={handleDeleteWire}
+                />
               ))}
-              
+
               {/* Components */}
               {components.map(comp => (
                 <ComponentRenderer
@@ -1141,6 +1239,7 @@ export default function LogicSimulatorPage() {
                   onClick={handleComponentClick}
                   onPortClick={handlePortClick}
                   onToggleInput={handleToggleInput}
+                  onDragStart={handleComponentDragStart}
                   scale={1}
                 />
               ))}
@@ -1183,8 +1282,27 @@ export default function LogicSimulatorPage() {
           </div>
         </div>
 
-        {/* Right sidebar - Saved circuits */}
-        <div className="w-64 p-4">
+        {/* Right sidebar */}
+        <div className="w-64 p-4 space-y-4">
+          {/* Component Properties */}
+          {selectedIds.length === 1 && (() => {
+            const sel = components.find(c => c.id === selectedIds[0]);
+            if (!sel) return null;
+            return (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+                <h3 className="text-sm font-semibold text-gray-500 mb-2">Properties: {sel.type}</h3>
+                <label className="block text-xs text-gray-500 mb-1">Label</label>
+                <input
+                  type="text"
+                  value={sel.label || ''}
+                  onChange={e => handleUpdateComponent(sel.id, { label: e.target.value })}
+                  placeholder="Label"
+                  className="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600"
+                />
+              </div>
+            );
+          })()}
+
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
             <h3 className="text-sm font-semibold text-gray-500 mb-3">Saved Circuits</h3>
             {loadingCircuits ? (

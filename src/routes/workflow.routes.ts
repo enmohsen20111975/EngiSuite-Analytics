@@ -1,12 +1,14 @@
 /**
  * Workflow Routes
  * Uses users database for workflows and workflows database for equations/pipelines
+ * Enhanced with DAG-based calculation engine
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../services/database.service.js';
 import { getWorkflowsDb } from '../services/database.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
+import { CalculationEngine, evaluateFormula } from '../services/calculationEngine.service.js';
 
 const router = Router();
 
@@ -75,6 +77,25 @@ interface CalculationPipelineRow {
   is_active: number;
   created_at: string;
   updated_at: string;
+}
+
+interface CalculationStepRow {
+  id: number;
+  pipeline_id: number;
+  step_id: string | null;
+  step_number: number;
+  name: string;
+  description: string | null;
+  standard_id: number | null;
+  formula_ref: string | null;
+  formula: string | null;
+  input_config: string | null;
+  output_config: string | null;
+  calculation_type: string | null;
+  precision: number | null;
+  step_type: string | null;
+  validation_config: string | null;
+  is_active: number;
 }
 
 // ============================================
@@ -248,7 +269,7 @@ router.get('/equations/:id', async (req: Request, res: Response, next: NextFunct
 
 /**
  * POST /api/workflows/equations/:id/calculate
- * Calculate equation result
+ * Calculate equation result using enhanced formula evaluator
  */
 router.post('/equations/:id/calculate', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -287,7 +308,7 @@ router.post('/equations/:id/calculate', async (req: Request, res: Response, next
       }
     }
 
-    // Evaluate the equation
+    // Evaluate the equation using enhanced evaluator
     const result = evaluateFormula(equation.equation, context);
 
     // Build output
@@ -363,14 +384,67 @@ router.get('/pipelines/:id', async (req: Request, res: Response, next: NextFunct
       SELECT * FROM calculation_steps
       WHERE pipeline_id = ? AND is_active = 1
       ORDER BY step_number ASC
-    `).all(id);
+    `).all(id) as CalculationStepRow[];
+
+    // Parse input_config and output_config for each step
+    const parsedSteps = steps.map(step => {
+      let inputConfig: unknown[] = [];
+      let outputConfig: unknown[] = [];
+      try { inputConfig = step.input_config ? JSON.parse(step.input_config) : []; } catch { inputConfig = []; }
+      try { outputConfig = step.output_config ? JSON.parse(step.output_config) : []; } catch { outputConfig = []; }
+      
+      return {
+        ...step,
+        input_config: inputConfig,
+        output_config: outputConfig,
+      };
+    });
 
     const dependencies = db.prepare(`
       SELECT * FROM calculation_dependencies WHERE pipeline_id = ?
     `).all(id);
 
     // Return data directly for frontend compatibility
-    res.json({ ...pipeline, steps, dependencies });
+    res.json({ ...pipeline, steps: parsedSteps, dependencies });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/workflows/pipelines/:id/execute
+ * Execute a calculation pipeline using the enhanced DAG-based engine
+ */
+router.post('/pipelines/:id/execute', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = parseInt(String(req.params.id), 10);
+    const { inputs } = req.body;
+    const db = getWorkflowsDb();
+
+    const pipeline = db.prepare(`
+      SELECT * FROM calculation_pipelines WHERE id = ? AND is_active = 1
+    `).get(id) as CalculationPipelineRow | undefined;
+
+    if (!pipeline) {
+      throw new NotFoundError('Pipeline not found');
+    }
+
+    // Use the enhanced calculation engine
+    const engine = new CalculationEngine(db);
+    const result = engine.executePipeline(pipeline.pipeline_id, inputs || {});
+
+    res.json({
+      success: result.success,
+      execution_id: result.execution_id,
+      pipelineId: pipeline.pipeline_id,
+      pipelineName: pipeline.name,
+      inputs: inputs || {},
+      outputs: result.results,
+      status: result.status,
+      execution_time: result.execution_time,
+      steps: Object.values(result.steps),
+      timestamp: new Date(),
+    });
   } catch (error) {
     next(error);
   }
@@ -462,7 +536,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * POST /api/workflows/:id/execute
- * Execute a workflow
+ * Execute a workflow using enhanced calculation engine
  */
 router.post('/:id/execute', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -492,7 +566,7 @@ router.post('/:id/execute', async (req: Request, res: Response, next: NextFuncti
       inputMap[input.name] = value ?? input.defaultValue;
     }
 
-    // Execute workflow steps
+    // Execute workflow steps using enhanced formula evaluator
     const stepResults: Array<{
       stepNumber: number;
       name: string;
@@ -543,31 +617,5 @@ router.post('/:id/execute', async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 });
-
-/**
- * Simple formula evaluator
- */
-function evaluateFormula(formula: string, context: Record<string, unknown>): number {
-  // Replace variable names with values
-  let evaluableFormula = formula;
-  for (const [key, value] of Object.entries(context)) {
-    evaluableFormula = evaluableFormula.replace(new RegExp(`\\b${key}\\b`, 'g'), String(value));
-  }
-  
-  // Clean up the formula for basic arithmetic
-  evaluableFormula = evaluableFormula
-    .replace(/\^/g, '**')  // Handle exponent notation
-    .replace(/×/g, '*')    // Handle multiplication sign
-    .replace(/÷/g, '/');   // Handle division sign
-
-  try {
-    // Basic arithmetic evaluation
-    const result = new Function(`return (${evaluableFormula})`)();
-    return Number(result) || 0;
-  } catch (e) {
-    console.error('Formula evaluation error:', e);
-    return 0;
-  }
-}
 
 export default router;

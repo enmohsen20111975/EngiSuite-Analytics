@@ -451,7 +451,10 @@ export default function PDFEditorPage() {
   const [filters, setFilters] = useState({ brightness: 100, contrast: 100, saturation: 100 });
   const [formFields, setFormFields] = useState([]);
   
+  const [pdfDocument, setPdfDocument] = useState(null);
+
   const canvasRef = useRef(null);
+  const pdfCanvasRef = useRef(null);
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -755,18 +758,16 @@ export default function PDFEditorPage() {
   // Load document
   const handleLoad = useCallback(async (doc) => {
     try {
-      const data = await canvasService.get(doc.id);
-      
-      if (data.state) {
-        setZoom(data.state.viewport?.zoom || 1);
-        setOffset(data.state.viewport?.offset || { x: 0, y: 0 });
-        setPages(data.state.pages || [{ id: 'page_1', annotations: [], layers: [{ id: 'layer_1', name: 'Layer 1', visible: true, locked: false }] }]);
-        setFormFields(data.state.formFields || []);
-        setFilters(data.state.filters || { brightness: 100, contrast: 100, saturation: 100 });
-        setCurrentPage(0);
-        setCurrentDocument(data);
-        setStatus(`Loaded: ${data.name}`);
-      }
+      const canvas = await canvasService.get(doc.id);
+      const state = canvas.data?.state ?? canvas.data ?? {};
+      setZoom(state.viewport?.zoom || 1);
+      setOffset(state.viewport?.offset || { x: 0, y: 0 });
+      setPages(state.pages || [{ id: 'page_1', annotations: [], layers: [{ id: 'layer_1', name: 'Layer 1', visible: true, locked: false }] }]);
+      setFormFields(state.formFields || []);
+      setFilters(state.filters || { brightness: 100, contrast: 100, saturation: 100 });
+      setCurrentPage(0);
+      setCurrentDocument(canvas);
+      setStatus(`Loaded: ${canvas.name}`);
     } catch (error) {
       console.error('Load failed:', error);
       setStatus('Load failed');
@@ -799,27 +800,76 @@ export default function PDFEditorPage() {
     }
   }, [currentDocument]);
 
-  // Upload PDF
-  const handleUploadPDF = useCallback((e) => {
+  // Upload and render PDF using PDF.js
+  const handleUploadPDF = useCallback(async (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    
-    // In a real implementation, this would use PDF.js to parse the PDF
-    setStatus(`Loaded: ${file.name}`);
-    setCurrentDocument({ name: file.name, type: 'pdf' });
+    if (!file || !file.type.includes('pdf')) return;
+    setStatus('Loading PDF...');
+    try {
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.mjs',
+        import.meta.url
+      ).toString();
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const newPages = Array.from({ length: pdf.numPages }, (_, i) => ({
+        id: `page_${i + 1}`,
+        annotations: [],
+        layers: [{ id: 'layer_1', name: 'Layer 1', visible: true, locked: false }]
+      }));
+      setPages(newPages);
+      setPdfDocument(pdf);
+      setCurrentPage(0);
+      setCurrentDocument({ name: file.name, type: 'pdf', numPages: pdf.numPages });
+      setStatus(`Loaded: ${file.name} (${pdf.numPages} pages)`);
+    } catch (err) {
+      console.error('PDF load failed:', err);
+      setStatus('Failed to load PDF');
+    }
   }, []);
 
-  // OCR text extraction (simulated)
-  const handleExtractText = useCallback(() => {
+  // Render current PDF page to background canvas
+  useEffect(() => {
+    if (!pdfDocument || !pdfCanvasRef.current) return;
+    let cancelled = false;
+    pdfDocument.getPage(currentPage + 1).then(page => {
+      if (cancelled) return;
+      const scale = zoom * 1.5;
+      const viewport = page.getViewport({ scale });
+      const canvas = pdfCanvasRef.current;
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      page.render({ canvasContext: ctx, viewport }).promise;
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [pdfDocument, currentPage, zoom]);
+
+  // OCR text extraction using Tesseract.js
+  const handleExtractText = useCallback(async () => {
+    if (!pdfCanvasRef.current) {
+      setStatus('Load a PDF first to extract text');
+      return;
+    }
     setIsOCRProcessing(true);
-    
-    // Simulate OCR processing
-    setTimeout(() => {
-      setExtractedText(`This is simulated OCR text extracted from page ${currentPage + 1}.\n\nIn a real implementation, this would use Tesseract.js or a server-side OCR service to extract actual text from the PDF or images.`);
-      setIsOCRProcessing(false);
+    setStatus('Running OCR...');
+    try {
+      const { createWorker } = await import('tesseract.js');
+      const worker = await createWorker('eng');
+      const imageDataUrl = pdfCanvasRef.current.toDataURL();
+      const { data: { text } } = await worker.recognize(imageDataUrl);
+      await worker.terminate();
+      setExtractedText(text || '(No text found)');
       setStatus('Text extracted');
-    }, 2000);
-  }, [currentPage]);
+    } catch (err) {
+      console.error('OCR failed:', err);
+      setStatus('OCR failed: ' + err.message);
+    } finally {
+      setIsOCRProcessing(false);
+    }
+  }, []);
 
   // Apply filters
   const handleApplyFilters = useCallback((newFilters) => {
@@ -844,17 +894,32 @@ export default function PDFEditorPage() {
     setStatus(`Added ${fieldType} field`);
   }, [formFields.length, currentPage]);
 
-  // Merge documents (simulated)
+  // Merge documents — opens file picker; full merge needs pdf-lib (npm install pdf-lib)
   const handleMergeDocuments = useCallback(() => {
-    setStatus('Merge feature: Select additional PDF files to merge');
-    // In real implementation, this would open a file picker and merge PDFs
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > 0) {
+        setStatus(`Selected ${files.length} file(s) to merge. Install pdf-lib for full merge support.`);
+      }
+    };
+    input.click();
   }, []);
 
-  // Split document (simulated)
+  // Split document — shows page range selection
   const handleSplitDocument = useCallback(() => {
-    setStatus('Split feature: Select pages to extract into new document');
-    // In real implementation, this would allow selecting pages to split
-  }, []);
+    if (!pdfDocument) {
+      setStatus('Load a PDF first to split');
+      return;
+    }
+    const pageRange = window.prompt(`Split pages (e.g. "1-3" from ${pages.length} total):`);
+    if (pageRange) {
+      setStatus(`Split request: pages ${pageRange}. Install pdf-lib for full split support.`);
+    }
+  }, [pdfDocument, pages.length]);
 
   // Printer document
   const handlePrint = useCallback(() => {
@@ -1080,14 +1145,29 @@ export default function PDFEditorPage() {
           {/* Canvas */}
           <div className="flex-1 overflow-auto p-4">
             <div className="flex justify-center">
+              <div className="relative shadow-lg" style={{ width: 612 * zoom, height: 792 * zoom }}>
+                {/* PDF background layer (rendered by PDF.js) */}
+                <canvas
+                  ref={pdfCanvasRef}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none',
+                    filter: filterStyle,
+                    display: pdfDocument ? 'block' : 'none',
+                  }}
+                />
               <svg
                 ref={canvasRef}
-                className="bg-white shadow-lg"
+                className={pdfDocument ? '' : 'bg-white'}
                 style={{
+                  position: 'relative',
                   width: 612 * zoom,
                   height: 792 * zoom,
                   cursor,
-                  filter: filterStyle
                 }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
@@ -1096,8 +1176,8 @@ export default function PDFEditorPage() {
               >
                 {/* Transform group */}
                 <g transform={`translate(${offset.x}, ${offset.y}) scale(${zoom})`}>
-                  {/* Page background */}
-                  <rect
+                  {/* Page background (when no PDF loaded) */}
+                  {!pdfDocument && <rect
                     x={0}
                     y={0}
                     width={612}
@@ -1105,7 +1185,7 @@ export default function PDFEditorPage() {
                     fill="white"
                     stroke="#e5e7eb"
                     strokeWidth={1}
-                  />
+                  />}
                   
                   {/* Render annotations by layer */}
                   {currentLayers.filter(l => l.visible).map(layer => (
@@ -1230,6 +1310,7 @@ export default function PDFEditorPage() {
                   )}
                 </g>
               </svg>
+              </div>
             </div>
           </div>
           

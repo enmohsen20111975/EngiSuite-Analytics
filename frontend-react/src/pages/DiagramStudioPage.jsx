@@ -14,7 +14,7 @@ import {
   Copy, Scissors, Clipboard, RotateCcw, RotateCw,
   AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal, AlignStartVertical,
   Group, Ungroup, Layers, Palette, Sparkles, Play, Settings,
-  Star, Cloud, User, Minus, ArrowRight, Eye, PenTool
+  Star, Cloud, User, Minus, ArrowRight, Eye, PenTool, Lock, Link2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -287,16 +287,14 @@ function Shape({ shape, isSelected, onClick, onDragStart, onResize, scale = 1 })
       {/* Resize handles */}
       {isSelected && (
         <>
-          <rect x={-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-nw-resize" />
-          <rect x={width/2-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-n-resize" />
-          <rect x={width-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-ne-resize" />
-          <rect x={width-4} y={height/2-4} width={8} height={8} fill="#3b82f6" className="cursor-e-resize" />
-          <rect x={width-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-se-resize"
-            onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }}
-          />
-          <rect x={width/2-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-s-resize" />
-          <rect x={-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-sw-resize" />
-          <rect x={-4} y={height/2-4} width={8} height={8} fill="#3b82f6" className="cursor-w-resize" />
+          <rect x={-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-nw-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={width/2-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-n-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={width-4} y={-4} width={8} height={8} fill="#3b82f6" className="cursor-ne-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={width-4} y={height/2-4} width={8} height={8} fill="#3b82f6" className="cursor-e-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={width-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-se-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={width/2-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-s-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={-4} y={height-4} width={8} height={8} fill="#3b82f6" className="cursor-sw-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
+          <rect x={-4} y={height/2-4} width={8} height={8} fill="#3b82f6" className="cursor-w-resize" onMouseDown={(e) => { e.stopPropagation(); onResize?.(id, e); }} />
         </>
       )}
     </g>
@@ -352,6 +350,7 @@ function ToolPalette({ activeTool, onToolChange, onAddShape }) {
           { id: 'select', icon: MousePointer, label: 'Select' },
           { id: 'pan', icon: Move, label: 'Pan' },
           { id: 'text', icon: Type, label: 'Text' },
+          { id: 'connect', icon: Link2, label: 'Connect' },
         ].map(tool => (
           <button
             key={tool.id}
@@ -916,18 +915,36 @@ export default function DiagramStudioPage() {
 
   // Shape click
   const handleShapeClick = useCallback((id) => {
+    if (activeTool === 'connect') {
+      if (!connectingFrom) {
+        setConnectingFrom(id);
+        setStatus('Click target shape to connect');
+      } else if (connectingFrom !== id) {
+        setConnections(prev => [...prev, {
+          id: `conn_${Date.now()}`,
+          from: connectingFrom,
+          to: id,
+          stroke: '#64748b',
+          arrow: true,
+        }]);
+        setConnectingFrom(null);
+        saveToHistory();
+        setStatus('Connection created');
+      }
+      return;
+    }
     if (activeTool === 'select') {
-      setSelectedIds(prev => 
+      setSelectedIds(prev =>
         prev.includes(id) ? prev.filter(i => i !== id) : [id]
       );
     }
-  }, [activeTool]);
+  }, [activeTool, connectingFrom, saveToHistory]);
 
   // Shape drag
   const handleShapeDragStart = useCallback((id, e) => {
     const shape = shapes.find(s => s.id === id);
     if (!shape || shape.locked) return;
-    
+
     dragRef.current = {
       id,
       startX: e.clientX,
@@ -937,38 +954,58 @@ export default function DiagramStudioPage() {
     };
   }, [shapes]);
 
-  // Mouse move for dragging
+  // Shape resize (SE corner handle)
+  const resizeRef = useRef(null);
+  const handleResize = useCallback((id, e) => {
+    const shape = shapes.find(s => s.id === id);
+    if (!shape) return;
+    e.stopPropagation();
+    resizeRef.current = {
+      id,
+      startX: e.clientX,
+      startY: e.clientY,
+      startW: shape.width,
+      startH: shape.height,
+    };
+  }, [shapes]);
+
+  // Mouse move for dragging and resizing
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (!dragRef.current) return;
-      
-      const { id, startX, startY, originalX, originalY } = dragRef.current;
-      const deltaX = (e.clientX - startX) / viewport.zoom;
-      const deltaY = (e.clientY - startY) / viewport.zoom;
-      
-      let newX = originalX + deltaX;
-      let newY = originalY + deltaY;
-      
-      if (snapToGrid) {
-        newX = Math.round(newX / 20) * 20;
-        newY = Math.round(newY / 20) * 20;
-      }
-      
-      setShapes(prev => prev.map(s => 
-        s.id === id ? { ...s, x: newX, y: newY } : s
-      ));
-    };
-    
-    const handleMouseUp = () => {
       if (dragRef.current) {
+        const { id, startX, startY, originalX, originalY } = dragRef.current;
+        const deltaX = (e.clientX - startX) / viewport.zoom;
+        const deltaY = (e.clientY - startY) / viewport.zoom;
+        let newX = originalX + deltaX;
+        let newY = originalY + deltaY;
+        if (snapToGrid) {
+          newX = Math.round(newX / 20) * 20;
+          newY = Math.round(newY / 20) * 20;
+        }
+        setShapes(prev => prev.map(s =>
+          s.id === id ? { ...s, x: newX, y: newY } : s
+        ));
+      } else if (resizeRef.current) {
+        const { id, startX, startY, startW, startH } = resizeRef.current;
+        const dw = (e.clientX - startX) / viewport.zoom;
+        const dh = (e.clientY - startY) / viewport.zoom;
+        setShapes(prev => prev.map(s =>
+          s.id === id ? { ...s, width: Math.max(20, startW + dw), height: Math.max(20, startH + dh) } : s
+        ));
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (dragRef.current || resizeRef.current) {
         saveToHistory();
         dragRef.current = null;
+        resizeRef.current = null;
       }
     };
-    
+
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-    
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -1116,16 +1153,15 @@ export default function DiagramStudioPage() {
   // Load diagram
   const handleLoad = useCallback(async (diagram) => {
     try {
-      const data = await canvasService.get(diagram.id);
-      
-      if (data.state) {
-        setViewport(data.state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
-        setShapes(data.state.shapes || []);
-        setConnections(data.state.connections || []);
-        setCurrentDiagram(data);
-        setSelectedIds([]);
-        setStatus(`Loaded: ${data.name}`);
-      }
+      const canvas = await canvasService.get(diagram.id);
+      // canvas.data is the parsed state object (service unwraps the API wrapper)
+      const state = canvas.data?.state ?? canvas.data ?? {};
+      setViewport(state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
+      setShapes(state.shapes || []);
+      setConnections(state.connections || []);
+      setCurrentDiagram(canvas);
+      setSelectedIds([]);
+      setStatus(`Loaded: ${canvas.name}`);
     } catch (error) {
       console.error('Load failed:', error);
       setStatus('Load failed');
@@ -1143,18 +1179,31 @@ export default function DiagramStudioPage() {
     setStatus('New diagram created');
   }, []);
 
-  // Export
-  const handleExport = useCallback(async (format) => {
-    try {
-      const result = await canvasService.export(currentDiagram?.id || 'temp', format);
-      if (result.downloadUrl) {
-        window.open(result.downloadUrl, '_blank');
-      }
-      setStatus(`Exported as ${format.toUpperCase()}`);
-    } catch (error) {
-      console.error('Export failed:', error);
-      setStatus('Export failed');
-    }
+  // Export as PNG (client-side, no backend needed)
+  const handleExport = useCallback(() => {
+    const svgEl = canvasRef.current;
+    if (!svgEl) return;
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = svgEl.clientWidth * 2;
+      canvas.height = svgEl.clientHeight * 2;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(2, 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      const link = document.createElement('a');
+      link.download = `${currentDiagram?.name || 'diagram'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      setStatus('Exported as PNG');
+    };
+    img.src = url;
   }, [currentDiagram]);
 
   // Keyboard shortcuts
@@ -1369,6 +1418,7 @@ export default function DiagramStudioPage() {
                   isSelected={selectedIds.includes(shape.id)}
                   onClick={handleShapeClick}
                   onDragStart={handleShapeDragStart}
+                  onResize={handleResize}
                   scale={viewport.zoom}
                 />
               ))}
