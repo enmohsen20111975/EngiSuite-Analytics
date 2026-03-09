@@ -137,9 +137,26 @@ model GeneratedReport {
   projectId    Int?     @map("project_id")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@map("generated_reports")
+}
+
+model ReportTemplate {
+  id            Int      @id @default(autoincrement())
+  name          String
+  slug          String   @unique
+  description   String?
+  category      String?
+  reportType    String   @map("report_type")
+  sections      String?  // JSON array of section definitions
+  stylingConfig String?  @map("styling_config") // JSON styling configuration
+  isPublic      Boolean  @default(true) @map("is_public")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("report_templates")
 }
 
 model UserSavedData {
@@ -595,6 +612,7 @@ model Project {
   clientId    Int?     @map("client_id")
   members     ProjectMember[]
   templates   ProjectTemplate[]
+  reports     GeneratedReport[]
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

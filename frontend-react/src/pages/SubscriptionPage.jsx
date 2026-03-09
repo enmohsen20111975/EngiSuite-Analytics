@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { subscriptionService } from '../services/subscriptionService';
 import { Button, Card, Loader, EmptyState, Input } from '../components/ui';
@@ -33,8 +33,8 @@ const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
-    price: 9.99,
-    priceEGP: 299,
+    price: 5,
+    priceEGP: 150,
     period: 'month',
     description: 'For individual engineers',
     icon: Crown,
@@ -52,8 +52,8 @@ const PLANS = [
   {
     id: 'pro',
     name: 'Professional',
-    price: 29.99,
-    priceEGP: 899,
+    price: 8,
+    priceEGP: 240,
     period: 'month',
     description: 'For serious engineers',
     icon: Crown,
@@ -71,8 +71,8 @@ const PLANS = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 99.99,
-    priceEGP: 2999,
+    price: 15,
+    priceEGP: 450,
     period: 'month',
     description: 'For teams and organizations',
     icon: Building,
@@ -103,6 +103,7 @@ const CREDIT_PACKAGES = [
  */
 export default function SubscriptionPage() {
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
   const [billingPeriod, setBillingPeriod] = useState('monthly');
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -115,6 +116,20 @@ export default function SubscriptionPage() {
     phone: '',
   });
   const [paymentMethod, setPaymentMethod] = useState('paymob'); // 'paymob' or 'stripe'
+
+  // Auto-open Paymob modal if ?plan= param is present (coming from PricingPage)
+  useEffect(() => {
+    const planId = searchParams.get('plan');
+    const billing = searchParams.get('billing');
+    if (planId) {
+      const plan = PLANS.find(p => p.id === planId);
+      if (plan && plan.id !== 'free') {
+        if (billing) setBillingPeriod(billing);
+        setSelectedPlan(plan);
+        setShowPaymobModal(true);
+      }
+    }
+  }, [searchParams]);
 
   // Fetch current subscription
   const { data: subscription, isLoading: loadingSubscription } = useQuery({

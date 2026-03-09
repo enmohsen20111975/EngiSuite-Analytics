@@ -1,7 +1,7 @@
 import apiClient from './apiClient';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-const USE_SERVER_REDIRECT_OAUTH = true; // Set to false to use Google Identity Services
+const USE_SERVER_REDIRECT_OAUTH = false; // Set to false to use Google Identity Services (server-side route not implemented)
 
 /**
  * Authentication service
@@ -13,16 +13,16 @@ export const authService = {
    */
   async login(email, password) {
     const response = await apiClient.post('/auth/login', { email, password });
-    const { access_token, user } = response.data;
+    const { token, user } = response.data.data || response.data; // Backend returns nested data
     
     // Store token
-    localStorage.setItem('token', access_token);
+    localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     
     // Also set cookie for cross-page auth
-    document.cookie = `access_token=${access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+    document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
     
-    return { user, token: access_token };
+    return { user, token };
   },
 
   /**
@@ -34,16 +34,16 @@ export const authService = {
       password, 
       name: fullName 
     });
-    const { access_token, user } = response.data;
+    const { token, user } = response.data.data || response.data; // Backend returns nested data
     
     // Store token
-    localStorage.setItem('token', access_token);
+    localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     
     // Also set cookie for cross-page auth
-    document.cookie = `access_token=${access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+    document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
     
-    return { user, token: access_token };
+    return { user, token };
   },
 
   /**
@@ -174,9 +174,7 @@ export const authService = {
     
     // Check if Google Client ID is configured for client-side flow
     if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('your-google-client-id')) {
-      // Fall back to server-side redirect
-      this.loginWithGoogle(window.location.pathname);
-      return;
+      throw new Error('Google OAuth is not configured. Set VITE_GOOGLE_CLIENT_ID in frontend-react/.env');
     }
     
     try {
@@ -190,17 +188,17 @@ export const authService = {
               try {
                 // Send credential to backend for verification
                 const result = await apiClient.post('/auth/google', {
-                  credential: response.credential,
+                  idToken: response.credential,  // Backend expects 'idToken', not 'credential'
                 });
                 
-                const { access_token, user } = result.data;
+                const { token, user } = result.data.data || result.data; // Backend returns nested data
                 
                 // Store token
-                localStorage.setItem('token', access_token);
+                localStorage.setItem('token', token);
                 localStorage.setItem('user', JSON.stringify(user));
-                document.cookie = `access_token=${access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+                document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
                 
-                resolve({ user, token: access_token });
+                resolve({ user, token });
               } catch (error) {
                 reject(error);
               }
@@ -213,15 +211,13 @@ export const authService = {
         // Prompt Google Sign-In popup
         google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Fall back to server-side redirect
-            this.loginWithGoogle(window.location.pathname);
+            reject(new Error('Google Sign-In popup was not displayed. Check browser popup settings and Google OAuth configuration.'));
           }
         });
       });
     } catch (error) {
       console.error('Google sign-in error:', error);
-      // Fall back to server-side redirect
-      this.loginWithGoogle(window.location.pathname);
+      throw error;
     }
   },
 
@@ -239,10 +235,7 @@ export const authService = {
     }
     
     if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('your-google-client-id')) {
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.addEventListener('click', () => this.loginWithGoogle(window.location.pathname));
-      }
+      options.onError?.(new Error('Google OAuth is not configured. Set VITE_GOOGLE_CLIENT_ID in frontend-react/.env'));
       return;
     }
     
@@ -255,17 +248,17 @@ export const authService = {
           if (response.credential && options.onSuccess) {
             try {
               const result = await apiClient.post('/auth/google', {
-                credential: response.credential,
+                idToken: response.credential,
               });
               
-              const { access_token, user } = result.data;
+              const { token, user } = result.data.data || result.data;
               
               // Store token
-              localStorage.setItem('token', access_token);
+              localStorage.setItem('token', token);
               localStorage.setItem('user', JSON.stringify(user));
-              document.cookie = `access_token=${access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+              document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
               
-              options.onSuccess({ user, token: access_token });
+              options.onSuccess({ user, token });
             } catch (error) {
               options.onError?.(error);
             }
@@ -290,10 +283,15 @@ export const authService = {
   },
 
   /**
-   * Check if Google OAuth is available (always true with server-side redirect)
+   * Check if Google OAuth is available (checks both server-side and client-side)
    */
   isGoogleOAuthConfigured() {
-    return true; // Always available via server-side redirect
+    // Server-side redirect is always available if enabled
+    if (USE_SERVER_REDIRECT_OAUTH) {
+      return true;
+    }
+    // Otherwise check if client-side is configured
+    return this.isGoogleClientSideConfigured();
   },
 
   /**
@@ -356,10 +354,10 @@ export const authService = {
    */
   async refreshToken() {
     const response = await apiClient.post('/auth/refresh');
-    const { access_token } = response.data;
-    localStorage.setItem('token', access_token);
-    document.cookie = `access_token=${access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
-    return access_token;
+    const { token } = response.data.data || response.data;
+    localStorage.setItem('token', token);
+    document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+    return token;
   },
 
   /**

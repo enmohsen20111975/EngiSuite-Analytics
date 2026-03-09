@@ -22,8 +22,8 @@ router.get('/', async (_req: Request, res: Response, _next: NextFunction) => {
       where: { userId },
       orderBy: { createdAt: 'desc' },
       include: {
-        project: {
-          select: { id: true, name: true },
+        user: {
+          select: { id: true, name: true, email: true },
         },
       },
     });

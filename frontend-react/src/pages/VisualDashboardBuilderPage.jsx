@@ -611,7 +611,7 @@ const VisualDashboardBuilderPage = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
       <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-3 shadow-lg z-50">
         <div className="flex items-center justify-between">

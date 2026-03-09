@@ -5,6 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useThemeStore } from '../../stores/themeStore';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import UpgradeModal from '../ui/UpgradeModal';
 
 /**
  * Main application layout with sidebar and header
@@ -39,7 +40,7 @@ function AppLayout() {
       
       {/* Sidebar */}
       <div className={cn(
-        'hidden lg:block',
+        'hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block',
         mobileMenuOpen && 'block'
       )}>
         <Sidebar
@@ -74,6 +75,9 @@ function AppLayout() {
         sidebarCollapsed={sidebarCollapsed}
       />
       
+      {/* Global Upgrade Modal */}
+      <UpgradeModal />
+
       {/* Main content */}
       <main className={cn(
         'min-h-screen pt-16 transition-all duration-300',

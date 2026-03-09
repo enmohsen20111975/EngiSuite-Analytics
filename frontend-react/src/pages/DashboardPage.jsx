@@ -1,18 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { calculatorsService } from '../services/calculatorsService';
 import { pipelinesService } from '../services/pipelinesService';
 import projectService from '../services/projectService';
 import apiClient from '../services/apiClient';
 import { Card, Loader } from '../components/ui';
-import { 
-  Zap, Cog, Building2, FileText, History, 
+import {
+  Zap, Cog, Building2, FileText, History,
   Bolt, Bot, Newspaper, TrendingUp,
   GraduationCap, Wrench, GitBranch, Microchip,
   FileSpreadsheet, ChevronRight, FolderKanban, SquareCheck,
-  Calculator, Layers
+  Calculator, Layers, CircuitBoard, Droplets
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useAuthStore } from '../stores/authStore';
 
 /**
  * Stat Card Component
@@ -126,12 +126,9 @@ function RecentCalculationItem({ calculation }) {
  * Main Dashboard Page
  */
 export default function DashboardPage() {
-  // Fetch calculator stats
-  const { data: calculatorsData, isLoading: loadingCalculators } = useQuery({
-    queryKey: ['calculators-stats'],
-    queryFn: calculatorsService.getAll,
-  });
-  
+  const user = useAuthStore((state) => state.user);
+  const displayName = (user?.name || user?.fullName || user?.email || 'Engineer').split(' ')[0];
+
   // Fetch pipelines stats
   const { data: pipelinesData, isLoading: loadingPipelines } = useQuery({
     queryKey: ['pipelines-stats'],
@@ -154,11 +151,12 @@ export default function DashboardPage() {
     retry: false,
   });
   
-  // Calculate stats
+  // Use byDomain from equations/stats (already fetched, reliable)
+  const byDomain = equationsStats?.data?.byDomain || {};
   const stats = {
-    electrical: calculatorsData?.electrical?.length || 0,
-    mechanical: calculatorsData?.mechanical?.length || 0,
-    civil: calculatorsData?.civil?.length || 0,
+    electrical: byDomain.electrical || 0,
+    mechanical: byDomain.mechanical || 0,
+    civil: byDomain.civil || 0,
     pipelines: pipelinesData?.length || 0,
     equations: equationsStats?.data?.total || 0,
     equationCategories: equationsStats?.data?.categories || 0,
@@ -179,7 +177,7 @@ export default function DashboardPage() {
     { id: 3, title: 'Structural Analysis', progress: 20, lessons: 15 },
   ];
   
-  const isLoading = loadingCalculators || loadingPipelines;
+  const isLoading = loadingPipelines;
   const myProjects = projectWidgets?.projects || [];
   const myTasks = projectWidgets?.tasks || [];
   
@@ -188,7 +186,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome back, Engineer
+          Welcome back, {displayName}
         </h1>
         <p className="text-gray-500 dark:text-gray-400">
           Your engineering workspace is ready. Here's what's happening today.
@@ -381,6 +379,60 @@ export default function DashboardPage() {
             to="/vda"
             color="text-emerald-500"
             bgColor="bg-emerald-500/10"
+          />
+        </div>
+      </Card>
+
+      {/* Simulators Section */}
+      <Card className="p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+            <CircuitBoard className="w-4 h-4 text-blue-500" />
+          </div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            Circuit Simulators
+          </h3>
+          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/20 text-blue-500">
+            NEW
+          </span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <ToolCard
+            icon={CircuitBoard}
+            title="Electrical Simulator"
+            subtitle="Industrial circuits"
+            description="Design and simulate industrial electrical circuits with motors, contactors, and PLCs."
+            to="/simulators/electrical2"
+            color="text-amber-500"
+            bgColor="bg-amber-500/10"
+          />
+          <ToolCard
+            icon={Droplets}
+            title="Fluid Simulator"
+            subtitle="Hydraulic systems"
+            description="Simulate hydraulic and pneumatic circuits with pumps, valves, and actuators."
+            to="/simulators/fluid"
+            color="text-blue-500"
+            bgColor="bg-blue-500/10"
+          />
+          <ToolCard
+            icon={Zap}
+            title="Electrical Designer"
+            subtitle="Power systems"
+            description="Advanced electrical system design with React-Flow based schematic editor."
+            to="/simulators/electrical"
+            color="text-yellow-500"
+            bgColor="bg-yellow-500/10"
+          />
+          <ToolCard
+            icon={Cog}
+            title="Hydraulic Simulator"
+            subtitle="Fluid power"
+            description="Design and analyze hydraulic systems with interactive component library."
+            to="/simulators/hydraulic"
+            color="text-cyan-500"
+            bgColor="bg-cyan-500/10"
           />
         </div>
       </Card>

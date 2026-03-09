@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { 
+import { useNavigate } from 'react-router-dom';
+import {
   Check, X, Sparkles, Zap, Building, Users,
   CircleQuestionMark, ArrowRight
 } from 'lucide-react';
@@ -29,7 +30,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 29,
+    price: 5,
     description: 'For professional engineers',
     features: [
       { text: 'Unlimited calculations', included: true },
@@ -47,7 +48,7 @@ const plans = [
   {
     id: 'enterprise',
     name: 'Enterprise',
-    price: 99,
+    price: 8,
     description: 'For teams and organizations',
     features: [
       { text: 'Everything in Pro', included: true },
@@ -89,7 +90,16 @@ const faqs = [
  */
 function PricingPage() {
   const [billingPeriod, setBillingPeriod] = useState('monthly');
-  
+  const navigate = useNavigate();
+
+  const handleSelectPlan = (plan) => {
+    if (plan.id === 'free') {
+      navigate('/register');
+    } else {
+      navigate(`/subscription?plan=${plan.id}&billing=${billingPeriod}`);
+    }
+  };
+
   return (
     <div className="space-y-12 animate-fade-up">
       {/* Page header */}
@@ -164,9 +174,10 @@ function PricingPage() {
                 )}
               </div>
               
-              <Button 
+              <Button
                 className="w-full mt-6"
                 variant={plan.popular ? 'primary' : 'secondary'}
+                onClick={() => handleSelectPlan(plan)}
               >
                 {plan.cta}
                 <ArrowRight className="w-4 h-4" />
@@ -266,7 +277,7 @@ function PricingPage() {
           <p className="text-[var(--color-text-secondary)] mt-2 max-w-md mx-auto">
             Join thousands of engineers who trust EngiSuite for their calculations.
           </p>
-          <Button className="mt-6">
+          <Button className="mt-6" onClick={() => navigate('/subscription?plan=pro')}>
             Start Your Free Trial
             <ArrowRight className="w-4 h-4" />
           </Button>

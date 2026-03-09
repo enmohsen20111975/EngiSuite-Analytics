@@ -39,6 +39,10 @@ export { default as SinamicsMotorLab } from './SinamicsMotorLab';
 export { default as SinamicsPIDLab } from './SinamicsPIDLab';
 export { default as SinamicsInverterFlow } from './SinamicsInverterFlow';
 
+// KineticGeometry - Mathematics & Geometry
+export { default as LissajousFigures } from './LissajousFigures';
+export { default as MandelbrotExplorer } from './MandelbrotExplorer';
+
 // Simulation type constants
 export const SIMULATION_TYPES = {
   // Electrical
@@ -75,7 +79,11 @@ export const SIMULATION_TYPES = {
   // SINAMICS Drive Technology
   SINAMICS_MOTOR_LAB: 'sinamics-motor-lab',
   SINAMICS_PID_LAB: 'sinamics-pid-lab',
-  SINAMICS_INVERTER_FLOW: 'sinamics-inverter-flow'
+  SINAMICS_INVERTER_FLOW: 'sinamics-inverter-flow',
+  
+  // KineticGeometry - Mathematics & Geometry
+  LISSAJOUS_FIGURES: 'lissajous-figures',
+  MANDELBROT_EXPLORER: 'mandelbrot-explorer'
 };
 
 // Category mapping for UI organization
@@ -87,5 +95,6 @@ export const SIMULATION_CATEGORIES = {
   chemical: ['reaction-rate', 'fluid-flow', 'heat-engine', 'piston-sim'],
   computer: ['logic-gate'],
   physics: ['atom-model', 'data-plotter'],
-  sinamics: ['sinamics-motor-lab', 'sinamics-pid-lab', 'sinamics-inverter-flow']
+  sinamics: ['sinamics-motor-lab', 'sinamics-pid-lab', 'sinamics-inverter-flow'],
+  mathematics: ['lissajous-figures', 'mandelbrot-explorer']
 };

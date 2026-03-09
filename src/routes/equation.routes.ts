@@ -38,9 +38,9 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
       GROUP BY difficulty_level
     `).all() as { difficulty_level: string; count: number }[];
 
-    // Get total categories
+    // Get total categories (equation_categories has no is_active column)
     const totalCategories = db.prepare(`
-      SELECT COUNT(*) as count FROM equation_categories WHERE is_active = 1
+      SELECT COUNT(*) as count FROM equation_categories
     `).get() as { count: number };
 
     // Get total inputs/outputs

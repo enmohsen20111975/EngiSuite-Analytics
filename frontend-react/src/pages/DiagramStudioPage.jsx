@@ -62,6 +62,161 @@ const FONTS = [
   'Verdana', 'Courier New', 'Impact', 'Comic Sans MS'
 ];
 
+// Practical Example Templates
+const DIAGRAM_TEMPLATES = {
+  flowchart: {
+    name: 'Basic Flowchart',
+    description: 'Simple process flow diagram',
+    shapes: [
+      { id: 't1_start', type: 'terminator', x: 300, y: 30, width: 120, height: 50, text: 'Start', fill: '#22c55e', stroke: '#16a34a' },
+      { id: 't1_process1', type: 'rectangle', x: 280, y: 120, width: 160, height: 60, text: 'Process Step 1', fill: '#3b82f6', stroke: '#1e40af' },
+      { id: 't1_decision', type: 'diamond', x: 290, y: 230, width: 140, height: 100, text: 'Decision?', fill: '#f59e0b', stroke: '#d97706' },
+      { id: 't1_process2a', type: 'rectangle', x: 100, y: 380, width: 160, height: 60, text: 'Yes Path', fill: '#22c55e', stroke: '#16a34a' },
+      { id: 't1_process2b', type: 'rectangle', x: 460, y: 380, width: 160, height: 60, text: 'No Path', fill: '#ef4444', stroke: '#dc2626' },
+      { id: 't1_end', type: 'terminator', x: 300, y: 500, width: 120, height: 50, text: 'End', fill: '#8b5cf6', stroke: '#7c3aed' },
+    ],
+    connections: [
+      { id: 'c1', from: 't1_start', to: 't1_process1', stroke: '#64748b', arrow: true },
+      { id: 'c2', from: 't1_process1', to: 't1_decision', stroke: '#64748b', arrow: true },
+      { id: 'c3', from: 't1_decision', to: 't1_process2a', stroke: '#22c55e', arrow: true },
+      { id: 'c4', from: 't1_decision', to: 't1_process2b', stroke: '#ef4444', arrow: true },
+      { id: 'c5', from: 't1_process2a', to: 't1_end', stroke: '#64748b', arrow: true },
+      { id: 'c6', from: 't1_process2b', to: 't1_end', stroke: '#64748b', arrow: true },
+    ]
+  },
+  usecase: {
+    name: 'Use Case Diagram',
+    description: 'UML Use Case diagram example',
+    shapes: [
+      { id: 't2_actor1', type: 'actor', x: 60, y: 100, width: 50, height: 80, text: '', fill: '#64748b', stroke: '#475569' },
+      { id: 't2_label1', type: 'text', x: 30, y: 200, width: 110, height: 30, text: 'User', fill: 'transparent', stroke: 'transparent', textColor: '#000' },
+      { id: 't2_actor2', type: 'actor', x: 60, y: 280, width: 50, height: 80, text: '', fill: '#64748b', stroke: '#475569' },
+      { id: 't2_label2', type: 'text', x: 30, y: 380, width: 110, height: 30, text: 'Admin', fill: 'transparent', stroke: 'transparent', textColor: '#000' },
+      { id: 't2_system', type: 'rectangle', x: 200, y: 40, width: 400, height: 400, text: 'System', fill: '#f8fafc', stroke: '#94a3b8', strokeWidth: 2 },
+      { id: 't2_uc1', type: 'circle', x: 280, y: 100, width: 120, height: 60, text: 'Login', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't2_uc2', type: 'circle', x: 440, y: 100, width: 120, height: 60, text: 'Register', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't2_uc3', type: 'circle', x: 280, y: 200, width: 120, height: 60, text: 'View Data', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't2_uc4', type: 'circle', x: 440, y: 200, width: 120, height: 60, text: 'Edit Data', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't2_uc5', type: 'circle', x: 360, y: 300, width: 120, height: 60, text: 'Manage Users', fill: '#dbeafe', stroke: '#3b82f6' },
+    ],
+    connections: [
+      { id: 'c1', from: 't2_actor1', to: 't2_uc1', stroke: '#64748b', arrow: true },
+      { id: 'c2', from: 't2_actor1', to: 't2_uc2', stroke: '#64748b', arrow: true },
+      { id: 'c3', from: 't2_actor1', to: 't2_uc3', stroke: '#64748b', arrow: true },
+      { id: 'c4', from: 't2_actor2', to: 't2_uc1', stroke: '#64748b', arrow: true },
+      { id: 'c5', from: 't2_actor2', to: 't2_uc4', stroke: '#64748b', arrow: true },
+      { id: 'c6', from: 't2_actor2', to: 't2_uc5', stroke: '#64748b', arrow: true },
+    ]
+  },
+  erdiagram: {
+    name: 'ER Diagram',
+    description: 'Entity Relationship diagram',
+    shapes: [
+      { id: 't3_entity1', type: 'rectangle', x: 100, y: 60, width: 140, height: 50, text: 'Customer', fill: '#3b82f6', stroke: '#1e40af' },
+      { id: 't3_attr1', type: 'circle', x: 60, y: 150, width: 80, height: 40, text: 'ID', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't3_attr2', type: 'circle', x: 160, y: 150, width: 80, height: 40, text: 'Name', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't3_rel1', type: 'diamond', x: 280, y: 60, width: 100, height: 60, text: 'Places', fill: '#22c55e', stroke: '#16a34a' },
+      { id: 't3_entity2', type: 'rectangle', x: 420, y: 60, width: 140, height: 50, text: 'Order', fill: '#3b82f6', stroke: '#1e40af' },
+      { id: 't3_attr3', type: 'circle', x: 380, y: 150, width: 80, height: 40, text: 'Order ID', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't3_attr4', type: 'circle', x: 500, y: 150, width: 80, height: 40, text: 'Date', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't3_rel2', type: 'diamond', x: 600, y: 60, width: 100, height: 60, text: 'Contains', fill: '#22c55e', stroke: '#16a34a' },
+      { id: 't3_entity3', type: 'rectangle', x: 740, y: 60, width: 140, height: 50, text: 'Product', fill: '#3b82f6', stroke: '#1e40af' },
+      { id: 't3_attr5', type: 'circle', x: 700, y: 150, width: 80, height: 40, text: 'SKU', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't3_attr6', type: 'circle', x: 820, y: 150, width: 80, height: 40, text: 'Price', fill: '#fef3c7', stroke: '#f59e0b' },
+    ],
+    connections: [
+      { id: 'c1', from: 't3_entity1', to: 't3_rel1', stroke: '#64748b', arrow: false },
+      { id: 'c2', from: 't3_rel1', to: 't3_entity2', stroke: '#64748b', arrow: false },
+      { id: 'c3', from: 't3_entity2', to: 't3_rel2', stroke: '#64748b', arrow: false },
+      { id: 'c4', from: 't3_rel2', to: 't3_entity3', stroke: '#64748b', arrow: false },
+      { id: 'c5', from: 't3_entity1', to: 't3_attr1', stroke: '#94a3b8', arrow: false },
+      { id: 'c6', from: 't3_entity1', to: 't3_attr2', stroke: '#94a3b8', arrow: false },
+      { id: 'c7', from: 't3_entity2', to: 't3_attr3', stroke: '#94a3b8', arrow: false },
+      { id: 'c8', from: 't3_entity2', to: 't3_attr4', stroke: '#94a3b8', arrow: false },
+      { id: 'c9', from: 't3_entity3', to: 't3_attr5', stroke: '#94a3b8', arrow: false },
+      { id: 'c10', from: 't3_entity3', to: 't3_attr6', stroke: '#94a3b8', arrow: false },
+    ]
+  },
+  network: {
+    name: 'Network Diagram',
+    description: 'Network topology diagram',
+    shapes: [
+      { id: 't4_cloud', type: 'cloud', x: 340, y: 20, width: 140, height: 80, text: 'Internet', fill: '#e0f2fe', stroke: '#0ea5e9' },
+      { id: 't4_firewall', type: 'hexagon', x: 355, y: 140, width: 110, height: 60, text: 'Firewall', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't4_router', type: 'cylinder', x: 355, y: 250, width: 110, height: 80, text: 'Router', fill: '#dbeafe', stroke: '#3b82f6' },
+      { id: 't4_switch', type: 'rectangle', x: 355, y: 380, width: 110, height: 50, text: 'Switch', fill: '#f3e8ff', stroke: '#a855f7' },
+      { id: 't4_server', type: 'rectangle', x: 120, y: 380, width: 100, height: 60, text: 'Server', fill: '#dcfce7', stroke: '#22c55e' },
+      { id: 't4_pc1', type: 'rectangle', x: 520, y: 320, width: 80, height: 50, text: 'PC 1', fill: '#f1f5f9', stroke: '#64748b' },
+      { id: 't4_pc2', type: 'rectangle', x: 620, y: 320, width: 80, height: 50, text: 'PC 2', fill: '#f1f5f9', stroke: '#64748b' },
+      { id: 't4_pc3', type: 'rectangle', x: 520, y: 400, width: 80, height: 50, text: 'PC 3', fill: '#f1f5f9', stroke: '#64748b' },
+      { id: 't4_pc4', type: 'rectangle', x: 620, y: 400, width: 80, height: 50, text: 'PC 4', fill: '#f1f5f9', stroke: '#64748b' },
+    ],
+    connections: [
+      { id: 'c1', from: 't4_cloud', to: 't4_firewall', stroke: '#0ea5e9', arrow: false },
+      { id: 'c2', from: 't4_firewall', to: 't4_router', stroke: '#3b82f6', arrow: false },
+      { id: 'c3', from: 't4_router', to: 't4_switch', stroke: '#a855f7', arrow: false },
+      { id: 'c4', from: 't4_switch', to: 't4_server', stroke: '#22c55e', arrow: false },
+      { id: 'c5', from: 't4_switch', to: 't4_pc1', stroke: '#64748b', arrow: false },
+      { id: 'c6', from: 't4_switch', to: 't4_pc2', stroke: '#64748b', arrow: false },
+      { id: 'c7', from: 't4_switch', to: 't4_pc3', stroke: '#64748b', arrow: false },
+      { id: 'c8', from: 't4_switch', to: 't4_pc4', stroke: '#64748b', arrow: false },
+    ]
+  },
+  orgchart: {
+    name: 'Organization Chart',
+    description: 'Company organizational structure',
+    shapes: [
+      { id: 't5_ceo', type: 'rectangle', x: 340, y: 30, width: 140, height: 50, text: 'CEO', fill: '#3b82f6', stroke: '#1e40af', textColor: '#fff' },
+      { id: 't5_cto', type: 'rectangle', x: 140, y: 130, width: 120, height: 45, text: 'CTO', fill: '#22c55e', stroke: '#16a34a', textColor: '#fff' },
+      { id: 't5_cfo', type: 'rectangle', x: 350, y: 130, width: 120, height: 45, text: 'CFO', fill: '#22c55e', stroke: '#16a34a', textColor: '#fff' },
+      { id: 't5_coo', type: 'rectangle', x: 560, y: 130, width: 120, height: 45, text: 'COO', fill: '#22c55e', stroke: '#16a34a', textColor: '#fff' },
+      { id: 't5_dev1', type: 'rectangle', x: 60, y: 230, width: 100, height: 40, text: 'Dev Team', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't5_dev2', type: 'rectangle', x: 180, y: 230, width: 100, height: 40, text: 'QA Team', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't5_fin1', type: 'rectangle', x: 300, y: 230, width: 100, height: 40, text: 'Accounting', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't5_fin2', type: 'rectangle', x: 420, y: 230, width: 100, height: 40, text: 'Treasury', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't5_ops1', type: 'rectangle', x: 540, y: 230, width: 100, height: 40, text: 'Operations', fill: '#fef3c7', stroke: '#f59e0b' },
+      { id: 't5_ops2', type: 'rectangle', x: 660, y: 230, width: 100, height: 40, text: 'Support', fill: '#fef3c7', stroke: '#f59e0b' },
+    ],
+    connections: [
+      { id: 'c1', from: 't5_ceo', to: 't5_cto', stroke: '#64748b', arrow: false },
+      { id: 'c2', from: 't5_ceo', to: 't5_cfo', stroke: '#64748b', arrow: false },
+      { id: 'c3', from: 't5_ceo', to: 't5_coo', stroke: '#64748b', arrow: false },
+      { id: 'c4', from: 't5_cto', to: 't5_dev1', stroke: '#64748b', arrow: false },
+      { id: 'c5', from: 't5_cto', to: 't5_dev2', stroke: '#64748b', arrow: false },
+      { id: 'c6', from: 't5_cfo', to: 't5_fin1', stroke: '#64748b', arrow: false },
+      { id: 'c7', from: 't5_cfo', to: 't5_fin2', stroke: '#64748b', arrow: false },
+      { id: 'c8', from: 't5_coo', to: 't5_ops1', stroke: '#64748b', arrow: false },
+      { id: 'c9', from: 't5_coo', to: 't5_ops2', stroke: '#64748b', arrow: false },
+    ]
+  },
+  swimlane: {
+    name: 'Swimlane Diagram',
+    description: 'Cross-functional flowchart',
+    shapes: [
+      { id: 't6_lane1', type: 'rectangle', x: 50, y: 50, width: 700, height: 120, text: '', fill: '#dbeafe', stroke: '#3b82f6', strokeWidth: 1, opacity: 0.3 },
+      { id: 't6_label1', type: 'text', x: 60, y: 95, width: 80, height: 30, text: 'Customer', fill: 'transparent', stroke: 'transparent', textColor: '#1e40af', fontSize: 12 },
+      { id: 't6_lane2', type: 'rectangle', x: 50, y: 170, width: 700, height: 120, text: '', fill: '#dcfce7', stroke: '#22c55e', strokeWidth: 1, opacity: 0.3 },
+      { id: 't6_label2', type: 'text', x: 60, y: 215, width: 80, height: 30, text: 'Sales', fill: 'transparent', stroke: 'transparent', textColor: '#16a34a', fontSize: 12 },
+      { id: 't6_lane3', type: 'rectangle', x: 50, y: 290, width: 700, height: 120, text: '', fill: '#fef3c7', stroke: '#f59e0b', strokeWidth: 1, opacity: 0.3 },
+      { id: 't6_label3', type: 'text', x: 60, y: 335, width: 80, height: 30, text: 'Warehouse', fill: 'transparent', stroke: 'transparent', textColor: '#d97706', fontSize: 12 },
+      { id: 't6_start', type: 'terminator', x: 180, y: 85, width: 100, height: 40, text: 'Order', fill: '#3b82f6', stroke: '#1e40af' },
+      { id: 't6_process1', type: 'rectangle', x: 180, y: 205, width: 100, height: 50, text: 'Review', fill: '#22c55e', stroke: '#16a34a' },
+      { id: 't6_decision', type: 'diamond', x: 330, y: 195, width: 80, height: 70, text: 'Stock?', fill: '#f59e0b', stroke: '#d97706' },
+      { id: 't6_process2', type: 'rectangle', x: 450, y: 325, width: 100, height: 50, text: 'Ship', fill: '#f59e0b', stroke: '#d97706' },
+      { id: 't6_process3', type: 'rectangle', x: 450, y: 205, width: 100, height: 50, text: 'Backorder', fill: '#ef4444', stroke: '#dc2626' },
+      { id: 't6_end', type: 'terminator', x: 600, y: 85, width: 100, height: 40, text: 'Complete', fill: '#8b5cf6', stroke: '#7c3aed' },
+    ],
+    connections: [
+      { id: 'c1', from: 't6_start', to: 't6_process1', stroke: '#64748b', arrow: true },
+      { id: 'c2', from: 't6_process1', to: 't6_decision', stroke: '#64748b', arrow: true },
+      { id: 'c3', from: 't6_decision', to: 't6_process2', stroke: '#22c55e', arrow: true },
+      { id: 'c4', from: 't6_decision', to: 't6_process3', stroke: '#ef4444', arrow: true },
+      { id: 'c5', from: 't6_process2', to: 't6_end', stroke: '#64748b', arrow: true },
+      { id: 'c6', from: 't6_process3', to: 't6_end', stroke: '#64748b', arrow: true },
+    ]
+  }
+};
+
 /**
  * Shape Component with full styling support
  */
@@ -742,6 +897,29 @@ function PropertiesPanel({ selectedShape, onUpdateShape, onDeleteShape }) {
 }
 
 /**
+ * Templates Panel Component - Practical Examples
+ */
+function TemplatesPanel({ onLoadTemplate }) {
+  return (
+    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Examples</h3>
+      <div className="space-y-1 max-h-64 overflow-y-auto">
+        {Object.entries(DIAGRAM_TEMPLATES).map(([key, template]) => (
+          <button
+            key={key}
+            onClick={() => onLoadTemplate(key)}
+            className="w-full px-3 py-2 text-left rounded-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+          >
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{template.name}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{template.description}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
  * Layers Panel Component
  */
 function LayersPanel({ shapes, selectedId, onSelect, onReorder, onToggleVisibility, onLock }) {
@@ -1179,6 +1357,36 @@ export default function DiagramStudioPage() {
     setStatus('New diagram created');
   }, []);
 
+  // Load template
+  const handleLoadTemplate = useCallback((templateKey) => {
+    const template = DIAGRAM_TEMPLATES[templateKey];
+    if (!template) return;
+    
+    // Deep copy template shapes with new IDs
+    const idMap = {};
+    const newShapes = template.shapes.map(shape => {
+      const newId = `shape_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      idMap[shape.id] = newId;
+      return { ...shape, id: newId };
+    });
+    
+    // Update connections with new IDs
+    const newConnections = template.connections.map(conn => ({
+      ...conn,
+      id: `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      from: idMap[conn.from] || conn.from,
+      to: idMap[conn.to] || conn.to,
+    }));
+    
+    setShapes(newShapes);
+    setConnections(newConnections);
+    setSelectedIds([]);
+    setCurrentDiagram(null);
+    setHistory([]);
+    setHistoryIndex(-1);
+    setStatus(`Loaded template: ${template.name}`);
+  }, []);
+
   // Export as PNG (client-side, no backend needed)
   const handleExport = useCallback(() => {
     const svgEl = canvasRef.current;
@@ -1271,7 +1479,7 @@ export default function DiagramStudioPage() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center gap-4">
@@ -1358,6 +1566,7 @@ export default function DiagramStudioPage() {
             onToolChange={setActiveTool}
             onAddShape={handleAddShape}
           />
+          <TemplatesPanel onLoadTemplate={handleLoadTemplate} />
           <LayersPanel
             shapes={shapes}
             selectedId={selectedIds[0]}

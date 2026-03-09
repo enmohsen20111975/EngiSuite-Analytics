@@ -1,0 +1,1098 @@
+/**
+ * Calculation Pipeline Engine
+ * DAG-based execution engine for deterministic engineering calculation pipelines.
+ * Ported from Python backend calculation_pipeline/engine.py
+ */
+
+import { Database } from 'better-sqlite3';
+import { getWorkflowsDb } from './database.service.js';
+
+// Type definitions
+interface CalculationStep {
+  id: number;
+  pipeline_id: number;
+  step_id: string;
+  step_number: number;
+  name: string;
+  description: string | null;
+  standard_id: number | null;
+  formula_ref: string | null;
+  formula: string | null;
+  input_config: string | null;
+  output_config: string | null;
+  calculation_type: string | null;
+  precision: number | null;
+  step_type: string | null;
+  validation_config: string | null;
+  is_active: number;
+}
+
+interface CalculationDependency {
+  id: number;
+  pipeline_id: number;
+  step_id: number;
+  depends_on_step_id: number;
+  input_mapping: string | null;
+}
+
+interface CalculationPipeline {
+  id: number;
+  pipeline_id: string;
+  name: string;
+  description: string | null;
+  domain: string | null;
+  standard_id: number | null;
+  version: string | null;
+  estimated_time: number | null;
+  difficulty_level: string | null;
+  tags: string | null;
+  is_active: number;
+}
+
+interface EngineeringStandard {
+  id: number;
+  standard_code: string;
+  name: string;
+  description: string | null;
+  standard_type: string;
+  domain: string;
+  is_active: number;
+}
+
+interface StandardCoefficient {
+  id: number;
+  standard_id: number;
+  coefficient_name: string;
+  coefficient_type: string;
+  data_source: string;
+  coefficient_table: string | null;
+  formula: string | null;
+  external_reference: string | null;
+}
+
+interface ExecutionContext {
+  [key: string]: number | string | boolean | unknown;
+}
+
+interface StepResult {
+  success: boolean;
+  step_id: string;
+  name: string;
+  inputs: Record<string, unknown>;
+  outputs: Record<string, unknown>;
+  execution_time: string;
+  validation?: {
+    passed: boolean;
+    errors: string[];
+    validations_checked: number;
+  };
+  error?: string;
+}
+
+interface PipelineResult {
+  success: boolean;
+  execution_id: string;
+  results: ExecutionContext;
+  status: string;
+  execution_time: string;
+  steps: Record<string, StepResult>;
+}
+
+/**
+ * Engineering calculation functions
+ * Collection of engineering calculation functions matching Python backend
+ */
+export class EngineeringCalculations {
+  static sqrt(value: number): number | null {
+    return value >= 0 ? Math.sqrt(value) : null;
+  }
+
+  static sin(value: number): number {
+    return Math.sin(value * Math.PI / 180);
+  }
+
+  static cos(value: number): number {
+    return Math.cos(value * Math.PI / 180);
+  }
+
+  static tan(value: number): number {
+    return Math.tan(value * Math.PI / 180);
+  }
+
+  static asin(value: number): number {
+    return Math.asin(value) * 180 / Math.PI;
+  }
+
+  static acos(value: number): number {
+    return Math.acos(value) * 180 / Math.PI;
+  }
+
+  static atan(value: number): number {
+    return Math.atan(value) * 180 / Math.PI;
+  }
+
+  static log(value: number): number | null {
+    return value > 0 ? Math.log10(value) : null;
+  }
+
+  static ln(value: number): number | null {
+    return value > 0 ? Math.log(value) : null;
+  }
+
+  static exp(value: number): number {
+    return Math.exp(value);
+  }
+
+  static pow(base: number, exp: number): number {
+    return Math.pow(base, exp);
+  }
+
+  static abs(value: number): number {
+    return Math.abs(value);
+  }
+
+  static round(value: number, decimals: number = 2): number {
+    const factor = Math.pow(10, decimals);
+    return Math.round(value * factor) / factor;
+  }
+
+  static ceil(value: number): number {
+    return Math.ceil(value);
+  }
+
+  static floor(value: number): number {
+    return Math.floor(value);
+  }
+
+  static max(...args: number[]): number {
+    return Math.max(...args);
+  }
+
+  static min(...args: number[]): number {
+    return Math.min(...args);
+  }
+
+  static sum(values: number[]): number {
+    return values.reduce((a, b) => a + b, 0);
+  }
+
+  static avg(values: number[]): number {
+    return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  }
+
+  /**
+   * Select standard cable size from ampacity requirement
+   */
+  static select_cable(required_ampacity: number): number {
+    const cableSizes = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400];
+    const ampacities = [14, 18, 24, 31, 44, 56, 75, 92, 110, 140, 170, 195, 225, 260, 305, 350, 400];
+
+    for (let i = 0; i < ampacities.length; i++) {
+      if (ampacities[i] >= required_ampacity) {
+        return cableSizes[i];
+      }
+    }
+    return cableSizes[cableSizes.length - 1];
+  }
+
+  /**
+   * Select standard transformer/pipeline size
+   */
+  static select_standard_size(required_kva: number): number {
+    const standardSizes = [15, 25, 30, 50, 75, 100, 150, 200, 250, 315, 400, 500, 630, 750, 1000, 1250, 1600, 2000, 2500];
+    for (const size of standardSizes) {
+      if (size >= required_kva) {
+        return size;
+      }
+    }
+    return standardSizes[standardSizes.length - 1];
+  }
+
+  /**
+   * Get next standard size
+   */
+  static next_standard_size(value: number): number {
+    return EngineeringCalculations.select_standard_size(value);
+  }
+
+  /**
+   * Apply demand factor to connected load
+   */
+  static apply_demand_factor(total_connected: number): number {
+    if (total_connected < 3000) {
+      return total_connected * 1.0;
+    } else if (total_connected < 12000) {
+      return total_connected * 0.8;
+    } else {
+      return total_connected * 0.7;
+    }
+  }
+
+  /**
+   * Lookup coefficient of utilization
+   */
+  static lookup_cu_table(rcr: number, wall_ref: number, ceil_ref: number): number {
+    const cuTable: Record<string, number> = {
+      '3,50,80': 0.62, '3,50,70': 0.58, '3,40,80': 0.55, '3,40,70': 0.52,
+      '5,50,80': 0.50, '5,50,70': 0.47, '5,40,80': 0.45, '5,40,70': 0.42,
+    };
+    const key = `${Math.round(rcr)},${Math.round(wall_ref)},${Math.round(ceil_ref)}`;
+    return cuTable[key] || 0.40;
+  }
+
+  /**
+   * Calculate voltage drop
+   */
+  static voltage_drop(current: number, length: number, resistance: number, voltage: number): number {
+    // VD = (2 * L * I * R) / 1000 for single phase
+    // For three phase: VD = (sqrt(3) * L * I * R) / 1000
+    const vd = (2 * length * current * resistance) / 1000;
+    return (vd / voltage) * 100; // Return as percentage
+  }
+
+  /**
+   * Calculate power factor correction capacitor
+   */
+  static pf_correction_capacitor(p: number, pf_initial: number, pf_target: number): number {
+    // Qc = P * (tan(acos(pf_initial)) - tan(acos(pf_target)))
+    const tanInitial = Math.tan(Math.acos(pf_initial));
+    const tanTarget = Math.tan(Math.acos(pf_target));
+    return p * (tanInitial - tanTarget);
+  }
+
+  /**
+   * Calculate three-phase power
+   */
+  static three_phase_power(voltage: number, current: number, power_factor: number): number {
+    return Math.sqrt(3) * voltage * current * power_factor;
+  }
+
+  /**
+   * Calculate short circuit current
+   */
+  static short_circuit_current(transformer_kva: number, transformer_impedance: number, voltage: number): number {
+    // Isc = (Transformer kVA * 1000) / (sqrt(3) * Voltage * %Z)
+    return (transformer_kva * 1000) / (Math.sqrt(3) * voltage * (transformer_impedance / 100));
+  }
+
+  /**
+   * Calculate beam deflection (simply supported)
+   */
+  static beam_deflection(load: number, length: number, elasticity: number, inertia: number, loadType: string = 'udl'): number {
+    if (loadType === 'udl') {
+      // δ = (5 * w * L^4) / (384 * E * I)
+      return (5 * load * Math.pow(length, 4)) / (384 * elasticity * inertia);
+    } else {
+      // Point load at center: δ = (P * L^3) / (48 * E * I)
+      return (load * Math.pow(length, 3)) / (48 * elasticity * inertia);
+    }
+  }
+
+  /**
+   * Calculate bending stress
+   */
+  static bending_stress(moment: number, section_modulus: number): number {
+    return moment / section_modulus;
+  }
+
+  /**
+   * Calculate shear stress
+   */
+  static shear_stress(shear_force: number, area: number): number {
+    return shear_force / area;
+  }
+
+  /**
+   * Calculate Reynolds number
+   */
+  static reynolds_number(density: number, velocity: number, diameter: number, viscosity: number): number {
+    return (density * velocity * diameter) / viscosity;
+  }
+
+  /**
+   * Calculate Darcy friction factor (approximate for turbulent flow)
+   */
+  static darcy_friction_factor(reynolds: number, roughness: number, diameter: number): number {
+    if (reynolds < 2300) {
+      // Laminar flow
+      return 64 / reynolds;
+    }
+    // Haaland equation for turbulent flow
+    const term1 = Math.pow(roughness / (3.7 * diameter), 10);
+    const term2 = Math.pow(5.74 / Math.pow(reynolds, 0.9), 10);
+    return Math.pow(-1.8 * Math.log10(term1 + term2), -2);
+  }
+
+  /**
+   * Calculate pressure drop in pipe
+   */
+  static pressure_drop(friction_factor: number, length: number, diameter: number, density: number, velocity: number): number {
+    // ΔP = f * (L/D) * (ρ * v²/2)
+    return friction_factor * (length / diameter) * (density * Math.pow(velocity, 2) / 2);
+  }
+
+  /**
+   * Calculate heat transfer coefficient (forced convection, approximate)
+   */
+  static heat_transfer_coefficient(reynolds: number, prandtl: number, thermal_conductivity: number, diameter: number): number {
+    // Dittus-Boelter equation for turbulent flow
+    const nusselt = 0.023 * Math.pow(reynolds, 0.8) * Math.pow(prandtl, 0.4);
+    return (nusselt * thermal_conductivity) / diameter;
+  }
+}
+
+/**
+ * Standards Engine
+ * Engineering standards coefficient lookup engine
+ */
+export class StandardsEngine {
+  private _db: Database | null = null;
+
+  private get db(): Database {
+    if (!this._db) {
+      this._db = getWorkflowsDb();
+    }
+    return this._db;
+  }
+
+  constructor(db?: Database) {
+    this._db = db || null;
+  }
+
+  getStandard(standardCode: string): EngineeringStandard | null {
+    const stmt = this.db.prepare(`
+      SELECT * FROM engineering_standards 
+      WHERE standard_code = ? AND is_active = 1
+    `);
+    return stmt.get(standardCode) as EngineeringStandard | null;
+  }
+
+  getCoefficient(standardCode: string, coefficientName: string, params: Record<string, unknown>): number | null {
+    const standard = this.getStandard(standardCode);
+    if (!standard) return null;
+
+    const stmt = this.db.prepare(`
+      SELECT * FROM standard_coefficients 
+      WHERE standard_id = ? AND coefficient_name = ?
+    `);
+    const coefficients = stmt.all(standard.id, coefficientName) as StandardCoefficient[];
+
+    for (const coeff of coefficients) {
+      if (coeff.data_source === 'table') {
+        return this.lookupTableCoefficient(coeff, params);
+      } else if (coeff.data_source === 'formula') {
+        return this.calculateFormulaCoefficient(coeff, params);
+      } else if (coeff.data_source === 'lookup') {
+        return this.lookupExternalCoefficient(coeff, params);
+      }
+    }
+
+    return null;
+  }
+
+  private lookupTableCoefficient(coefficient: StandardCoefficient, params: Record<string, unknown>): number | null {
+    try {
+      const tableData = coefficient.coefficient_table 
+        ? JSON.parse(coefficient.coefficient_table) 
+        : null;
+
+      if (!tableData) return null;
+
+      const key = params.key || params.value || 0;
+      const numKey = Number(key);
+
+      // Try exact match first
+      for (const [k, value] of Object.entries(tableData)) {
+        if (Number(k) === numKey) {
+          return Number(value);
+        }
+      }
+
+      // Find closest match
+      let closestKey = Object.keys(tableData)[0];
+      let minDiff = Math.abs(Number(closestKey) - numKey);
+
+      for (const k of Object.keys(tableData)) {
+        const diff = Math.abs(Number(k) - numKey);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestKey = k;
+        }
+      }
+
+      return Number(tableData[closestKey]);
+    } catch {
+      return null;
+    }
+  }
+
+  private calculateFormulaCoefficient(coefficient: StandardCoefficient, params: Record<string, unknown>): number | null {
+    try {
+      if (!coefficient.formula) return null;
+
+      const context = {
+        ...params,
+        Math,
+        sqrt: Math.sqrt,
+        sin: Math.sin,
+        cos: Math.cos,
+        tan: Math.tan,
+        log: Math.log,
+        exp: Math.exp,
+        pow: Math.pow,
+        PI: Math.PI,
+        E: Math.E,
+      };
+
+      return evaluateFormula(coefficient.formula, context);
+    } catch {
+      return null;
+    }
+  }
+
+  private lookupExternalCoefficient(_coefficient: StandardCoefficient, _params: Record<string, unknown>): number | null {
+    // Placeholder for external coefficient lookup
+    return null;
+  }
+}
+
+/**
+ * Calculation Engine
+ * Deterministic calculation pipeline engine with DAG-based execution
+ */
+export class CalculationEngine {
+  private _db: Database | null = null;
+  private executionState: ExecutionContext = {};
+  private validationResults: Record<string, unknown> = {};
+  private _standardsEngine: StandardsEngine | null = null;
+
+  // Math functions available in formulas
+  private mathFunctions: Record<string, unknown> = {
+    sqrt: EngineeringCalculations.sqrt,
+    sin: EngineeringCalculations.sin,
+    cos: EngineeringCalculations.cos,
+    tan: EngineeringCalculations.tan,
+    asin: EngineeringCalculations.asin,
+    acos: EngineeringCalculations.acos,
+    atan: EngineeringCalculations.atan,
+    log: EngineeringCalculations.log,
+    ln: EngineeringCalculations.ln,
+    exp: EngineeringCalculations.exp,
+    pow: EngineeringCalculations.pow,
+    abs: EngineeringCalculations.abs,
+    round: EngineeringCalculations.round,
+    ceil: EngineeringCalculations.ceil,
+    floor: EngineeringCalculations.floor,
+    max: EngineeringCalculations.max,
+    min: EngineeringCalculations.min,
+    sum: EngineeringCalculations.sum,
+    avg: EngineeringCalculations.avg,
+    select_cable: EngineeringCalculations.select_cable,
+    select_standard_size: EngineeringCalculations.select_standard_size,
+    next_standard_size: EngineeringCalculations.next_standard_size,
+    apply_demand_factor: EngineeringCalculations.apply_demand_factor,
+    lookup_cu_table: EngineeringCalculations.lookup_cu_table,
+    voltage_drop: EngineeringCalculations.voltage_drop,
+    pf_correction_capacitor: EngineeringCalculations.pf_correction_capacitor,
+    three_phase_power: EngineeringCalculations.three_phase_power,
+    short_circuit_current: EngineeringCalculations.short_circuit_current,
+    beam_deflection: EngineeringCalculations.beam_deflection,
+    bending_stress: EngineeringCalculations.bending_stress,
+    shear_stress: EngineeringCalculations.shear_stress,
+    reynolds_number: EngineeringCalculations.reynolds_number,
+    darcy_friction_factor: EngineeringCalculations.darcy_friction_factor,
+    pressure_drop: EngineeringCalculations.pressure_drop,
+    heat_transfer_coefficient: EngineeringCalculations.heat_transfer_coefficient,
+    PI: Math.PI,
+    E: Math.E,
+  };
+
+  constructor(db?: Database) {
+    this._db = db || null;
+    this._standardsEngine = null;
+  }
+
+  private get db(): Database {
+    if (!this._db) {
+      this._db = getWorkflowsDb();
+    }
+    return this._db;
+  }
+
+  private get standardsEngine(): StandardsEngine {
+    if (!this._standardsEngine) {
+      this._standardsEngine = new StandardsEngine(this.db);
+    }
+    return this._standardsEngine;
+  }
+
+  loadPipeline(pipelineId: string): CalculationPipeline | null {
+    const stmt = this.db.prepare(`
+      SELECT * FROM calculation_pipelines 
+      WHERE pipeline_id = ? AND is_active = 1
+    `);
+    return stmt.get(pipelineId) as CalculationPipeline | null;
+  }
+
+  loadPipelineById(id: number): CalculationPipeline | null {
+    const stmt = this.db.prepare(`
+      SELECT * FROM calculation_pipelines 
+      WHERE id = ? AND is_active = 1
+    `);
+    return stmt.get(id) as CalculationPipeline | null;
+  }
+
+  getSteps(pipelineDbId: number): CalculationStep[] {
+    const stmt = this.db.prepare(`
+      SELECT * FROM calculation_steps 
+      WHERE pipeline_id = ? AND is_active = 1
+      ORDER BY step_number ASC
+    `);
+    return stmt.all(pipelineDbId) as CalculationStep[];
+  }
+
+  getDependencies(pipelineDbId: number): CalculationDependency[] {
+    const stmt = this.db.prepare(`
+      SELECT cd.* FROM calculation_dependencies cd
+      JOIN calculation_steps cs ON cd.step_id = cs.id
+      WHERE cs.pipeline_id = ?
+    `);
+    return stmt.all(pipelineDbId) as CalculationDependency[];
+  }
+
+  /**
+   * Build dependency graph and return topologically sorted step order
+   */
+  buildExecutionOrder(steps: CalculationStep[], dependencies: CalculationDependency[]): string[] {
+    // Build adjacency list
+    const graph: Record<string, string[]> = {};
+    const inDegree: Record<string, number> = {};
+
+    // Initialize
+    for (const step of steps) {
+      graph[step.step_id] = [];
+      inDegree[step.step_id] = 0;
+    }
+
+    // Build edges (dependency -> dependent)
+    for (const dep of dependencies) {
+      const fromStep = steps.find(s => s.id === dep.depends_on_step_id);
+      const toStep = steps.find(s => s.id === dep.step_id);
+
+      if (fromStep && toStep && fromStep.step_id !== toStep.step_id) {
+        graph[fromStep.step_id].push(toStep.step_id);
+        inDegree[toStep.step_id]++;
+      }
+    }
+
+    // Kahn's algorithm for topological sort
+    const queue: string[] = [];
+    const result: string[] = [];
+
+    // Start with nodes that have no dependencies
+    for (const stepId in inDegree) {
+      if (inDegree[stepId] === 0) {
+        queue.push(stepId);
+      }
+    }
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      result.push(current);
+
+      for (const neighbor of graph[current]) {
+        inDegree[neighbor]--;
+        if (inDegree[neighbor] === 0) {
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    // Check for cycles
+    if (result.length !== steps.length) {
+      throw new Error('Pipeline has cyclic dependencies - cannot execute');
+    }
+
+    return result;
+  }
+
+  /**
+   * Execute a calculation pipeline with given inputs
+   */
+  executePipeline(pipelineId: string, inputs: ExecutionContext): PipelineResult {
+    const pipelineStart = performance.now();
+    const executionId = `exec_${Date.now()}`;
+
+    // Load pipeline
+    const pipeline = this.loadPipeline(pipelineId);
+    if (!pipeline) {
+      throw new Error(`Pipeline '${pipelineId}' not found or inactive`);
+    }
+
+    // Get steps and dependencies
+    const steps = this.getSteps(pipeline.id);
+    const dependencies = this.getDependencies(pipeline.id);
+
+    // Build execution order
+    let executionOrder: string[];
+    try {
+      executionOrder = this.buildExecutionOrder(steps, dependencies);
+    } catch (error) {
+      return {
+        success: false,
+        execution_id: executionId,
+        results: {},
+        status: 'failed',
+        execution_time: `${((performance.now() - pipelineStart) / 1000).toFixed(2)} seconds`,
+        steps: {},
+      };
+    }
+
+    // Execute steps in order
+    const stepResults: Record<string, StepResult> = {};
+    const pipelineState: ExecutionContext = { ...inputs };
+
+    // Create step lookup
+    const stepLookup: Record<string, CalculationStep> = {};
+    for (const step of steps) {
+      stepLookup[step.step_id] = step;
+    }
+
+    let failed = false;
+
+    for (const stepId of executionOrder) {
+      const step = stepLookup[stepId];
+      if (!step) continue;
+
+      const stepResult = this.executeStep(step, pipelineState);
+      stepResults[stepId] = stepResult;
+
+      if (!stepResult.success) {
+        failed = true;
+        break;
+      }
+
+      // Merge step outputs into pipeline state
+      if (stepResult.outputs) {
+        Object.assign(pipelineState, stepResult.outputs);
+      }
+    }
+
+    const executionTime = (performance.now() - pipelineStart) / 1000;
+
+    return {
+      success: !failed,
+      execution_id: executionId,
+      results: pipelineState,
+      status: failed ? 'failed' : 'completed',
+      execution_time: `${executionTime.toFixed(2)} seconds`,
+      steps: stepResults,
+    };
+  }
+
+  /**
+   * Execute a single calculation step
+   */
+  private executeStep(step: CalculationStep, pipelineState: ExecutionContext): StepResult {
+    const startTime = performance.now();
+
+    try {
+      // Collect inputs for this step
+      const stepInputs = this.collectStepInputs(step, pipelineState);
+
+      // Execute calculation
+      const calculationResult = this.executeCalculation(step, stepInputs);
+
+      // Validate results
+      const validationResult = this.validateStep(step, calculationResult);
+
+      const executionTime = (performance.now() - startTime) / 1000;
+
+      if (!validationResult.passed) {
+        return {
+          success: false,
+          step_id: step.step_id,
+          name: step.name,
+          inputs: stepInputs,
+          outputs: calculationResult,
+          execution_time: `${executionTime.toFixed(2)} seconds`,
+          validation: validationResult,
+          error: `Step validation failed: ${validationResult.errors.join(', ')}`,
+        };
+      }
+
+      return {
+        success: true,
+        step_id: step.step_id,
+        name: step.name,
+        inputs: stepInputs,
+        outputs: calculationResult,
+        execution_time: `${executionTime.toFixed(2)} seconds`,
+        validation: validationResult,
+      };
+    } catch (error) {
+      const executionTime = (performance.now() - startTime) / 1000;
+      return {
+        success: false,
+        step_id: step.step_id,
+        name: step.name,
+        inputs: {},
+        outputs: {},
+        execution_time: `${executionTime.toFixed(2)} seconds`,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /**
+   * Collect inputs for a step from pipeline state
+   */
+  private collectStepInputs(step: CalculationStep, pipelineState: ExecutionContext): ExecutionContext {
+    const stepInputs: ExecutionContext = {};
+
+    if (step.input_config) {
+      try {
+        const inputConfig = typeof step.input_config === 'string' 
+          ? JSON.parse(step.input_config) 
+          : step.input_config;
+
+        const inputsList = inputConfig.inputs || inputConfig.coefficients || [];
+        for (const paramName of inputsList) {
+          const name = typeof paramName === 'string' ? paramName : paramName.name;
+          if (name && name in pipelineState) {
+            stepInputs[name] = pipelineState[name];
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    return stepInputs;
+  }
+
+  /**
+   * Execute the calculation for a single step
+   */
+  private executeCalculation(step: CalculationStep, inputs: ExecutionContext): ExecutionContext {
+    const calculationType = step.calculation_type || 'formula';
+
+    switch (calculationType) {
+      case 'formula':
+        return this.executeFormulaCalculation(step, inputs);
+      case 'lookup':
+        return this.executeLookupCalculation(step, inputs);
+      case 'table':
+        return this.executeTableCalculation(step, inputs);
+      case 'custom':
+        return this.executeFormulaCalculation(step, inputs);
+      case 'standard':
+      case 'equation':
+        // For standard/equation types, return inputs as results
+        return inputs;
+      default:
+        throw new Error(`Unknown calculation type '${calculationType}'`);
+    }
+  }
+
+  /**
+   * Execute formula-based calculation
+   */
+  private executeFormulaCalculation(step: CalculationStep, inputs: ExecutionContext): ExecutionContext {
+    if (!step.formula) {
+      throw new Error(`No formula defined for step '${step.name}'`);
+    }
+
+    try {
+      // Parse output config
+      let outputNames: string[] = [];
+      if (step.output_config) {
+        try {
+          const outputConfig = typeof step.output_config === 'string'
+            ? JSON.parse(step.output_config)
+            : step.output_config;
+          outputNames = outputConfig.outputs || [];
+        } catch {
+          // Ignore parse errors
+        }
+      }
+
+      // Prepare execution context
+      const context: ExecutionContext = {
+        ...this.mathFunctions,
+        ...inputs,
+      };
+
+      // Parse and execute formula
+      const formula = step.formula;
+      const results: ExecutionContext = {};
+
+      // Handle multiple assignments separated by semicolons or newlines
+      const formulas = formula.replace(/;/g, '\n').split('\n');
+
+      for (const f of formulas) {
+        const trimmed = f.trim();
+        if (!trimmed) continue;
+
+        // Check if it's an assignment
+        if (trimmed.includes('=') && !trimmed.includes('==')) {
+          const parts = trimmed.split('=');
+          if (parts.length >= 2) {
+            const varName = parts[0].trim();
+            const expr = parts.slice(1).join('=').trim();
+
+            // Evaluate expression
+            const result = evaluateFormula(expr, context);
+            context[varName] = result;
+            results[varName] = result;
+          }
+        } else {
+          // Just evaluate - might be a complex expression
+          const result = evaluateFormula(trimmed, context);
+          if (result !== null && result !== undefined) {
+            results['result'] = result;
+          }
+        }
+      }
+
+      // If no specific outputs defined, return all variables
+      if (outputNames.length === 0) {
+        return results;
+      }
+
+      // Filter to only requested outputs
+      const filtered: ExecutionContext = {};
+      for (const name of outputNames) {
+        if (name in results) {
+          filtered[name] = results[name];
+        } else if (name in context) {
+          filtered[name] = context[name];
+        }
+      }
+
+      return Object.keys(filtered).length > 0 ? filtered : results;
+    } catch (error) {
+      throw new Error(`Formula execution failed for step '${step.name}': ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * Execute lookup-based calculation
+   */
+  private executeLookupCalculation(step: CalculationStep, inputs: ExecutionContext): ExecutionContext {
+    const results: ExecutionContext = {};
+
+    try {
+      // Try to lookup coefficients from database
+      const stmt = this.db.prepare(`
+        SELECT es.standard_code, sc.* 
+        FROM engineering_standards es
+        JOIN standard_coefficients sc ON sc.standard_id = es.id
+        WHERE es.is_active = 1
+      `);
+      const coefficients = stmt.all() as Array<{ standard_code: string; coefficient_name: string; data_source: string; coefficient_table: string }>;
+
+      for (const coeff of coefficients) {
+        if (coeff.data_source === 'table' && coeff.coefficient_table) {
+          results[coeff.coefficient_name] = 'lookup_table_available';
+        }
+      }
+    } catch {
+      // Table might not exist
+    }
+
+    return results;
+  }
+
+  /**
+   * Execute table-based calculation
+   */
+  private executeTableCalculation(step: CalculationStep, inputs: ExecutionContext): ExecutionContext {
+    return this.executeLookupCalculation(step, inputs);
+  }
+
+  /**
+   * Validate step results against configured constraints
+   */
+  private validateStep(step: CalculationStep, results: ExecutionContext): { passed: boolean; errors: string[]; validations_checked: number } {
+    const errors: string[] = [];
+    let validationsChecked = 0;
+
+    // Parse validation config
+    if (step.validation_config) {
+      try {
+        const validationConfig = typeof step.validation_config === 'string'
+          ? JSON.parse(step.validation_config)
+          : step.validation_config;
+
+        validationsChecked = Object.keys(validationConfig).length;
+
+        for (const [paramName, paramValue] of Object.entries(results)) {
+          if (paramName in validationConfig) {
+            const paramErrors = this.validateParameter(paramName, paramValue, validationConfig[paramName]);
+            errors.push(...paramErrors);
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    return {
+      passed: errors.length === 0,
+      errors,
+      validations_checked: validationsChecked,
+    };
+  }
+
+  /**
+   * Validate a single parameter against constraints
+   */
+  private validateParameter(paramName: string, paramValue: unknown, config: Record<string, unknown>): string[] {
+    const errors: string[] = [];
+
+    if (config.range) {
+      const rangeConfig = config.range as { min?: number; max?: number };
+      const minVal = rangeConfig.min;
+      const maxVal = rangeConfig.max;
+      const numValue = Number(paramValue);
+
+      if (minVal !== undefined && numValue < minVal) {
+        errors.push(`Parameter '${paramName}' (${paramValue}) is less than minimum ${minVal}`);
+      }
+      if (maxVal !== undefined && numValue > maxVal) {
+        errors.push(`Parameter '${paramName}' (${paramValue}) exceeds maximum ${maxVal}`);
+      }
+    }
+
+    return errors;
+  }
+
+  /**
+   * Get execution history for a pipeline
+   */
+  getExecutionHistory(pipelineId: string, limit: number = 20): Array<Record<string, unknown>> {
+    const pipeline = this.loadPipeline(pipelineId);
+    if (!pipeline) {
+      throw new Error(`Pipeline '${pipelineId}' not found`);
+    }
+
+    try {
+      const stmt = this.db.prepare(`
+        SELECT * FROM calculation_executions 
+        WHERE pipeline_id = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+      `);
+      const executions = stmt.all(pipeline.id, limit) as Array<Record<string, unknown>>;
+
+      return executions.map(exec => ({
+        execution_id: exec.execution_id,
+        status: exec.status,
+        start_time: exec.start_time,
+        end_time: exec.end_time,
+        execution_time: exec.execution_time,
+        inputs: exec.input_data,
+        results: exec.output_data,
+        step_count: 0, // Would need to count step_executions
+      }));
+    } catch {
+      // Table might not exist
+      return [];
+    }
+  }
+}
+
+/**
+ * Enhanced formula evaluator with support for engineering functions
+ */
+export function evaluateFormula(formula: string, context: ExecutionContext = {}): number {
+  // Build safe evaluation context
+  const safeContext: ExecutionContext = {
+    // Math constants
+    PI: Math.PI,
+    E: Math.E,
+    
+    // Math functions
+    sqrt: Math.sqrt,
+    sin: (v: number) => Math.sin(v * Math.PI / 180),
+    cos: (v: number) => Math.cos(v * Math.PI / 180),
+    tan: (v: number) => Math.tan(v * Math.PI / 180),
+    asin: (v: number) => Math.asin(v) * 180 / Math.PI,
+    acos: (v: number) => Math.acos(v) * 180 / Math.PI,
+    atan: (v: number) => Math.atan(v) * 180 / Math.PI,
+    log: Math.log10,
+    ln: Math.log,
+    exp: Math.exp,
+    pow: Math.pow,
+    abs: Math.abs,
+    round: Math.round,
+    ceil: Math.ceil,
+    floor: Math.floor,
+    max: Math.max,
+    min: Math.min,
+    
+    // Engineering functions
+    select_cable: EngineeringCalculations.select_cable,
+    select_standard_size: EngineeringCalculations.select_standard_size,
+    next_standard_size: EngineeringCalculations.next_standard_size,
+    apply_demand_factor: EngineeringCalculations.apply_demand_factor,
+    lookup_cu_table: EngineeringCalculations.lookup_cu_table,
+    voltage_drop: EngineeringCalculations.voltage_drop,
+    pf_correction_capacitor: EngineeringCalculations.pf_correction_capacitor,
+    three_phase_power: EngineeringCalculations.three_phase_power,
+    short_circuit_current: EngineeringCalculations.short_circuit_current,
+    beam_deflection: EngineeringCalculations.beam_deflection,
+    bending_stress: EngineeringCalculations.bending_stress,
+    shear_stress: EngineeringCalculations.shear_stress,
+    reynolds_number: EngineeringCalculations.reynolds_number,
+    darcy_friction_factor: EngineeringCalculations.darcy_friction_factor,
+    pressure_drop: EngineeringCalculations.pressure_drop,
+    heat_transfer_coefficient: EngineeringCalculations.heat_transfer_coefficient,
+    
+    // User context
+    ...context,
+  };
+
+  // Replace variable names with values
+  let evaluableFormula = formula;
+
+  // Handle special characters
+  evaluableFormula = evaluableFormula
+    .replace(/\^/g, '**')      // Handle exponent notation
+    .replace(/×/g, '*')        // Handle multiplication sign
+    .replace(/÷/g, '/')        // Handle division sign
+    .replace(/π/g, 'PI');      // Handle pi symbol
+
+  // Replace context variables
+  for (const [key, value] of Object.entries(safeContext)) {
+    if (typeof value === 'number' || typeof value === 'string') {
+      const regex = new RegExp(`\\b${key}\\b`, 'g');
+      evaluableFormula = evaluableFormula.replace(regex, String(value));
+    }
+  }
+
+  try {
+    // Build function with safe context
+    const contextKeys = Object.keys(safeContext);
+    const contextValues = Object.values(safeContext);
+    
+    const fn = new Function(...contextKeys, `return (${evaluableFormula})`);
+    const result = fn(...contextValues);
+    
+    return Number(result) || 0;
+  } catch (error) {
+    console.error('Formula evaluation error:', error);
+    return 0;
+  }
+}
+
+// Lazy singleton getter
+let _calculationEngine: CalculationEngine | null = null;
+
+export function getCalculationEngine(): CalculationEngine {
+  if (!_calculationEngine) {
+    _calculationEngine = new CalculationEngine();
+  }
+  return _calculationEngine;
+}

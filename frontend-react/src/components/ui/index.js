@@ -5,3 +5,5 @@ export { Input, Textarea, Select } from './Input';
 export { Modal, ModalFooter } from './Modal';
 export { Loader, PageLoader, Skeleton } from './Loader';
 export { EmptyState, ErrorState } from './EmptyState';
+export { default as CreditsBadge } from './CreditsBadge';
+export { default as UpgradeModal } from './UpgradeModal';

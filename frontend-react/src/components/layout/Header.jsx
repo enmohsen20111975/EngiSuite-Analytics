@@ -15,6 +15,7 @@ import {
 import { cn } from '../../lib/utils';
 import { useAuthStore } from '../../stores/authStore';
 import { useThemeStore } from '../../stores/themeStore';
+import CreditsBadge from '../ui/CreditsBadge';
 
 /**
  * Header component
@@ -61,12 +62,12 @@ function Header({ onMenuClick, sidebarCollapsed }) {
   return (
     <header
       className={cn(
-        'fixed top-0 right-0 z-30 h-16',
+        'fixed top-0 right-0 left-0 z-30 h-16',
         'flex items-center justify-between px-4 md:px-6',
         'bg-[var(--color-bg-primary)]/80 backdrop-blur-xl',
         'border-b border-[var(--color-border)]',
         'transition-all duration-300',
-        sidebarCollapsed ? 'left-16' : 'left-64'
+        sidebarCollapsed ? 'lg:left-16' : 'lg:left-64'
       )}
     >
       {/* Left side */}
@@ -94,6 +95,9 @@ function Header({ onMenuClick, sidebarCollapsed }) {
       
       {/* Right side */}
       <div className="flex items-center gap-2">
+        {/* Credit Balance */}
+        <CreditsBadge className="hidden sm:flex" />
+
         {/* Theme toggle */}
         <div className="relative" ref={themeMenuRef}>
           <button

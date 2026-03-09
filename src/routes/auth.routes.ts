@@ -37,34 +37,48 @@ function generateTokens(userId: number): { token: string; refreshToken: string }
   return { token, refreshToken };
 }
 
+// Keep auth queries compatible with legacy users table during migration.
+const authUserSelect = {
+  id: true,
+  email: true,
+  name: true,
+  passwordHash: true,
+  googleId: true,
+  tier: true,
+  subscriptionStatus: true,
+  isVerified: true,
+  isActive: true,
+  createdAt: true,
+} as const;
+
 /**
  * Format user response
  */
 function formatUserResponse(user: {
   id: number;
   email: string;
-  name: string | null;
-  phone: string | null;
-  company: string | null;
-  country: string | null;
-  tier: string;
-  subscriptionStatus: string;
-  isVerified: boolean;
-  isAdmin: boolean;
-  createdAt: Date;
+  name?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  country?: string | null;
+  tier?: string | null;
+  subscriptionStatus?: string | null;
+  isVerified?: boolean | null;
+  isAdmin?: boolean | null;
+  createdAt?: Date;
 }): UserResponse {
   return {
     id: user.id,
     email: user.email,
-    name: user.name,
-    phone: user.phone,
-    company: user.company,
-    country: user.country,
-    tier: user.tier,
-    subscriptionStatus: user.subscriptionStatus,
-    isVerified: user.isVerified,
-    isAdmin: user.isAdmin,
-    createdAt: user.createdAt,
+    name: user.name ?? null,
+    phone: user.phone ?? null,
+    company: user.company ?? null,
+    country: user.country ?? null,
+    tier: user.tier ?? 'free',
+    subscriptionStatus: user.subscriptionStatus ?? 'active',
+    isVerified: user.isVerified ?? false,
+    isAdmin: user.isAdmin ?? false,
+    createdAt: user.createdAt ?? new Date(),
   };
 }
 
@@ -88,6 +102,7 @@ router.post('/register', authRateLimiter, async (req: Request, res: Response, ne
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      select: { id: true },
     });
 
     if (existingUser) {
@@ -103,14 +118,11 @@ router.post('/register', authRateLimiter, async (req: Request, res: Response, ne
         email: email.toLowerCase(),
         passwordHash,
         name,
-        phone: phone || null,
-        company: company || null,
-        country: country || null,
         tier: 'free',
         subscriptionStatus: 'active',
         isVerified: false,
-        isAdmin: false,
       },
+      select: authUserSelect,
     });
 
     // Generate tokens
@@ -157,6 +169,7 @@ router.post('/login', authRateLimiter, async (req: Request, res: Response, next:
     // Find user
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      select: authUserSelect,
     });
 
     if (!user || !user.passwordHash) {
@@ -173,12 +186,6 @@ router.post('/login', authRateLimiter, async (req: Request, res: Response, next:
     if (!isValidPassword) {
       throw new UnauthorizedError('Invalid email or password');
     }
-
-    // Update last login
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() },
-    });
 
     // Generate tokens
     const { token, refreshToken } = generateTokens(user.id);
@@ -222,6 +229,7 @@ router.post('/google', async (req: Request, res: Response, next: NextFunction) =
     // Find or create user
     let user = await prisma.user.findUnique({
       where: { email: decoded.email.toLowerCase() },
+      select: authUserSelect,
     });
 
     if (!user) {
@@ -233,22 +241,17 @@ router.post('/google', async (req: Request, res: Response, next: NextFunction) =
           tier: 'free',
           subscriptionStatus: 'active',
           isVerified: true, // Google verified the email
-          isAdmin: false,
         },
+        select: authUserSelect,
       });
     } else if (!user.googleId) {
       // Link Google account
       user = await prisma.user.update({
         where: { id: user.id },
         data: { googleId: decoded.sub, isVerified: true },
+        select: authUserSelect,
       });
     }
-
-    // Update last login
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() },
-    });
 
     const { token, refreshToken } = generateTokens(user.id);
 
@@ -289,6 +292,7 @@ router.post('/telegram', async (req: Request, res: Response, next: NextFunction)
     // Find or create user
     let user = await prisma.user.findFirst({
       where: { telegramId },
+      select: authUserSelect,
     });
 
     if (!user) {
@@ -304,16 +308,10 @@ router.post('/telegram', async (req: Request, res: Response, next: NextFunction)
           tier: 'free',
           subscriptionStatus: 'active',
           isVerified: true,
-          isAdmin: false,
         },
+        select: authUserSelect,
       });
     }
-
-    // Update last login
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() },
-    });
 
     const { token, refreshToken } = generateTokens(user.id);
 
@@ -355,6 +353,7 @@ router.post('/refresh', async (req: Request, res: Response, next: NextFunction) 
     // Find user
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
+      select: { id: true, isActive: true },
     });
 
     if (!user || !user.isActive) {
@@ -399,6 +398,7 @@ router.post('/forgot-password', authRateLimiter, async (req: Request, res: Respo
 
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      select: { id: true },
     });
 
     // Always return success to prevent email enumeration
@@ -504,6 +504,7 @@ router.get('/me', async (req: Request, res: Response, next: NextFunction) => {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
+      select: authUserSelect,
     });
 
     if (!user) {

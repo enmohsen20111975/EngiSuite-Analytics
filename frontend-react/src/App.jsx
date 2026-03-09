@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './router';
 import { useAuthStore } from './stores/authStore';
+import { useCreditStore } from './stores/creditStore';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -21,10 +22,19 @@ const queryClient = new QueryClient({
 function App() {
   // Initialize auth state from cookies/localStorage on app start
   const init = useAuthStore((state) => state.init);
-  
+  const user = useAuthStore((state) => state.user);
+  const setPaidStatus = useCreditStore((state) => state.setPaidStatus);
+
   useEffect(() => {
     init();
   }, [init]);
+
+  // Sync paid plan status from user profile
+  useEffect(() => {
+    const paidPlans = ['starter', 'pro', 'enterprise'];
+    const isPaid = user?.plan && paidPlans.includes(user.plan);
+    setPaidStatus(!!isPaid);
+  }, [user, setPaidStatus]);
 
   return (
     <QueryClientProvider client={queryClient}>

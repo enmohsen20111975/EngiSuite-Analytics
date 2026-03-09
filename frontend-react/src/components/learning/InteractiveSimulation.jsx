@@ -34,6 +34,10 @@ const SinamicsMotorLab = lazy(() => import('./simulations/SinamicsMotorLab'));
 const SinamicsPIDLab = lazy(() => import('./simulations/SinamicsPIDLab'));
 const SinamicsInverterFlow = lazy(() => import('./simulations/SinamicsInverterFlow'));
 
+// KineticGeometry - Mathematics & Geometry Simulations
+const LissajousFigures = lazy(() => import('./simulations/LissajousFigures'));
+const MandelbrotExplorer = lazy(() => import('./simulations/MandelbrotExplorer'));
+
 // Loading fallback component
 const SimulationLoader = () => (
   <div className="flex items-center justify-center h-48 bg-gray-50 dark:bg-slate-800 rounded-xl">
@@ -111,6 +115,12 @@ const InteractiveSimulation = ({ type, config = {}, data = {} }) => {
         return <SinamicsPIDLab {...config} {...data} />;
       case 'sinamics-inverter-flow':
         return <SinamicsInverterFlow {...config} {...data} />;
+        
+      // KineticGeometry - Mathematics & Geometry
+      case 'lissajous-figures':
+        return <LissajousFigures {...config} {...data} />;
+      case 'mandelbrot-explorer':
+        return <MandelbrotExplorer {...config} {...data} />;
         
       default:
         return (
@@ -240,6 +250,16 @@ export const SIMULATION_METADATA = {
     name: 'SINAMICS Power Electronics',
     category: 'Drive Technology',
     description: 'Visualize AC-DC-AC power conversion'
+  },
+  'lissajous-figures': {
+    name: 'Lissajous Figures',
+    category: 'Mathematics',
+    description: 'Explore parametric curves from harmonic motion'
+  },
+  'mandelbrot-explorer': {
+    name: 'Mandelbrot Fractal Explorer',
+    category: 'Mathematics',
+    description: 'Interactive fractal geometry visualization'
   }
 };
 

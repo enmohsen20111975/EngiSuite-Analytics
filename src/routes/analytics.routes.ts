@@ -111,7 +111,7 @@ router.post('/datasets', optionalAuth, async (req: Request, res: Response, next:
  */
 router.get('/datasets/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id as string, 10);
 
     const dataset = await prisma.analyticsDataset.findFirst({
       where: { id },
@@ -139,7 +139,7 @@ router.get('/datasets/:id', async (req: Request, res: Response, next: NextFuncti
  */
 router.delete('/datasets/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id as string, 10);
 
     await prisma.analyticsDataset.delete({
       where: { id },
@@ -212,7 +212,7 @@ router.post('/query', async (req: Request, res: Response, next: NextFunction) =>
         });
 
         aggregations.forEach((agg: { column: string; function: string; alias?: string }) => {
-          const values = rows.map(r => Number(r[agg.column]) || 0);
+          const values = (rows as Record<string, unknown>[]).map(r => Number(r[agg.column]) || 0);
           const alias = agg.alias || `${agg.function}_${agg.column}`;
           
           switch (agg.function) {

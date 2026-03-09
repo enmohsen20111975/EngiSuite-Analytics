@@ -1,0 +1,174 @@
+Plan: Fix All 4 Tools — Diagram Studio, Logic Simulator, PDF Editor, Data Analysis
+Context
+Four core tools in EngiSuite are partially broken due to: a backend HTTP method mismatch (PATCH vs PUT), a field name mismatch (state vs data) in save/load, hardcoded userId=1 on all routes, missing npm packages (pdfjs-dist, tesseract.js, papaparse), simulated operations in place of real API calls, and incomplete simulation engine logic. This plan fixes all four tools end-to-end.
+
+Phase 0 — Package Installation
+Run in frontend-react/:
+
+
+npm install pdfjs-dist tesseract.js papaparse
+No new backend packages needed (xlsx is already installed at root).
+
+Phase 1 — Cross-Cutting Backend Fixes (All 4 tools depend on these)
+1.1 — Add PATCH route to canvas.routes.ts
+File: src/routes/canvas.routes.ts (lines 96–118)
+Change router.put('/:id', handler) to handle both methods:
+
+
+router.route('/:id').put(handler).patch(handler);
+This fixes the 404 error caused by canvasService.js calling api.patch().
+
+1.2 — Fix state vs data field name mismatch
+File: src/routes/canvas.routes.ts
+In POST handler (line 41) and PUT/PATCH handler (line 99), update destructuring to accept both field names:
+
+
+const { name, type, data: dataField, state, thumbnail, isPublic } = req.body;
+const data = dataField ?? state;
+This fixes silent save failures across all 4 tools.
+
+1.3 — Fix hardcoded userId = 1
+Files:
+
+src/routes/canvas.routes.ts (lines 18, 40)
+src/routes/analytics.routes.ts (lines 19, 44)
+src/routes/vda.routes.ts (line 59)
+Create src/middleware/auth.middleware.ts with an optionalAuth middleware that reads the Authorization: Bearer <token> header, verifies with jwt.verify(), and sets req.userId = payload.userId. Falls through without error if no token.
+
+Replace const userId = 1; with const userId = req.userId ?? 1; in all above files.
+
+Apply optionalAuth in src/server.ts before the route mounting for canvas, analytics, and vda routes.
+
+1.4 — Fix handleLoad in all 4 page files
+Files: DiagramStudioPage.jsx (~line 1120), LogicSimulatorPage.jsx (~line 965), PDFEditorPage.jsx (~line 760), VisualDataAnalysisPage.jsx (~line 825)
+
+The backend GET /api/canvas/:id returns the Prisma row where canvas state is in field data, but all frontend handleLoad functions read data.state. Fix each to:
+
+
+const canvasState = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;
+const state = canvasState?.state ?? canvasState;
+// then use `state` instead of `data.state`
+Phase 2 — Diagram Studio
+File: frontend-react/src/pages/DiagramStudioPage.jsx
+
+2.1 — Wire resize handle drag logic
+Shape component resize handles exist (lines 288–301) but onResize prop is never passed from parent.
+Add handleResize(id, e) callback in main page that attaches document.addEventListener('mousemove'/'mouseup') and updates shapes width/height by delta.
+Pass onResize={handleResize} to <Shape> at line ~1371.
+2.2 — Connection tool (draw arrows between shapes)
+Add 'connect' to the tool palette TOOLS array (~line 350).
+Add port circle to Shape component (visible when activeTool === 'connect').
+Add onConnectStart(id, e) prop to Shape; on mouseup on target shape, push new connection: { id, from, to } to connections state.
+2.3 — PNG export (client-side)
+Replace the export button handler (~line 1147) that calls missing backend endpoint.
+Serialize the main SVG with XMLSerializer, draw to <canvas>, then trigger download as PNG.
+2.4 — Wire auto-save
+Call canvasService.createAutoSave() after save returns a canvas ID.
+Trigger debounced save on every setShapes call.
+Phase 3 — Logic Simulator
+File: frontend-react/src/pages/LogicSimulatorPage.jsx
+
+3.1 — Fix flip-flop simulation state
+Add ffStateRef = useRef(new Map()) to persist Q/Q-bar state across simulation steps.
+Add cases in simulateStep() (lines 841–916) for D_FF, T_FF, JK_FF, SR_FF — each checks for a rising clock edge before updating Q.
+Toggle CLOCK components on every step call.
+Fix wire propagation to use fromComp.outputValues?.[wire.fromPort] ?? fromComp.outputValue for multi-output components.
+3.2 — MUX / DEMUX / ADDER logic
+Add cases to simulateStep():
+
+MUX: output = inputs[selectIndex]
+DEMUX: set outputValues[selectIndex] = input
+ADDER: half-adder with Sum and Carry outputs
+3.3 — Component drag after placement
+Add handleComponentDragStart(id, e) in main page using dragRef.
+Add document-level mousemove/mouseup listeners (same pattern as Diagram Studio).
+Pass onDragStart to <ComponentRenderer> and bind to outer <g> element's onMouseDown.
+3.4 — Wire deletion
+Remove pointer-events-none from RoutedWire path (line 505).
+Add onContextMenu → onDelete(wire.id) to the <path>.
+Add handleDeleteWire(wireId) in main page to filter wires state.
+3.5 — Component properties panel
+Add ComponentPropertiesPanel component with label input field.
+Add handleUpdateComponent(id, updates) handler.
+Render panel in right sidebar when a component is selected.
+Phase 4 — PDF Editor
+File: frontend-react/src/pages/PDFEditorPage.jsx
+
+4.1 — Real PDF rendering with PDF.js
+Replace handleUploadPDF (lines 802–810) with:
+
+Dynamic import of pdfjs-dist.
+Set GlobalWorkerOptions.workerSrc to bundled worker URL.
+Load PDF from file.arrayBuffer() using pdfjsLib.getDocument().
+Store pdfDocument in state; update pages array with real page count.
+Add pdfCanvasRef and a useEffect that renders the current page via page.render() whenever pdfDocument, currentPage, or zoom changes.
+
+Place <canvas ref={pdfCanvasRef}> as a position: absolute background element in the canvas area, behind the SVG annotation layer.
+
+4.2 — Overlay form fields on PDF
+In the SVG annotation layer, render formFields (filtered by currentPage) as <foreignObject> elements containing real <input> or <checkbox> HTML elements.
+
+4.3 — Real OCR with Tesseract.js
+Replace handleExtractText (lines 813–822) with:
+
+Check pdfCanvasRef.current exists (PDF must be loaded).
+Dynamic import tesseract.js (lazy, ~15MB worker).
+Call worker.recognize(canvas.toDataURL()) and set extractedText to real result.
+4.4 — Merge stub improvement
+Replace the stub at lines 847–851 with a file picker that stores selected File objects and shows count. Add a note that full merge requires pdf-lib (install separately when needed).
+
+Phase 5 — Data Analysis
+5.1 — Fix CSV/Excel parsing in backend
+File: src/routes/analytics.routes.ts (lines 8, 62–65)
+Add import * as XLSX from 'xlsx'; at top.
+Replace the empty stub at lines 62–65 with real XLSX.read() + XLSX.utils.sheet_to_json() calls for both CSV (string input) and Excel (base64 buffer input).
+
+Apply same fix to src/routes/vda.routes.ts upload endpoint.
+
+5.2 — Replace simulated AnalyticsPage handlers
+File: frontend-react/src/pages/AnalyticsPage.jsx
+
+handleConnect (line 108–121): Replace setTimeout with real GET /api/analytics/datasets call; populate dbTables from response.
+handleExecuteQuery (line 124–138): Replace with real POST /api/analytics/query call using selectedDataset as datasetId.
+processFiles (line 167–172): Replace with papaparse CSV parse in browser + POST /api/analytics/datasets upload. Store actual File objects in uploadedFiles state (update handleFileSelect at line 158).
+5.3 — Wire VDA CSV/Excel file upload
+File: frontend-react/src/pages/VisualDataAnalysisPage.jsx
+In the file upload handler, dynamically import papaparse (CSV) or xlsx (Excel), parse the file client-side, then pass parsed rows to handleDataUpload(name, rows).
+
+5.4 — Dashboard persistence (resolved by Phase 1)
+After Phase 1 fixes (PATCH route + field name fix), handleSave in VisualDataAnalysisPage.jsx will correctly store dashboard state to the canvas DB. No further changes needed.
+
+Critical Files
+File	Phase	What Changes
+src/routes/canvas.routes.ts	1	PATCH handler, field fix, userId auth
+src/routes/analytics.routes.ts	1, 5	userId auth, CSV parsing
+src/routes/vda.routes.ts	1, 5	userId auth, CSV parsing
+src/middleware/auth.middleware.ts	1	NEW — optionalAuth middleware
+src/server.ts	1	Apply optionalAuth to routes
+frontend-react/src/pages/DiagramStudioPage.jsx	2	handleLoad fix, resize, connect, PNG export
+frontend-react/src/pages/LogicSimulatorPage.jsx	3	handleLoad fix, simulateStep FF/MUX/DEMUX, drag, wire delete
+frontend-react/src/pages/PDFEditorPage.jsx	4	handleLoad fix, PDF.js rendering, Tesseract OCR
+frontend-react/src/pages/VisualDataAnalysisPage.jsx	5	handleLoad fix, CSV upload
+frontend-react/src/pages/AnalyticsPage.jsx	5	Replace 3 simulated handlers
+Verification
+Diagram Studio: Create shapes → save → reload page → load → shapes restored. Drag SE resize handle → shape resizes. Export → PNG downloads.
+Logic Simulator: Add D-FF + CLOCK + INPUT + OUTPUT → simulate → Q toggles only on clock rising edge. Right-click wire → wire removed. Move component after placement.
+PDF Editor: Upload a PDF file → PDF page renders in canvas. Add annotation → draw on top of PDF. Click OCR → real text extracted.
+Data Analysis: Upload CSV in Analytics page → data persists to DB. Reload → datasets visible on Connect. Build dashboard in VDA → save → reload → dashboard restored.
+User approved the plan
+Tool loaded.
+Update Todos
+
+Phase 0: Install pdfjs-dist, tesseract.js, papaparse in frontend-react
+
+Phase 1.1-1.3: Backend fixes — PATCH route, field name fix, userId auth middleware
+
+Phase 1.4: Fix handleLoad in all 4 page files (data.data vs data.state)
+
+Phase 2: Diagram Studio — resize drag, connection tool, PNG export, auto-save
+
+Phase 3: Logic Simulator — FF state, MUX/DEMUX logic, component drag, wire delete, props panel
+
+Phase 4: PDF Editor — pdfjs-dist rendering, form field overlay, Tesseract OCR, merge stub
+
+Phase 5: Data Analysis — CSV parsing backend, replace simulated handlers, VDA file upload

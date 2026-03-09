@@ -226,9 +226,11 @@ function applyFilters(pipelines, { domain, difficulty, search, sort }) {
   if (search.trim()) {
     const q = search.toLowerCase();
     list = list.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.domain.toLowerCase().includes(q)
+      String(p.name || '').toLowerCase().includes(q) ||
+      String(p.description || '').toLowerCase().includes(q) ||
+      String(p.domain || '').toLowerCase().includes(q) ||
+      (p.main_classification || '').toLowerCase().includes(q) ||
+      (p.sub_classification || '').toLowerCase().includes(q)
     );
   }
   switch (sort) {
@@ -248,6 +250,75 @@ function groupByDomain(pipelines) {
     groups[p.domain].push(p);
   }
   return groups;
+}
+
+function inferSubClassification(pipeline) {
+  const text = `${pipeline.name || ''} ${pipeline.description || ''}`.toLowerCase();
+  const rules = {
+    electrical: [
+      ['cable', 'Cable Sizing'],
+      ['voltage drop', 'Voltage Drop'],
+      ['short circuit', 'Short Circuit'],
+      ['protection', 'Protection'],
+      ['motor', 'Motor Systems'],
+      ['power factor', 'Power Quality'],
+      ['lighting', 'Lighting'],
+    ],
+    mechanical: [
+      ['pump', 'Pumping'],
+      ['pipe', 'Piping'],
+      ['compressor', 'Compressors'],
+      ['stress', 'Stress Analysis'],
+      ['thermal', 'Thermal Systems'],
+    ],
+    civil: [
+      ['beam', 'Structural Design'],
+      ['column', 'Structural Design'],
+      ['foundation', 'Foundations'],
+      ['soil', 'Geotechnical'],
+      ['wind', 'Wind Loading'],
+      ['seismic', 'Seismic'],
+    ],
+    hvac: [
+      ['cooling', 'Cooling Load'],
+      ['heating', 'Heating Load'],
+      ['duct', 'Duct Design'],
+      ['ventilation', 'Ventilation'],
+      ['air', 'Air Distribution'],
+    ],
+    hydraulics: [
+      ['flow', 'Flow Analysis'],
+      ['pressure', 'Pressure Drop'],
+      ['head', 'Head Loss'],
+      ['network', 'Network Design'],
+      ['reservoir', 'Water Supply'],
+    ],
+  };
+
+  const domainRules = rules[pipeline.domain] || [];
+  for (const [token, label] of domainRules) {
+    if (text.includes(token)) return label;
+  }
+  return 'General';
+}
+
+function normalizePipelines(pipelines) {
+  const seen = new Set();
+  return (pipelines || []).filter((pipeline) => {
+    const key = `${pipeline.id || pipeline.pipeline_id || ''}|${pipeline.domain || ''}|${pipeline.name || ''}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map((pipeline) => ({
+    ...pipeline,
+    id: pipeline.id || pipeline.pipeline_id,
+    description: pipeline.description || '',
+    estimated_time: pipeline.estimated_time || (pipeline.estimated_time_minutes ? `${pipeline.estimated_time_minutes} min` : 'N/A'),
+    difficulty: pipeline.difficulty || pipeline.difficulty_level || 'beginner',
+    step_count: pipeline.step_count ?? pipeline.steps_count ?? pipeline.total_steps ?? 0,
+    main_classification: pipeline.main_classification || pipeline.domain,
+    sub_classification: pipeline.sub_classification || inferSubClassification(pipeline),
+  }));
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -279,8 +350,27 @@ export default function PipelinesPage() {
   const [generatingReport, setGeneratingReport] = useState(false);
 
   useEffect(() => {
-    axios.get(API)
-      .then(r => setPipelines(r.data.data))
+    Promise.allSettled([
+      axios.get(API),
+      axios.get('/api/pipelines'),
+    ])
+      .then((results) => {
+        const merged = [];
+        const local = results[0];
+        const global = results[1];
+        if (local.status === 'fulfilled') {
+          const localData = local.value?.data?.data || [];
+          merged.push(...localData);
+        }
+        if (global.status === 'fulfilled') {
+          const globalData = Array.isArray(global.value?.data) ? global.value.data : (global.value?.data?.data || []);
+          merged.push(...globalData);
+        }
+        setPipelines(normalizePipelines(merged));
+        if (merged.length === 0) {
+          setFetchError('Failed to load pipelines. Make sure the server is running.');
+        }
+      })
       .catch(() => setFetchError('Failed to load pipelines. Make sure the server is running.'))
       .finally(() => setLoading(false));
   }, []);
@@ -408,6 +498,30 @@ export default function PipelinesPage() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadPdf = () => {
+    if (!reportHtml) return alert('Generate the report first.');
+
+    // Open a new window with the report HTML and trigger browser print (user can choose Save as PDF)
+    const win = window.open('', '_blank');
+    if (!win) return alert('Popup blocked. Please allow popups for this site to download PDF.');
+
+    win.document.open();
+    win.document.write(reportHtml);
+    win.document.close();
+
+    // Wait for styles/images to load then call print
+    const tryPrint = () => {
+      try {
+        win.focus();
+        win.print();
+      } catch (err) {
+        setTimeout(tryPrint, 500);
+      }
+    };
+
+    setTimeout(tryPrint, 500);
+  };
+
   const progressPct = activePipeline
     ? ((currentStepIdx + (currentOutputs ? 1 : 0)) / activePipeline.steps.length) * 100
     : 0;
@@ -422,12 +536,12 @@ export default function PipelinesPage() {
     if (d === 'all') return pipelines.filter(p => {
       const dm = DIFFICULTY_META[p.difficulty];
       return (diffFilter === 'all' || p.difficulty === diffFilter) &&
-             (!search.trim() || p.name.toLowerCase().includes(search.toLowerCase()));
+             (!search.trim() || String(p.name || '').toLowerCase().includes(search.toLowerCase()));
     }).length;
     return pipelines.filter(p =>
       p.domain === d &&
       (diffFilter === 'all' || p.difficulty === diffFilter) &&
-      (!search.trim() || p.name.toLowerCase().includes(search.toLowerCase()))
+      (!search.trim() || String(p.name || '').toLowerCase().includes(search.toLowerCase()))
     ).length;
   };
 
@@ -606,6 +720,9 @@ export default function PipelinesPage() {
                   <button onClick={downloadHtml} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }}>
                     ⬇ Download HTML Report
                   </button>
+                  <button onClick={downloadPdf} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }}>
+                    ⬇ Download PDF
+                  </button>
                   <button onClick={downloadJson} style={{ ...S.nextBtn, marginLeft: 0, padding: '7px 16px', fontSize: 13 }}>
                     ⬇ Download JSON
                   </button>
@@ -782,11 +899,13 @@ function PipelineCard({ p, onClick }) {
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
       }}
     >
-      <div style={S.cardIcon}>{p.icon}</div>
+      <div style={S.cardIcon}>{p.icon || '🧩'}</div>
       <h3 style={S.cardTitle}>{p.name}</h3>
       <p style={S.cardDesc}>{p.description}</p>
       <div style={S.cardMeta}>
         <span style={S.badge(dc.bg, dc.badge)}>{p.domain.toUpperCase()}</span>
+        <span style={S.badge('#e3f2fd', '#0d47a1')}>{(p.main_classification || p.domain).toUpperCase()}</span>
+        <span style={S.badge('#eef2ff', '#3949ab')}>{p.sub_classification || 'General'}</span>
         <span style={S.badge(df.bg, df.color)}>{df.label}</span>
         <span style={S.badge('#f5f5f5', '#555')}>{p.step_count} steps</span>
         <span style={S.badge('#f5f5f5', '#888')}>⏱ {p.estimated_time}</span>

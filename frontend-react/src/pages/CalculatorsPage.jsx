@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useCredits } from '../hooks/useCredits';
 import { calculatorsService, CATEGORY_META } from '../services/calculatorsService';
 import projectService from '../services/projectService';
 import { Card, Input, Loader } from '../components/ui';
@@ -125,6 +126,7 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
   const [outputs, setOutputs] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState(null);
+  const { spend, credits, isPaid } = useCredits();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [taskTitle, setTaskTitle] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
@@ -180,7 +182,10 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
   // Handle calculation
   const handleCalculate = async () => {
     if (!calculator) return;
-    
+
+    // Deduct credits — opens UpgradeModal automatically if insufficient
+    if (!spend('calculator')) return;
+
     setIsCalculating(true);
     setError(null);
     
@@ -430,6 +435,9 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
                   <>
                     <Play className="w-4 h-4" />
                     Calculate
+                    {!isPaid && (
+                      <span className="text-xs opacity-75">(-2 pts)</span>
+                    )}
                   </>
                 )}
               </button>

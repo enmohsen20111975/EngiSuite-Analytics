@@ -90,7 +90,8 @@ export default function LoginPage() {
         navigate('/dashboard', { replace: true });
       }, 500);
     } catch (err) {
-      setError(err.message || 'Google sign-in failed. Please try again.');
+      const backendMessage = err?.response?.data?.error?.message || err?.response?.data?.detail;
+      setError(backendMessage || err.message || 'Google sign-in failed. Please try again.');
     } finally {
       setGoogleLoading(false);
     }

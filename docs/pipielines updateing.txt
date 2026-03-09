@@ -1,0 +1,154 @@
+Plan: Fix Pipeline Feature — Real Step-by-Step Calculation Workflow
+Context
+The current pipeline feature is broken in three critical ways:
+
+No real calculations — The frontend wizard runs a fake Function() eval (sums inputs as fallback). No engineering math happens.
+No step chaining — Step outputs do not feed into the next step's inputs. Each step is isolated.
+Bad database data — Most pipeline steps in workflows.db have generic names (input_value_1, output_value_1), missing formulas, missing units. Garbage in → garbage out.
+Goal: Rebuild pipelines as a proper engineering workflow tool:
+
+User enters inputs for Step 1 → backend calculates → outputs displayed
+Outputs auto-fill as inputs for Step 2 → repeat until all steps done
+Final screen shows technical report with all inputs, formulas, results, standards
+Since the DB data is unreliable, we use a local TypeScript data file instead of the database for pipeline definitions.
+
+Files to Create
+1. src/data/engineeringPipelines.ts
+Local pipeline definitions — no DB needed. Contains 4 complete engineering pipelines:
+
+Pipeline 1: LV Cable Sizing (Electrical)
+
+Step 1 — Load Analysis: inputs kva_load, power_factor, voltage_ll → outputs current_a, active_power_kw, reactive_power_kvar
+Step 2 — Cable Selection: inputs current_a, installation_method, ambient_temp, num_cables → outputs cable_size_mm2, cable_ampacity_a, derating_factor
+Step 3 — Voltage Drop Check: inputs cable_size_mm2, cable_length_m, current_a, voltage_ll → outputs voltage_drop_v, voltage_drop_pct, compliant (limit 3% for branch, 5% total per IEC 60364)
+Step 4 — Short Circuit Rating: inputs fault_level_ka, cable_size_mm2, clearing_time_s → outputs adiabatic_temp_rise, sc_rating_ka, sc_compliant
+Pipeline 2: Power Factor Correction (Electrical)
+
+Step 1 — Existing Power Analysis: inputs active_power_kw, measured_pf → outputs kva_existing, kvar_existing
+Step 2 — Correction Sizing: inputs active_power_kw, kvar_existing, target_pf → outputs kvar_required, kvar_to_add
+Step 3 — Capacitor Bank Selection: inputs kvar_to_add, voltage_ll → outputs capacitor_kvar, standard_size_kvar, capacitor_current_a
+Pipeline 3: Beam Design (Civil/Structural)
+
+Step 1 — Load Analysis: inputs dead_load_kn_m, live_load_kn_m, span_m → outputs total_udl_kn_m, design_load_kn_m, max_moment_kn_m, max_shear_kn
+Step 2 — Section Selection: inputs max_moment_kn_m, fy_mpa, steel_grade → outputs required_z_cm3, selected_section, section_z_cm3, section_weight_kg_m
+Step 3 — Deflection Check: inputs design_load_kn_m, span_m, e_gpa, selected_section_i_cm4 → outputs max_deflection_mm, allowable_deflection_mm, deflection_compliant
+Pipeline 4: HVAC Cooling Load (Mechanical)
+
+Step 1 — Sensible Load: inputs floor_area_m2, window_area_m2, occupants, lighting_w_m2, equipment_w_m2 → outputs sensible_load_kw
+Step 2 — Latent Load: inputs occupants, fresh_air_m3_h, indoor_rh_pct → outputs latent_load_kw
+Step 3 — Total Load & Selection: inputs sensible_load_kw, latent_load_kw, safety_factor → outputs total_cooling_kw, cooling_tons, selected_unit_kw, cop_est
+Each step includes:
+
+formula_display: Human-readable formula string for the report
+formula_fn: Actual TypeScript calculation function (not eval, real code)
+standard_ref: Code reference (IEC 60364, BS EN 1993-1-1, ASHRAE 62.1, etc.)
+description: Engineering explanation of what/why
+2. src/routes/localPipelines.routes.ts
+New route file with endpoints:
+
+
+GET  /api/local-pipelines              → list all local pipelines (name, domain, steps count, difficulty)
+GET  /api/local-pipelines/:id          → full pipeline with all steps definitions
+POST /api/local-pipelines/:id/steps/:stepNumber/calculate  → calculate one step
+     body: { inputs: { field: value } }
+     returns: { outputs: {...}, formula_display, standard_ref, warnings[] }
+POST /api/local-pipelines/:id/report  → generate final technical report
+     body: { stepResults: [{step, inputs, outputs},...] }
+     returns: { html: "...", json: {...} }
+The step calculate endpoint uses the formula_fn directly from local data — no eval, no DB lookup, no strings. Pure TypeScript math.
+
+3. frontend-react/src/pages/PipelinesPage.jsx (full rewrite)
+Replace current broken wizard with proper step-by-step flow:
+
+State:
+
+
+const [pipelines, setPipelines] = useState([]);
+const [activePipeline, setActivePipeline] = useState(null);
+const [currentStepIndex, setCurrentStepIndex] = useState(0);
+const [stepInputs, setStepInputs] = useState({});     // {stepNum: {field: value}}
+const [stepOutputs, setStepOutputs] = useState({});   // {stepNum: {field: value}}
+const [calculating, setCalculating] = useState(false);
+const [report, setReport] = useState(null);
+const [mode, setMode] = useState('list'); // 'list' | 'wizard' | 'report'
+Wizard Flow:
+
+Step form shows current step inputs
+Any input that matches an output name from a previous step is pre-filled and highlighted (auto-chaining)
+"Calculate" button → POST /api/local-pipelines/:id/steps/:stepNum/calculate
+Outputs appear below with units, then "Next Step" unlocks
+On last step → "Generate Report" button
+Report screen: full technical report HTML rendered in iframe + JSON download
+Report content (generated backend):
+
+Project/pipeline summary
+For each step: description, inputs table (name, value, unit), formula (display), outputs table (name, value, unit), standard reference
+Final results summary table
+Engineering notes / warnings (e.g., "voltage drop exceeds 3% limit")
+Files to Modify
+src/app.ts (or wherever routes are mounted)
+Add: app.use('/api/local-pipelines', localPipelinesRouter)
+
+Implementation Order
+Create src/data/engineeringPipelines.ts with all 4 pipelines
+Create src/routes/localPipelines.routes.ts with calculate + report endpoints
+Register new route in app.ts
+Rewrite frontend-react/src/pages/PipelinesPage.jsx
+Verification
+Start server: npm run dev
+GET /api/local-pipelines → should return 4 pipelines
+GET /api/local-pipelines/lv-cable-sizing → full step definitions
+POST /api/local-pipelines/lv-cable-sizing/steps/1/calculate with {inputs: {kva_load:100, power_factor:0.85, voltage_ll:400}} → returns {current_a: 144.3, active_power_kw: 85, reactive_power_kvar: 52.7}
+Open browser → Pipelines page → select LV Cable Sizing → run all 4 steps → check report
+Verify step 2 inputs auto-populate current_a from step 1 output
+Verify report shows all formulas, standards, and values
+User approved the plan
+Tool loaded.
+Update Todos
+
+Create src/data/engineeringPipelines.ts with 4 real engineering pipelines
+
+Create src/routes/localPipelines.routes.ts with calculate + report endpoints
+
+Register new route in app.ts
+
+Rewrite frontend-react/src/pages/PipelinesPage.jsx with real step-by-step wizar
+
+
+*****************************************
+
+All 4 tasks are complete. Here's what was built:
+
+What was created
+src/data/engineeringPipelines.ts — Local pipeline data (no DB)
+4 complete engineering pipelines with real TypeScript calculation functions (no eval, no placeholders):
+
+Pipeline	Steps	Standard
+LV Cable Sizing	4	IEC 60364-5-52
+Power Factor Correction	3	IEC 60831-1
+Steel Beam Design (UDL)	3	EN 1993-1-1 (Eurocode 3)
+HVAC Cooling Load	3	ASHRAE HF Ch. 18
+Each step has: real inputs with units/ranges/help text, real calculation functions, formula display strings, and compliance checks.
+
+src/routes/localPipelines.routes.ts — New API endpoints
+GET /api/local-pipelines — list pipelines
+GET /api/local-pipelines/:id — full pipeline definition
+POST /api/local-pipelines/:id/steps/:n/calculate — calculate one step, returns outputs + warnings
+POST /api/local-pipelines/:id/report — generate a full HTML + JSON technical report
+frontend-react/src/pages/PipelinesPage.jsx — Completely rewritten
+Step-by-step wizard with sidebar navigation
+Auto-chains outputs → inputs: when you finish Step 1, Step 2 inputs pre-populate automatically (highlighted in blue as "auto-filled")
+Calculate button calls backend — real math happens server-side
+Shows results, formulas, warnings per step
+After all steps: generates a professional HTML report (rendered in-page) with download buttons
+Read C:\Users\soso\AppData\Local\Temp\claude\d--My-WebStie-Applications-Mywebsite-applications-final-EngiSuite-node-js-engisuite-nodejs\tasks\bp267w49r.output
+That was just a background file listing — nothing to act on. The implementation is complete.
+
+To test everything, start the server (npm run dev) and:
+
+Open the Pipelines page in the browser
+Click any pipeline card (e.g. LV Cable Sizing)
+Fill in Step 1 inputs → click ⚡ Calculate — you'll see real results (current, active power, reactive power)
+Click Next Step → — Step 2 inputs auto-populate with Step 1's outputs (highlighted blue as "auto-filled")
+Calculate each step through to the end
+Click 📋 Generate Report — a full HTML technical report renders with all inputs, formulas, results, compliance checks, and standard references

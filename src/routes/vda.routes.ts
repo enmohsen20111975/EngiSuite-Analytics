@@ -111,7 +111,7 @@ router.post('/analyze', async (req: Request, res: Response, next: NextFunction) 
     switch (analysisType) {
       case 'statistics':
         for (const col of columns || []) {
-          const values = data.map((row: Record<string, unknown>) => Number(row[col])).filter(v => !isNaN(v));
+          const values = data.map((row: Record<string, unknown>) => Number(row[col])).filter((v: number) => !isNaN(v));
           results[col] = {
             count: values.length,
             mean: values.reduce((a: number, b: number) => a + b, 0) / values.length,
@@ -160,7 +160,7 @@ router.post('/analyze', async (req: Request, res: Response, next: NextFunction) 
  */
 router.post('/chart', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { datasetId, chartType, xAxis, yAxis, groupBy } = req.body;
+    const { datasetId, chartType, xAxis, yAxis } = req.body;
 
     const dataset = await prisma.analyticsDataset.findFirst({
       where: { id: datasetId },

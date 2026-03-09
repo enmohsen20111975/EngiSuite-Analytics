@@ -11,7 +11,8 @@ import {
   Save, FolderOpen, Download, Upload, Trash2, Plus,
   Play, Pause, RotateCcw, Zap, CircuitBoard, StepForward,
   MousePointer, Move, Copy, Scissors, Clipboard,
-  Grid3x3, ZoomIn, ZoomOut, Maximize, CircleQuestionMark, Table, Clock
+  Grid3x3, ZoomIn, ZoomOut, Maximize, CircleQuestionMark, Table, Clock,
+  PanelLeft, PanelRight, ChevronDown
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -56,6 +57,230 @@ const CATEGORY_COLORS = {
   sequential: '#f59e0b',
   advanced: '#8b5cf6',
   utility: '#64748b',
+};
+
+// Practical Circuit Examples - Pre-built circuits for learning
+const CIRCUIT_EXAMPLES = {
+  halfAdder: {
+    name: 'Half Adder',
+    description: 'Adds two 1-bit numbers, outputs Sum and Carry',
+    components: [
+      { id: 'ha_in1', type: 'SWITCH', x: 80, y: 80, label: 'A', outputValue: false },
+      { id: 'ha_in2', type: 'SWITCH', x: 80, y: 200, label: 'B', outputValue: false },
+      { id: 'ha_xor1', type: 'XOR', x: 220, y: 120, label: 'XOR' },
+      { id: 'ha_and1', type: 'AND', x: 220, y: 240, label: 'AND' },
+      { id: 'ha_sum', type: 'LED', x: 380, y: 120, label: 'Sum' },
+      { id: 'ha_carry', type: 'LED', x: 380, y: 240, label: 'Carry' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'ha_in1', fromPort: 0, toComponent: 'ha_xor1', toPort: 0 },
+      { id: 'w2', fromComponent: 'ha_in2', fromPort: 0, toComponent: 'ha_xor1', toPort: 1 },
+      { id: 'w3', fromComponent: 'ha_in1', fromPort: 0, toComponent: 'ha_and1', toPort: 0 },
+      { id: 'w4', fromComponent: 'ha_in2', fromPort: 0, toComponent: 'ha_and1', toPort: 1 },
+      { id: 'w5', fromComponent: 'ha_xor1', fromPort: 0, toComponent: 'ha_sum', toPort: 0 },
+      { id: 'w6', fromComponent: 'ha_and1', fromPort: 0, toComponent: 'ha_carry', toPort: 0 },
+    ]
+  },
+  fullAdder: {
+    name: 'Full Adder',
+    description: 'Adds three 1-bit numbers with carry in/out',
+    components: [
+      { id: 'fa_a', type: 'SWITCH', x: 50, y: 60, label: 'A', outputValue: false },
+      { id: 'fa_b', type: 'SWITCH', x: 50, y: 140, label: 'B', outputValue: false },
+      { id: 'fa_cin', type: 'SWITCH', x: 50, y: 220, label: 'Cin', outputValue: false },
+      { id: 'fa_xor1', type: 'XOR', x: 170, y: 80, label: 'XOR1' },
+      { id: 'fa_xor2', type: 'XOR', x: 290, y: 140, label: 'XOR2' },
+      { id: 'fa_and1', type: 'AND', x: 170, y: 200, label: 'AND1' },
+      { id: 'fa_and2', type: 'AND', x: 290, y: 240, label: 'AND2' },
+      { id: 'fa_or1', type: 'OR', x: 410, y: 220, label: 'OR' },
+      { id: 'fa_sum', type: 'LED', x: 420, y: 100, label: 'Sum' },
+      { id: 'fa_cout', type: 'LED', x: 530, y: 220, label: 'Cout' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'fa_a', fromPort: 0, toComponent: 'fa_xor1', toPort: 0 },
+      { id: 'w2', fromComponent: 'fa_b', fromPort: 0, toComponent: 'fa_xor1', toPort: 1 },
+      { id: 'w3', fromComponent: 'fa_xor1', fromPort: 0, toComponent: 'fa_xor2', toPort: 0 },
+      { id: 'w4', fromComponent: 'fa_cin', fromPort: 0, toComponent: 'fa_xor2', toPort: 1 },
+      { id: 'w5', fromComponent: 'fa_a', fromPort: 0, toComponent: 'fa_and1', toPort: 0 },
+      { id: 'w6', fromComponent: 'fa_b', fromPort: 0, toComponent: 'fa_and1', toPort: 1 },
+      { id: 'w7', fromComponent: 'fa_xor1', fromPort: 0, toComponent: 'fa_and2', toPort: 0 },
+      { id: 'w8', fromComponent: 'fa_cin', fromPort: 0, toComponent: 'fa_and2', toPort: 1 },
+      { id: 'w9', fromComponent: 'fa_and1', fromPort: 0, toComponent: 'fa_or1', toPort: 0 },
+      { id: 'w10', fromComponent: 'fa_and2', fromPort: 0, toComponent: 'fa_or1', toPort: 1 },
+      { id: 'w11', fromComponent: 'fa_xor2', fromPort: 0, toComponent: 'fa_sum', toPort: 0 },
+      { id: 'w12', fromComponent: 'fa_or1', fromPort: 0, toComponent: 'fa_cout', toPort: 0 },
+    ]
+  },
+  dFlipFlop: {
+    name: 'D Flip-Flop',
+    description: 'Edge-triggered D flip-flop with clock',
+    components: [
+      { id: 'dff_d', type: 'SWITCH', x: 80, y: 100, label: 'D', outputValue: false },
+      { id: 'dff_clk', type: 'CLOCK', x: 80, y: 200, label: 'CLK', outputValue: false },
+      { id: 'dff_ff', type: 'D_FF', x: 220, y: 120, label: 'D-FF' },
+      { id: 'dff_q', type: 'LED', x: 380, y: 100, label: 'Q' },
+      { id: 'dff_qbar', type: 'LED', x: 380, y: 180, label: 'Q̄' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'dff_d', fromPort: 0, toComponent: 'dff_ff', toPort: 0 },
+      { id: 'w2', fromComponent: 'dff_clk', fromPort: 0, toComponent: 'dff_ff', toPort: 1 },
+      { id: 'w3', fromComponent: 'dff_ff', fromPort: 0, toComponent: 'dff_q', toPort: 0 },
+      { id: 'w4', fromComponent: 'dff_ff', fromPort: 1, toComponent: 'dff_qbar', toPort: 0 },
+    ]
+  },
+  mux2to1: {
+    name: '2-to-1 Multiplexer',
+    description: 'Selects between two inputs based on select line',
+    components: [
+      { id: 'mux_a', type: 'SWITCH', x: 60, y: 60, label: 'A', outputValue: false },
+      { id: 'mux_b', type: 'SWITCH', x: 60, y: 140, label: 'B', outputValue: false },
+      { id: 'mux_sel', type: 'SWITCH', x: 60, y: 220, label: 'Sel', outputValue: false },
+      { id: 'mux_not', type: 'NOT', x: 180, y: 200, label: 'NOT' },
+      { id: 'mux_and1', type: 'AND', x: 280, y: 60, label: 'AND1' },
+      { id: 'mux_and2', type: 'AND', x: 280, y: 160, label: 'AND2' },
+      { id: 'mux_or', type: 'OR', x: 400, y: 110, label: 'OR' },
+      { id: 'mux_out', type: 'LED', x: 520, y: 110, label: 'Y' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'mux_a', fromPort: 0, toComponent: 'mux_and1', toPort: 0 },
+      { id: 'w2', fromComponent: 'mux_sel', fromPort: 0, toComponent: 'mux_not', toPort: 0 },
+      { id: 'w3', fromComponent: 'mux_not', fromPort: 0, toComponent: 'mux_and1', toPort: 1 },
+      { id: 'w4', fromComponent: 'mux_b', fromPort: 0, toComponent: 'mux_and2', toPort: 0 },
+      { id: 'w5', fromComponent: 'mux_sel', fromPort: 0, toComponent: 'mux_and2', toPort: 1 },
+      { id: 'w6', fromComponent: 'mux_and1', fromPort: 0, toComponent: 'mux_or', toPort: 0 },
+      { id: 'w7', fromComponent: 'mux_and2', fromPort: 0, toComponent: 'mux_or', toPort: 1 },
+      { id: 'w8', fromComponent: 'mux_or', fromPort: 0, toComponent: 'mux_out', toPort: 0 },
+    ]
+  },
+  srLatch: {
+    name: 'SR Latch (NAND)',
+    description: 'Set-Reset latch using NAND gates',
+    components: [
+      { id: 'sr_s', type: 'SWITCH', x: 80, y: 80, label: 'S (Set)', outputValue: true },
+      { id: 'sr_r', type: 'SWITCH', x: 80, y: 200, label: 'R (Reset)', outputValue: true },
+      { id: 'sr_nand1', type: 'NAND', x: 220, y: 80, label: 'NAND1' },
+      { id: 'sr_nand2', type: 'NAND', x: 220, y: 200, label: 'NAND2' },
+      { id: 'sr_q', type: 'LED', x: 380, y: 80, label: 'Q' },
+      { id: 'sr_qbar', type: 'LED', x: 380, y: 200, label: 'Q̄' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'sr_s', fromPort: 0, toComponent: 'sr_nand1', toPort: 0 },
+      { id: 'w2', fromComponent: 'sr_r', fromPort: 0, toComponent: 'sr_nand2', toPort: 1 },
+      { id: 'w3', fromComponent: 'sr_nand1', fromPort: 0, toComponent: 'sr_nand2', toPort: 0 },
+      { id: 'w4', fromComponent: 'sr_nand2', fromPort: 0, toComponent: 'sr_nand1', toPort: 1 },
+      { id: 'w5', fromComponent: 'sr_nand1', fromPort: 0, toComponent: 'sr_q', toPort: 0 },
+      { id: 'w6', fromComponent: 'sr_nand2', fromPort: 0, toComponent: 'sr_qbar', toPort: 0 },
+    ]
+  },
+  andGateDemo: {
+    name: 'AND Gate Demo',
+    description: 'Basic AND gate truth table demonstration',
+    components: [
+      { id: 'and_a', type: 'SWITCH', x: 100, y: 100, label: 'A', outputValue: false },
+      { id: 'and_b', type: 'SWITCH', x: 100, y: 180, label: 'B', outputValue: false },
+      { id: 'and_gate', type: 'AND', x: 250, y: 120, label: 'AND' },
+      { id: 'and_out', type: 'LED', x: 400, y: 140, label: 'Output' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'and_a', fromPort: 0, toComponent: 'and_gate', toPort: 0 },
+      { id: 'w2', fromComponent: 'and_b', fromPort: 0, toComponent: 'and_gate', toPort: 1 },
+      { id: 'w3', fromComponent: 'and_gate', fromPort: 0, toComponent: 'and_out', toPort: 0 },
+    ]
+  },
+  orGateDemo: {
+    name: 'OR Gate Demo',
+    description: 'Basic OR gate truth table demonstration',
+    components: [
+      { id: 'or_a', type: 'SWITCH', x: 100, y: 100, label: 'A', outputValue: false },
+      { id: 'or_b', type: 'SWITCH', x: 100, y: 180, label: 'B', outputValue: false },
+      { id: 'or_gate', type: 'OR', x: 250, y: 120, label: 'OR' },
+      { id: 'or_out', type: 'LED', x: 400, y: 140, label: 'Output' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'or_a', fromPort: 0, toComponent: 'or_gate', toPort: 0 },
+      { id: 'w2', fromComponent: 'or_b', fromPort: 0, toComponent: 'or_gate', toPort: 1 },
+      { id: 'w3', fromComponent: 'or_gate', fromPort: 0, toComponent: 'or_out', toPort: 0 },
+    ]
+  },
+  xorGateDemo: {
+    name: 'XOR Gate Demo',
+    description: 'Exclusive OR gate demonstration',
+    components: [
+      { id: 'xor_a', type: 'SWITCH', x: 100, y: 100, label: 'A', outputValue: false },
+      { id: 'xor_b', type: 'SWITCH', x: 100, y: 180, label: 'B', outputValue: false },
+      { id: 'xor_gate', type: 'XOR', x: 250, y: 120, label: 'XOR' },
+      { id: 'xor_out', type: 'LED', x: 400, y: 140, label: 'Output' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'xor_a', fromPort: 0, toComponent: 'xor_gate', toPort: 0 },
+      { id: 'w2', fromComponent: 'xor_b', fromPort: 0, toComponent: 'xor_gate', toPort: 1 },
+      { id: 'w3', fromComponent: 'xor_gate', fromPort: 0, toComponent: 'xor_out', toPort: 0 },
+    ]
+  },
+  notGateDemo: {
+    name: 'NOT Gate Demo',
+    description: 'Inverter demonstration',
+    components: [
+      { id: 'not_a', type: 'SWITCH', x: 100, y: 140, label: 'Input', outputValue: false },
+      { id: 'not_gate', type: 'NOT', x: 250, y: 140, label: 'NOT' },
+      { id: 'not_out', type: 'LED', x: 400, y: 140, label: 'Output' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'not_a', fromPort: 0, toComponent: 'not_gate', toPort: 0 },
+      { id: 'w2', fromComponent: 'not_gate', fromPort: 0, toComponent: 'not_out', toPort: 0 },
+    ]
+  },
+  binaryCounter: {
+    name: '2-Bit Counter',
+    description: 'Binary counter using T flip-flops',
+    components: [
+      { id: 'cnt_clk', type: 'CLOCK', x: 60, y: 140, label: 'CLK', outputValue: false },
+      { id: 'cnt_t1', type: 'T_FF', x: 180, y: 100, label: 'T-FF0' },
+      { id: 'cnt_t2', type: 'T_FF', x: 340, y: 100, label: 'T-FF1' },
+      { id: 'cnt_q0', type: 'LED', x: 320, y: 200, label: 'Q0' },
+      { id: 'cnt_q1', type: 'LED', x: 480, y: 200, label: 'Q1' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'cnt_clk', fromPort: 0, toComponent: 'cnt_t1', toPort: 1 },
+      { id: 'w2', fromComponent: 'cnt_t1', fromPort: 0, toComponent: 'cnt_q0', toPort: 0 },
+      { id: 'w3', fromComponent: 'cnt_t1', fromPort: 0, toComponent: 'cnt_t2', toPort: 1 },
+      { id: 'w4', fromComponent: 'cnt_t2', fromPort: 0, toComponent: 'cnt_q1', toPort: 0 },
+    ]
+  },
+  decoder2to4: {
+    name: '2-to-4 Decoder',
+    description: 'Decodes 2-bit input to 4 outputs',
+    components: [
+      { id: 'dec_a', type: 'SWITCH', x: 60, y: 80, label: 'A', outputValue: false },
+      { id: 'dec_b', type: 'SWITCH', x: 60, y: 160, label: 'B', outputValue: false },
+      { id: 'dec_not1', type: 'NOT', x: 160, y: 60, label: 'NOT1' },
+      { id: 'dec_not2', type: 'NOT', x: 160, y: 140, label: 'NOT2' },
+      { id: 'dec_and1', type: 'AND', x: 280, y: 40, label: 'AND0' },
+      { id: 'dec_and2', type: 'AND', x: 280, y: 100, label: 'AND1' },
+      { id: 'dec_and3', type: 'AND', x: 280, y: 160, label: 'AND2' },
+      { id: 'dec_and4', type: 'AND', x: 280, y: 220, label: 'AND3' },
+      { id: 'dec_y0', type: 'LED', x: 420, y: 40, label: 'Y0' },
+      { id: 'dec_y1', type: 'LED', x: 420, y: 100, label: 'Y1' },
+      { id: 'dec_y2', type: 'LED', x: 420, y: 160, label: 'Y2' },
+      { id: 'dec_y3', type: 'LED', x: 420, y: 220, label: 'Y3' },
+    ],
+    wires: [
+      { id: 'w1', fromComponent: 'dec_a', fromPort: 0, toComponent: 'dec_not1', toPort: 0 },
+      { id: 'w2', fromComponent: 'dec_b', fromPort: 0, toComponent: 'dec_not2', toPort: 0 },
+      { id: 'w3', fromComponent: 'dec_not1', fromPort: 0, toComponent: 'dec_and1', toPort: 0 },
+      { id: 'w4', fromComponent: 'dec_not2', fromPort: 0, toComponent: 'dec_and1', toPort: 1 },
+      { id: 'w5', fromComponent: 'dec_a', fromPort: 0, toComponent: 'dec_and2', toPort: 0 },
+      { id: 'w6', fromComponent: 'dec_not2', fromPort: 0, toComponent: 'dec_and2', toPort: 1 },
+      { id: 'w7', fromComponent: 'dec_not1', fromPort: 0, toComponent: 'dec_and3', toPort: 0 },
+      { id: 'w8', fromComponent: 'dec_b', fromPort: 0, toComponent: 'dec_and3', toPort: 1 },
+      { id: 'w9', fromComponent: 'dec_a', fromPort: 0, toComponent: 'dec_and4', toPort: 0 },
+      { id: 'w10', fromComponent: 'dec_b', fromPort: 0, toComponent: 'dec_and4', toPort: 1 },
+      { id: 'w11', fromComponent: 'dec_and1', fromPort: 0, toComponent: 'dec_y0', toPort: 0 },
+      { id: 'w12', fromComponent: 'dec_and2', fromPort: 0, toComponent: 'dec_y1', toPort: 0 },
+      { id: 'w13', fromComponent: 'dec_and3', fromPort: 0, toComponent: 'dec_y2', toPort: 0 },
+      { id: 'w14', fromComponent: 'dec_and4', fromPort: 0, toComponent: 'dec_y3', toPort: 0 },
+    ]
+  },
 };
 
 /**
@@ -514,6 +739,36 @@ function RoutedWire({ wire, components, scale = 1, onDelete }) {
 }
 
 /**
+ * Circuit Examples Panel - Pre-built circuit templates
+ */
+function CircuitExamplesPanel({ onLoadExample }) {
+  return (
+    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg mt-4">
+      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Circuit Examples</h3>
+      <div className="space-y-1 max-h-80 overflow-y-auto">
+        {Object.entries(CIRCUIT_EXAMPLES).map(([key, example]) => (
+          <button
+            key={key}
+            onClick={() => onLoadExample(key)}
+            className="w-full px-3 py-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
+          >
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              {example.name}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {example.description}
+            </div>
+            <div className="text-[10px] text-gray-400 mt-1">
+              {example.components.length} components, {example.wires.length} wires
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
  * Component Palette with categories
  */
 function ComponentPalette({ onAddComponent }) {
@@ -747,6 +1002,9 @@ export default function LogicSimulatorPage() {
   const [status, setStatus] = useState('Ready');
   const [showTruthTable, setShowTruthTable] = useState(false);
   const [clockTick, setClockTick] = useState(0);
+  const [showExamplesMenu, setShowExamplesMenu] = useState(false);
+  const [showLeftPanelMobile, setShowLeftPanelMobile] = useState(false);
+  const [showRightPanelMobile, setShowRightPanelMobile] = useState(false);
 
   const canvasRef = useRef(null);
   const dragRef = useRef(null);
@@ -1087,6 +1345,46 @@ export default function LogicSimulatorPage() {
     setStatus('Deleted selected');
   }, [selectedIds]);
 
+  // Load circuit example
+  const handleLoadCircuitExample = useCallback((exampleKey) => {
+    const example = CIRCUIT_EXAMPLES[exampleKey];
+    if (!example) return;
+
+    // Create ID mapping for deep copy
+    const idMap = new Map();
+    const timestamp = Date.now();
+
+    // Deep copy components with new IDs
+    const newComponents = example.components.map((comp, index) => {
+      const newId = `comp_${timestamp}_${index}`;
+      idMap.set(comp.id, newId);
+      return {
+        ...comp,
+        id: newId,
+        inputValues: Array(comp.inputs || COMPONENT_TYPES[comp.type]?.inputs || 0).fill(false),
+        outputValue: comp.outputValue ?? false,
+      };
+    });
+
+    // Deep copy wires with remapped IDs
+    const newWires = example.wires.map((wire, index) => ({
+      ...wire,
+      id: `wire_${timestamp}_${index}`,
+      fromComponent: idMap.get(wire.fromComponent) || wire.fromComponent,
+      toComponent: idMap.get(wire.toComponent) || wire.toComponent,
+      value: false,
+    }));
+
+    // Reset simulation state
+    setIsSimulating(false);
+    ffStateRef.current.clear();
+    setComponents(newComponents);
+    setWires(newWires);
+    setSelectedIds([]);
+    setCurrentCircuit(null);
+    setStatus(`Loaded example: ${example.name}`);
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -1115,18 +1413,27 @@ export default function LogicSimulatorPage() {
   }, [selectedIds, handleDeleteSelected]);
 
   return (
-    <div className="h-full flex flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-        <div className="flex items-center gap-4">
+      <div className="relative flex flex-wrap items-center justify-between gap-2 px-3 md:px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+        <div className="flex items-center gap-3 min-w-0">
           <h1 className="text-lg font-semibold flex items-center gap-2">
             <CircuitBoard className="w-5 h-5 text-blue-500" />
             Logic Simulator
           </h1>
-          <span className="text-sm text-gray-500">{currentCircuit?.name || 'Untitled'}</span>
+          <span className="hidden md:inline text-sm text-gray-500 truncate">{currentCircuit?.name || 'Untitled'}</span>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2 flex-wrap justify-end">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="lg:hidden"
+            onClick={() => setShowLeftPanelMobile(true)}
+          >
+            <PanelLeft className="w-4 h-4" />
+          </Button>
+
           {/* Simulation controls */}
           {isSimulating ? (
             <Button size="sm" variant="secondary" onClick={() => setIsSimulating(false)}>
@@ -1155,13 +1462,37 @@ export default function LogicSimulatorPage() {
           <select
             value={simulationSpeed}
             onChange={(e) => setSimulationSpeed(Number(e.target.value))}
-            className="px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600"
+            className="px-2 py-1 text-xs md:text-sm border rounded dark:bg-gray-700 dark:border-gray-600"
           >
             <option value={500}>Slow</option>
             <option value={100}>Normal</option>
             <option value={50}>Fast</option>
             <option value={10}>Very Fast</option>
           </select>
+
+          <div className="relative">
+            <Button variant="ghost" size="sm" onClick={() => setShowExamplesMenu(prev => !prev)}>
+              Examples
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </Button>
+            {showExamplesMenu && (
+              <div className="absolute right-0 top-full mt-2 z-50 w-72 max-h-80 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl">
+                {Object.entries(CIRCUIT_EXAMPLES).map(([key, example]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      handleLoadCircuitExample(key);
+                      setShowExamplesMenu(false);
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{example.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{example.description}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           
           <div className="border-l border-gray-200 dark:border-gray-700 pl-2 ml-2 flex gap-1">
             {/* Truth table */}
@@ -1179,18 +1510,27 @@ export default function LogicSimulatorPage() {
               Save
             </Button>
           </div>
+
+          <Button
+            size="sm"
+            variant="ghost"
+            className="lg:hidden"
+            onClick={() => setShowRightPanelMobile(true)}
+          >
+            <PanelRight className="w-4 h-4" />
+          </Button>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-w-0">
         {/* Left sidebar - Component Palette */}
-        <div className="p-4">
+        <div className="hidden lg:block w-80 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700">
           <ComponentPalette onAddComponent={handleAddComponent} />
         </div>
 
         {/* Canvas area */}
-        <div className="flex-1 relative">
+        <div className="flex-1 min-w-0 relative">
           <svg
             ref={canvasRef}
             className="w-full h-full bg-white dark:bg-gray-900 cursor-crosshair"
@@ -1283,7 +1623,7 @@ export default function LogicSimulatorPage() {
         </div>
 
         {/* Right sidebar */}
-        <div className="w-64 p-4 space-y-4">
+        <div className="hidden lg:block w-64 p-4 space-y-4 overflow-y-auto border-l border-gray-200 dark:border-gray-700">
           {/* Component Properties */}
           {selectedIds.length === 1 && (() => {
             const sel = components.find(c => c.id === selectedIds[0]);
@@ -1344,6 +1684,86 @@ export default function LogicSimulatorPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile left panel */}
+      {showLeftPanelMobile && (
+        <>
+          <button
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setShowLeftPanelMobile(false)}
+            aria-label="Close components panel"
+          />
+          <div className="fixed inset-y-0 left-0 z-50 w-[88vw] max-w-sm bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto lg:hidden">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">Components</h3>
+              <Button size="sm" variant="ghost" onClick={() => setShowLeftPanelMobile(false)}>Close</Button>
+            </div>
+            <ComponentPalette onAddComponent={handleAddComponent} />
+          </div>
+        </>
+      )}
+
+      {/* Mobile right panel */}
+      {showRightPanelMobile && (
+        <>
+          <button
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setShowRightPanelMobile(false)}
+            aria-label="Close details panel"
+          />
+          <div className="fixed inset-y-0 right-0 z-50 w-[88vw] max-w-sm bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 p-4 overflow-y-auto space-y-4 lg:hidden">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">Circuit Details</h3>
+              <Button size="sm" variant="ghost" onClick={() => setShowRightPanelMobile(false)}>Close</Button>
+            </div>
+
+            {selectedIds.length === 1 && (() => {
+              const sel = components.find(c => c.id === selectedIds[0]);
+              if (!sel) return null;
+              return (
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2">Properties: {sel.type}</h3>
+                  <label className="block text-xs text-gray-500 mb-1">Label</label>
+                  <input
+                    type="text"
+                    value={sel.label || ''}
+                    onChange={e => handleUpdateComponent(sel.id, { label: e.target.value })}
+                    placeholder="Label"
+                    className="w-full px-2 py-1 text-sm border rounded dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </div>
+              );
+            })()}
+
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <h3 className="text-sm font-semibold text-gray-500 mb-3">Saved Circuits</h3>
+              {loadingCircuits ? (
+                <Loader size="sm" />
+              ) : (
+                <div className="space-y-1 max-h-80 overflow-y-auto">
+                  {circuits?.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        handleLoad(c);
+                        setShowRightPanelMobile(false);
+                      }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
+                        currentCircuit?.id === c.id
+                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      )}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
       
       {/* Truth Table Modal */}
       <TruthTable

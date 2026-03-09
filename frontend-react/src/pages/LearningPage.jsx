@@ -13,6 +13,7 @@ import {
 import { cn } from '../lib/utils';
 import InteractiveSimulation from '../components/learning/InteractiveSimulation';
 import { SINAMICS_COURSE, SINAMICS_MODULES } from '../data/sinamicsCourseData';
+import { KINETIC_GEOMETRY_COURSE, KINETIC_GEOMETRY_MODULES } from '../data/kineticGeometryCourseData';
 import SinamicsMotorLab from '../components/learning/simulations/SinamicsMotorLab';
 import SinamicsPIDLab from '../components/learning/simulations/SinamicsPIDLab';
 import SinamicsInverterFlow from '../components/learning/simulations/SinamicsInverterFlow';
@@ -52,6 +53,7 @@ const disciplineIcons = {
   aerospace: Plane,
   general: BookOpen,
   sinamics: Zap,
+  mathematics: Calculator,
 };
 
 // Type colors for lesson types
@@ -727,6 +729,97 @@ function CourseGridView({ courses, onSelect, progress }) {
           >
             <FlaskConical className="w-4 h-4 mr-2" />
             Try Motor Lab Demo
+          </Button>
+        </div>
+      </Card>
+
+      {/* KineticGeometry Lab Section */}
+      <Card className="p-6 border-2 border-purple-200 dark:border-purple-800">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+            <Calculator className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              {KINETIC_GEOMETRY_COURSE.title}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {KINETIC_GEOMETRY_COURSE.description}
+            </p>
+            <div className="flex items-center gap-4 mt-3">
+              <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                {KINETIC_GEOMETRY_COURSE.level}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {KINETIC_GEOMETRY_COURSE.duration}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {KINETIC_GEOMETRY_COURSE.totalLessons} lessons
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* KineticGeometry Features */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {KINETIC_GEOMETRY_COURSE.features.map((feature, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <CircleCheck className="w-4 h-4 text-green-500" />
+              {feature}
+            </div>
+          ))}
+        </div>
+
+        {/* KineticGeometry Modules Preview */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+            Course Modules
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {KINETIC_GEOMETRY_MODULES.map((module) => (
+              <div
+                key={module.id}
+                className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center gap-2">
+                  {module.type === 'SIMULATION_CURVES' || module.type === 'SIMULATION_FRACTALS' || module.type === 'SIMULATION_COORDINATES' ? (
+                    <Atom className="w-4 h-4 text-purple-500" />
+                  ) : (
+                    <BookOpen className="w-4 h-4 text-blue-500" />
+                  )}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {module.title}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+                  {module.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* KineticGeometry Quick Access Buttons */}
+        <div className="flex flex-wrap gap-3 mt-6">
+          <Button
+            onClick={() => {
+              onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
+            }}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Start Course
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
+            }}
+            className="border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300"
+          >
+            <Atom className="w-4 h-4 mr-2" />
+            Explore Lissajous Curves
           </Button>
         </div>
       </Card>

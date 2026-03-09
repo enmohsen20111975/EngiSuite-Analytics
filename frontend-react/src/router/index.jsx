@@ -22,6 +22,8 @@ import VisualDashboardBuilderPage from '../pages/VisualDashboardBuilderPage';
 // Simulator Pages
 import HydraulicSimulatorPage from '../pages/HydraulicSimulatorPage';
 import ElectricalSimulatorPage from '../pages/ElectricalSimulatorPage';
+import ElectricalSimulator2Page from '../pages/ElectricalSimulator2Page';
+import FluidSimulatorPage from '../pages/FluidSimulatorPage';
 
 /**
  * Application router configuration
@@ -59,6 +61,10 @@ export const router = createBrowserRouter([
     element: <DiagramStudioPage />,
   },
   {
+    path: '/logic-simulator',
+    element: <LogicSimulatorPage />,
+  },
+  {
     path: '/logic-sim',
     element: <LogicSimulatorPage />,
   },
@@ -70,11 +76,36 @@ export const router = createBrowserRouter([
     path: '/data-analysis',
     element: <VisualDataAnalysisPage />,
   },
+  {
+    path: '/visual-data-analysis',
+    element: <VisualDataAnalysisPage />,
+  },
+  {
+    path: '/data-upload',
+    element: <DataUploadPage />,
+  },
+  {
+    path: '/visual-query-builder',
+    element: <VisualQueryBuilderPage />,
+  },
+  {
+    path: '/visual-report-builder',
+    element: <VisualReportBuilderPage />,
+  },
+  {
+    path: '/visual-dashboard-builder',
+    element: <VisualDashboardBuilderPage />,
+  },
 
   // Protected routes (with layout)
   {
     element: <AppLayout />,
     children: [
+      {
+        index: true,
+        element: <Navigate to="/dashboard" replace />,
+      },
+
       // Dashboard
       {
         path: '/dashboard',
@@ -121,6 +152,18 @@ export const router = createBrowserRouter([
       {
         path: '/simulators/electrical',
         element: <ElectricalSimulatorPage />,
+      },
+
+      // Electrical Simulator 2 (Google AI Studio)
+      {
+        path: '/simulators/electrical2',
+        element: <ElectricalSimulator2Page />,
+      },
+
+      // Fluid Simulator (Google AI Studio)
+      {
+        path: '/simulators/fluid',
+        element: <FluidSimulatorPage />,
       },
 
       // Reports
@@ -241,47 +284,6 @@ export const router = createBrowserRouter([
         element: <AdminSystemPage />,
       },
 
-      // SubSaaS Routes (fully integrated)
-      {
-        path: '/visual-data-analysis',
-        element: <VisualDataAnalysisPage />,
-      },
-      {
-        path: '/vda',
-        element: <Navigate to="/data-upload" replace />,
-      },
-
-      // VDA Routes (Visual Data Analysis - 4 main pages)
-      {
-        path: '/data-upload',
-        element: <DataUploadPage />,
-      },
-      {
-        path: '/visual-query-builder',
-        element: <VisualQueryBuilderPage />,
-      },
-      {
-        path: '/visual-report-builder',
-        element: <VisualReportBuilderPage />,
-      },
-      {
-        path: '/visual-dashboard-builder',
-        element: <VisualDashboardBuilderPage />,
-      },
-
-      // Legacy SubSaaS Routes
-      {
-        path: '/logic-simulator',
-        element: <LogicSimulatorPage />,
-      },
-      {
-        path: '/logic-sim',
-        element: <Navigate to="/logic-simulator" replace />,
-      },
-      {
-        path: '/pdf-editor',
-        element: <PDFEditorPage />,
-      },
     ],
   },
 

@@ -993,7 +993,7 @@ export default function PDFEditorPage() {
   }, [filters]);
 
   return (
-    <div className="h-full flex flex-col bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center gap-4">
