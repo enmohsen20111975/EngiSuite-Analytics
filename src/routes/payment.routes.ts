@@ -28,6 +28,8 @@ const TIER_PRICES: Record<string, Record<string, { monthly: number; yearly: numb
 
 // Paymob configuration
 const PAYMOB_API_KEY = process.env.PAYMOB_API_KEY || '';
+const PAYMOB_SECRET_KEY = process.env.PAYMOB_SECRET_KEY || '';
+const PAYMOB_PUBLIC_KEY = process.env.PAYMOB_PUBLIC_KEY || '';
 const PAYMOB_INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID || '';
 const PAYMOB_IFRAME_ID = process.env.PAYMOB_IFRAME_ID || '';
 const PAYMOB_HMAC_SECRET = process.env.PAYMOB_HMAC_SECRET || '';
@@ -618,6 +620,7 @@ router.get('/paymob/config', (_req: Request, res: Response) => {
   res.json({
     success: true,
     data: {
+      publicKey: PAYMOB_PUBLIC_KEY,
       iframeId: PAYMOB_IFRAME_ID,
       integrationId: PAYMOB_INTEGRATION_ID,
     },

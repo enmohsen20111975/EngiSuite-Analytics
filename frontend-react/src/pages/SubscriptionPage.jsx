@@ -3,11 +3,12 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { subscriptionService } from '../services/subscriptionService';
 import { Button, Card, Loader, EmptyState, Input } from '../components/ui';
-import { 
+import {
   Check, X, CreditCard, Coins, History, Download,
-  Crown, Zap, Building, ArrowRight, CircleAlert,
-  Calendar, DollarSign, TrendingUp, Wallet
+  Crown, Zap, Building, CircleAlert,
+  DollarSign
 } from 'lucide-react';
+import { useAuthStore } from '../stores/authStore';
 import { cn } from '../lib/utils';
 
 // Subscription plans
@@ -16,6 +17,7 @@ const PLANS = [
     id: 'free',
     name: 'Free',
     price: 0,
+    priceEGP: 0,
     period: 'forever',
     description: 'Perfect for getting started',
     icon: Zap,
@@ -104,20 +106,23 @@ const CREDIT_PACKAGES = [
 export default function SubscriptionPage() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const { user } = useAuthStore();
   const [billingPeriod, setBillingPeriod] = useState('monthly');
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [showPaymobModal, setShowPaymobModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [billingData, setBillingData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-  });
-  const [paymentMethod, setPaymentMethod] = useState('paymob'); // 'paymob' or 'stripe'
 
-  // Auto-open Paymob modal if ?plan= param is present (coming from PricingPage)
+  // Auto-fill billing data from user profile
+  const nameParts = (user?.name || '').trim().split(' ');
+  const [billingData, setBillingData] = useState({
+    firstName: nameParts[0] || '',
+    lastName: nameParts.slice(1).join(' ') || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+  });
+
+  // Auto-open payment modal if ?plan= param is present (coming from PricingPage)
   useEffect(() => {
     const planId = searchParams.get('plan');
     const billing = searchParams.get('billing');
@@ -126,7 +131,7 @@ export default function SubscriptionPage() {
       if (plan && plan.id !== 'free') {
         if (billing) setBillingPeriod(billing);
         setSelectedPlan(plan);
-        setShowPaymobModal(true);
+        setShowPaymentModal(true);
       }
     }
   }, [searchParams]);
@@ -171,12 +176,11 @@ export default function SubscriptionPage() {
     },
   });
 
-  // Paymob payment mutation
-  const paymobMutation = useMutation({
-    mutationFn: ({ tier, billingCycle, billingData }) => 
+  // Payment mutation
+  const paymentMutation = useMutation({
+    mutationFn: ({ tier, billingCycle, billingData }) =>
       subscriptionService.createSubscriptionWithPaymob(tier, billingCycle, billingData),
     onSuccess: (response) => {
-      // Redirect to Paymob payment page
       if (response.data?.paymentUrl) {
         window.location.href = response.data.paymentUrl;
       }
@@ -199,23 +203,18 @@ export default function SubscriptionPage() {
   // Handle plan selection
   const handleSelectPlan = (plan) => {
     if (plan.id === 'free') return;
-    
     setSelectedPlan(plan);
-    if (paymentMethod === 'paymob') {
-      setShowPaymobModal(true);
-    } else {
-      subscribeMutation.mutate(plan.id);
-    }
+    setShowPaymentModal(true);
   };
 
-  // Handle Paymob payment
-  const handlePaymobPayment = () => {
-    if (!billingData.email || !billingData.phone) {
-      alert('Please fill in email and phone number');
+  // Handle payment submission
+  const handlePayment = () => {
+    if (!billingData.email) {
+      alert('Please fill in your email');
       return;
     }
 
-    paymobMutation.mutate({
+    paymentMutation.mutate({
       tier: selectedPlan.id,
       billingCycle: billingPeriod === 'yearly' ? 'yearly' : 'monthly',
       billingData,
@@ -241,44 +240,6 @@ export default function SubscriptionPage() {
           Manage your subscription, credits, and payment methods
         </p>
       </div>
-
-      {/* Payment Method Toggle */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Payment Method</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Choose your preferred payment method
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPaymentMethod('paymob')}
-              className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
-                paymentMethod === 'paymob'
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-              )}
-            >
-              <Wallet className="w-4 h-4" />
-              Paymob (EGP)
-            </button>
-            <button
-              onClick={() => setPaymentMethod('stripe')}
-              className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
-                paymentMethod === 'stripe'
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-              )}
-            >
-              <CreditCard className="w-4 h-4" />
-              Stripe (USD)
-            </button>
-          </div>
-        </div>
-      </Card>
 
       {/* Current Plan & Credits Overview */}
       <div className="grid md:grid-cols-2 gap-6">
@@ -395,10 +356,7 @@ export default function SubscriptionPage() {
           {PLANS.map((plan) => {
             const Icon = plan.icon;
             const isCurrentPlan = subscription?.plan_id === plan.id;
-            const price = billingPeriod === 'yearly' 
-              ? (paymentMethod === 'paymob' ? plan.priceEGP * 12 * 0.8 : plan.price * 12 * 0.8)
-              : (paymentMethod === 'paymob' ? plan.priceEGP : plan.price);
-            const currency = paymentMethod === 'paymob' ? 'EGP' : 'USD';
+            const price = billingPeriod === 'yearly' ? plan.price * 12 * 0.8 : plan.price;
             
             return (
               <Card
@@ -429,7 +387,7 @@ export default function SubscriptionPage() {
                   <p className="text-xs text-gray-500 mt-1">{plan.description}</p>
                   <div className="mt-3">
                     <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {currency === 'EGP' ? 'E£' : '$'}{price.toFixed(0)}
+                      ${price.toFixed(0)}
                     </span>
                     {plan.price > 0 && (
                       <span className="text-gray-500 text-sm">/{billingPeriod === 'yearly' ? 'year' : 'month'}</span>
@@ -456,7 +414,7 @@ export default function SubscriptionPage() {
                   className="w-full"
                   size="sm"
                   variant={isCurrentPlan ? 'outline' : 'default'}
-                  disabled={isCurrentPlan || subscribeMutation.isPending || paymobMutation.isPending}
+                  disabled={isCurrentPlan || subscribeMutation.isPending || paymentMutation.isPending}
                   onClick={() => handleSelectPlan(plan)}
                 >
                   {isCurrentPlan ? 'Current Plan' : plan.cta}
@@ -495,7 +453,7 @@ export default function SubscriptionPage() {
                 </p>
                 <p className="text-sm text-gray-500">credits</p>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white mt-2">
-                  {paymentMethod === 'paymob' ? `E£${pkg.priceEGP}` : `$${pkg.price}`}
+                  ${pkg.price}
                 </p>
               </div>
             </Card>
@@ -624,9 +582,7 @@ export default function SubscriptionPage() {
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-gray-600 dark:text-gray-400">Total:</span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    {paymentMethod === 'paymob' 
-                      ? `E£${selectedPackage.priceEGP}` 
-                      : `$${selectedPackage.price}`}
+                    ${selectedPackage.price}
                   </span>
                 </div>
               </div>
@@ -643,7 +599,7 @@ export default function SubscriptionPage() {
                 }}
                 disabled={purchaseCreditsMutation.isPending}
               >
-                {purchaseCreditsMutation.isPending ? 'Processing...' : `Pay with ${paymentMethod === 'paymob' ? 'Paymob' : 'Card'}`}
+                {purchaseCreditsMutation.isPending ? 'Processing...' : 'Pay with Card'}
               </Button>
               <Button
                 variant="outline"
@@ -660,26 +616,26 @@ export default function SubscriptionPage() {
         </div>
       )}
 
-      {/* Paymob Payment Modal */}
-      {showPaymobModal && selectedPlan && (
+      {/* Payment Modal */}
+      {showPaymentModal && selectedPlan && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg p-6 m-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Complete Payment with Paymob
+              Complete Payment
             </h3>
-            
+
             {/* Plan Summary */}
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedPlan.name} Plan</p>
                   <p className="text-sm text-gray-500">{billingPeriod === 'yearly' ? 'Yearly' : 'Monthly'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-green-600">
-                    E£{billingPeriod === 'yearly' 
-                      ? (selectedPlan.priceEGP * 12 * 0.8).toFixed(0) 
-                      : selectedPlan.priceEGP}
+                  <p className="text-2xl font-bold text-blue-600">
+                    ${billingPeriod === 'yearly'
+                      ? (selectedPlan.price * 12 * 0.8).toFixed(0)
+                      : selectedPlan.price}
                   </p>
                   <p className="text-xs text-gray-500">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
                 </div>
@@ -733,7 +689,7 @@ export default function SubscriptionPage() {
                   placeholder="+20 xxx xxx xxxx"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Enter your Egyptian phone number</p>
+                <p className="text-xs text-gray-500 mt-1">Enter your phone number</p>
               </div>
             </div>
 
@@ -743,26 +699,26 @@ export default function SubscriptionPage() {
                 variant="outline"
                 className="flex-1"
                 onClick={() => {
-                  setShowPaymobModal(false);
+                  setShowPaymentModal(false);
                   setSelectedPlan(null);
                 }}
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-green-600 hover:bg-green-700"
-                onClick={handlePaymobPayment}
-                disabled={paymobMutation.isPending || !billingData.email || !billingData.phone}
+                className="flex-1"
+                onClick={handlePayment}
+                disabled={paymentMutation.isPending || !billingData.email}
               >
-                {paymobMutation.isPending ? (
+                {paymentMutation.isPending ? (
                   <>
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <Wallet className="w-4 h-4 mr-2" />
-                    Pay with Paymob
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Pay Now
                   </>
                 )}
               </Button>
@@ -770,7 +726,7 @@ export default function SubscriptionPage() {
 
             {/* Security Note */}
             <p className="text-xs text-gray-500 mt-4 text-center">
-              🔒 Your payment is secured by Paymob. You will be redirected to complete payment.
+              🔒 Your payment is secure. You will be redirected to complete payment.
             </p>
           </Card>
         </div>

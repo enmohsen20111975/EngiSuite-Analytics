@@ -8,40 +8,41 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useCredits } from '../../hooks/useCredits';
+import { useTranslation } from '../../stores/languageStore';
 
-const navItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/calculators', label: 'Calculators', icon: Calculator },
-  { path: '/engineering-calculator', label: 'Sci Calculator', icon: FunctionSquare },
+const getNavItems = (t) => [
+  { path: '/dashboard', label: t('navigation.dashboard'), icon: LayoutDashboard },
+  { path: '/calculators', label: t('navigation.calculators'), icon: Calculator },
+  { path: '/engineering-calculator', label: t('calculators.title'), icon: FunctionSquare },
   { path: '/unit-converter', label: 'Unit Converter', icon: Ruler },
-  { path: '/pipelines', label: 'Pipelines', icon: GitBranch },
+  { path: '/pipelines', label: t('navigation.projects'), icon: GitBranch },
   { path: '/visual-workflow', label: 'Visual Workflow', icon: Workflow },
-  { path: '/reports', label: 'Reports', icon: FileText },
-  { path: '/projects', label: 'Projects', icon: FolderKanban },
-  { path: '/learning', label: 'Learning', icon: BookOpen },
+  { path: '/reports', label: t('navigation.reports'), icon: FileText },
+  { path: '/projects', label: t('navigation.projects'), icon: FolderKanban },
+  { path: '/learning', label: t('learning.title'), icon: BookOpen },
   { path: '/pricing', label: 'Pricing', icon: DollarSign },
 ];
 
-const subsaasItems = [
+const getSubsaasItems = (t) => [
   { path: '/diagram-studio', label: 'Diagram Studio', icon: PenTool },
-  { path: '/logic-simulator', label: 'Logic Simulator', icon: CircuitBoard },
+  { path: '/logic-simulator', label: t('simulators.logic'), icon: CircuitBoard },
   { path: '/pdf-editor', label: 'PDF Editor', icon: FileEdit },
-  { path: '/visual-data-analysis', label: 'Data Analysis', icon: BarChart3 },
+  { path: '/visual-data-analysis', label: t('navigation.analytics'), icon: BarChart3 },
 ];
 
-const simulatorItems = [
+const getSimulatorItems = (t) => [
   { path: '/simulators/electrical2', label: 'Electrical Sim 2', icon: Zap },
-  { path: '/simulators/fluid', label: 'Fluid Sim', icon: Droplets },
-  { path: '/simulators/electrical', label: 'Electrical Sim', icon: CircuitBoard },
-  { path: '/simulators/hydraulic', label: 'Hydraulic Sim', icon: Cog },
+  { path: '/simulators/fluid', label: t('simulators.hydraulic'), icon: Droplets },
+  { path: '/simulators/electrical', label: t('simulators.electrical'), icon: CircuitBoard },
+  { path: '/simulators/hydraulic', label: t('simulators.hydraulic'), icon: Cog },
 ];
 
-const bottomNavItems = [
-  { path: '/profile', label: 'Profile', icon: User },
-  { path: '/settings', label: 'Settings', icon: Settings },
+const getBottomNavItems = (t) => [
+  { path: '/profile', label: t('navigation.profile'), icon: User },
+  { path: '/settings', label: t('navigation.settings'), icon: Settings },
 ];
 
-function NavItem({ item, collapsed }) {
+function NavItem({ item, collapsed, direction }) {
   return (
     <li>
       <NavLink
@@ -49,11 +50,12 @@ function NavItem({ item, collapsed }) {
         className={({ isActive }) => cn(
           'sidebar-link',
           isActive && 'active',
-          collapsed && 'justify-center px-2'
+          collapsed && 'justify-center px-2',
+          direction === 'rtl' && collapsed && 'flex-row-reverse'
         )}
         title={collapsed ? item.label : undefined}
       >
-        <item.icon className="w-5 h-5 flex-shrink-0" />
+        <item.icon className={cn("w-5 h-5 flex-shrink-0", direction === 'rtl' && !collapsed && 'ml-0 mr-3')} />
         {!collapsed && <span>{item.label}</span>}
       </NavLink>
     </li>
@@ -65,11 +67,18 @@ function Sidebar({ collapsed, onToggle }) {
   const [simsExpanded, setSimsExpanded] = useState(false);
   const navigate = useNavigate();
   const { credits, isLow } = useCredits();
+  const { t, direction } = useTranslation();
+  
+  const navItems = getNavItems(t);
+  const subsaasItems = getSubsaasItems(t);
+  const simulatorItems = getSimulatorItems(t);
+  const bottomNavItems = getBottomNavItems(t);
 
   return (
     <aside className={cn(
       'relative flex flex-col h-full bg-[var(--color-bg-secondary)] border-r border-[var(--color-border)] transition-all duration-300',
-      collapsed ? 'w-16' : 'w-64'
+      collapsed ? 'w-16' : 'w-64',
+      direction === 'rtl' && 'border-r-0 border-l'
     )}>
       {/* Logo */}
       <div className={cn(
@@ -90,7 +99,8 @@ function Sidebar({ collapsed, onToggle }) {
             'mx-3 mt-3 px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
             isLow
               ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 animate-pulse'
-              : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]'
+              : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]',
+            direction === 'rtl' && 'flex-row-reverse'
           )}
         >
           <Coins className="w-4 h-4 flex-shrink-0" />
@@ -129,7 +139,7 @@ function Sidebar({ collapsed, onToggle }) {
       <nav className="flex-1 overflow-y-auto py-4 px-2">
         <ul className="space-y-1">
           {navItems.map((item) => (
-            <NavItem key={item.path} item={item} collapsed={collapsed} />
+            <NavItem key={item.path} item={item} collapsed={collapsed} direction={direction} />
           ))}
         </ul>
 
@@ -138,10 +148,13 @@ function Sidebar({ collapsed, onToggle }) {
           {!collapsed && (
             <button
               onClick={() => setToolsExpanded(prev => !prev)}
-              className="w-full flex items-center justify-between px-3 mb-2"
+              className={cn(
+                'w-full flex items-center justify-between px-3 mb-2',
+                direction === 'rtl' && 'flex-row-reverse'
+              )}
             >
               <p className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-                Tools
+                {t('settings.sections.developer') === 'إعدادات المطور' ? 'أدوات' : 'Tools'}
               </p>
               <ChevronDown className={cn(
                 'w-3 h-3 text-[var(--color-text-muted)] transition-transform',
@@ -152,7 +165,7 @@ function Sidebar({ collapsed, onToggle }) {
           {(toolsExpanded || collapsed) && (
             <ul className="space-y-1">
               {subsaasItems.map((item) => (
-                <NavItem key={item.path} item={item} collapsed={collapsed} />
+                <NavItem key={item.path} item={item} collapsed={collapsed} direction={direction} />
               ))}
             </ul>
           )}
@@ -163,10 +176,13 @@ function Sidebar({ collapsed, onToggle }) {
           {!collapsed && (
             <button
               onClick={() => setSimsExpanded(prev => !prev)}
-              className="w-full flex items-center justify-between px-3 mb-2"
+              className={cn(
+                'w-full flex items-center justify-between px-3 mb-2',
+                direction === 'rtl' && 'flex-row-reverse'
+              )}
             >
               <p className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">
-                Simulators
+                {t('simulators.title')}
               </p>
               <ChevronDown className={cn(
                 'w-3 h-3 text-[var(--color-text-muted)] transition-transform',
@@ -177,7 +193,7 @@ function Sidebar({ collapsed, onToggle }) {
           {(simsExpanded || collapsed) && (
             <ul className="space-y-1">
               {simulatorItems.map((item) => (
-                <NavItem key={item.path} item={item} collapsed={collapsed} />
+                <NavItem key={item.path} item={item} collapsed={collapsed} direction={direction} />
               ))}
             </ul>
           )}
@@ -188,7 +204,7 @@ function Sidebar({ collapsed, onToggle }) {
       <div className="py-4 px-2 border-t border-[var(--color-border)]">
         <ul className="space-y-1">
           {bottomNavItems.map((item) => (
-            <NavItem key={item.path} item={item} collapsed={collapsed} />
+            <NavItem key={item.path} item={item} collapsed={collapsed} direction={direction} />
           ))}
         </ul>
       </div>
@@ -197,12 +213,16 @@ function Sidebar({ collapsed, onToggle }) {
       <button
         onClick={onToggle}
         className={cn(
-          'absolute -right-3 top-20 z-50 w-6 h-6 rounded-full',
+          'absolute w-6 h-6 rounded-full z-50',
           'bg-[var(--color-bg-primary)] border border-[var(--color-border)]',
-          'flex items-center justify-center text-[var(--color-text-muted)]'
+          'flex items-center justify-center text-[var(--color-text-muted)]',
+          direction === 'rtl' ? '-left-3 top-20' : '-right-3 top-20'
         )}
       >
-        {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        {collapsed 
+          ? (direction === 'rtl' ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />) 
+          : (direction === 'rtl' ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />)
+        }
       </button>
     </aside>
   );

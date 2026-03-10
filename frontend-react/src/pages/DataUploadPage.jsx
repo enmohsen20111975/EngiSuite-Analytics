@@ -1,13 +1,15 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Upload, FileSpreadsheet, FileCode, FileText, Database, 
+import {
+  Upload, FileSpreadsheet, FileCode, FileText, Database,
   Trash2, Eye, SquareCheck, Square, RefreshCw, Download,
   CircleAlert, CircleCheck, CircleX, FolderOpen, Table,
   ArrowRight, LoaderCircle, Search, ListFilter, ChevronDown, ChevronRight,
-  ChartColumn, FileChartColumn, LayoutDashboard
+  ChartColumn, FileChartColumn, LayoutDashboard, ChevronUp, CheckCircle2,
+  Layers, Minimize2, Maximize2
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { useVDAData } from '../contexts/VDADataContext';
 
 // File type configurations
 const FILE_TYPES = {
@@ -21,8 +23,25 @@ const DataUploadPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   
-  // State management
-  const [files, setFiles] = useState([]);
+  // Get context methods and state
+  const {
+    dataSources,
+    activeDataSource,
+    addDataSource,
+    removeDataSource,
+    selectDataSource,
+    isLoading: contextLoading,
+    isSubscribed,
+    sourceCount,
+    // Multi-select from context
+    selectedSourceIds,
+    toggleSourceSelection,
+    selectAllSources,
+    deselectAllSources,
+    getSelectedSources
+  } = useVDAData();
+  
+  // Local state for UI
   const [selectedFile, setSelectedFile] = useState(null);
   const [sheets, setSheets] = useState([]);
   const [selectedSheets, setSelectedSheets] = useState([]);
@@ -33,44 +52,23 @@ const DataUploadPage = () => {
   const [success, setSuccess] = useState(null);
   const [expandedFiles, setExpandedFiles] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Load saved data from localStorage on mount
+  const [isActionPanelCollapsed, setIsActionPanelCollapsed] = useState(false);
+
+  // Sync local selected file with context's active data source
   useEffect(() => {
-    const savedFiles = localStorage.getItem('vda_uploaded_files');
-    if (savedFiles) {
-      try {
-        const parsed = JSON.parse(savedFiles);
-        setFiles(parsed);
-      } catch (e) {
-        console.error('Failed to load saved files:', e);
+    if (activeDataSource) {
+      setSelectedFile(activeDataSource);
+      setSheets(activeDataSource.sheets || []);
+      setSelectedSheets(activeDataSource.sheets?.map(s => s.name) || []);
+      
+      if (activeDataSource.sheets && activeDataSource.sheets.length > 0) {
+        setPreviewData({
+          headers: activeDataSource.sheets[0].headers || [],
+          rows: activeDataSource.sheets[0].rows?.slice(0, 100) || []
+        });
       }
     }
-  }, []);
-  
-  // Save files to localStorage when changed
-  useEffect(() => {
-    if (files.length > 0) {
-      // Store metadata only, not full data (to avoid quota issues)
-      const metadata = files.map(f => ({
-        id: f.id,
-        name: f.name,
-        type: f.type,
-        size: f.size,
-        uploadedAt: f.uploadedAt,
-        sheets: f.sheets?.map(s => ({
-          name: s.name,
-          rowCount: s.rowCount,
-          colCount: s.colCount
-        })),
-        rowCount: f.rowCount,
-        colCount: f.colCount
-      }));
-      localStorage.setItem('vda_uploaded_files', JSON.stringify(metadata));
-    }
-  }, [files]);
-
-  // Generate unique ID
-  const generateId = () => `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }, [activeDataSource]);
 
   // Get file type
   const getFileType = (filename) => {
@@ -85,75 +83,74 @@ const DataUploadPage = () => {
   // Parse file content
   const parseFile = async (file) => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      const fileType = getFileType(file.name);
-      
-      reader.onload = (e) => {
-        try {
-          let result = { sheets: [], type: fileType };
+    const reader = new FileReader();
+    const fileType = getFileType(file.name);
+    
+    reader.onload = (e) => {
+      try {
+        let result = { sheets: [], type: fileType };
+        
+        if (fileType === 'xlsx' || fileType === 'csv') {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
           
-          if (fileType === 'xlsx' || fileType === 'csv') {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
+          result.sheets = workbook.SheetNames.map(name => {
+            const worksheet = workbook.Sheets[name];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            const headers = jsonData[0] || [];
+            const rows = jsonData.slice(1);
             
-            result.sheets = workbook.SheetNames.map(name => {
-              const worksheet = workbook.Sheets[name];
-              const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-              const headers = jsonData[0] || [];
-              const rows = jsonData.slice(1);
-              
-              return {
-                name,
-                headers,
-                rows,
-                rowCount: rows.length,
-                colCount: headers.length,
-                rawData: jsonData
-              };
-            });
-          } else if (fileType === 'json') {
-            const jsonData = JSON.parse(e.target.result);
-            const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+            return {
+              name,
+              headers,
+              rows,
+              rowCount: rows.length,
+              colCount: headers.length,
+              rawData: jsonData
+            };
+          });
+        } else if (fileType === 'json') {
+          const jsonData = JSON.parse(e.target.result);
+          const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+          
+          if (dataArray.length > 0) {
+            const headers = Object.keys(dataArray[0]);
+            const rows = dataArray.map(item => headers.map(h => item[h]));
             
-            if (dataArray.length > 0) {
-              const headers = Object.keys(dataArray[0]);
-              const rows = dataArray.map(item => headers.map(h => item[h]));
-              
-              result.sheets = [{
-                name: 'Data',
-                headers,
-                rows,
-                rowCount: rows.length,
-                colCount: headers.length,
-                rawData: dataArray
-              }];
-            }
-          } else if (fileType === 'db') {
-            // SQLite would need sql.js library - for now, show placeholder
             result.sheets = [{
-              name: 'Database',
-              headers: ['Info'],
-              rows: [['SQLite database uploaded - tables will be available in query builder']],
-              rowCount: 1,
-              colCount: 1,
-              rawData: []
+              name: 'Data',
+              headers,
+              rows,
+              rowCount: rows.length,
+              colCount: headers.length,
+              rawData: dataArray
             }];
           }
-          
-          resolve(result);
-        } catch (err) {
-          reject(err);
+        } else if (fileType === 'db') {
+          result.sheets = [{
+            name: 'Database',
+            headers: ['Info'],
+            rows: [['SQLite database uploaded - tables will be available in query builder']],
+            rowCount: 1,
+            colCount: 1,
+            rawData: []
+          }];
         }
-      };
-      
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      
-      if (fileType === 'json') {
-        reader.readAsText(file);
-      } else {
-        reader.readAsArrayBuffer(file);
+        
+        resolve(result);
+      } catch (err) {
+        reject(err);
       }
-    });
+    };
+    
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    
+    if (fileType === 'json') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
   };
 
   // Handle file drop
@@ -178,6 +175,13 @@ const DataUploadPage = () => {
     setError(null);
     
     try {
+      // Check limits for non-subscribed users
+      if (!isSubscribed && sourceCount + fileList.length > 10) {
+        setError(`Free users are limited to ${10} data sources. Please upgrade for more storage.`);
+        setIsLoading(false);
+        return;
+      }
+      
       for (const file of fileList) {
         const fileType = getFileType(file.name);
         
@@ -188,23 +192,25 @@ const DataUploadPage = () => {
         
         const parsed = await parseFile(file);
         
-        const fileData = {
-          id: generateId(),
+        // Prepare data for context
+        const sourceData = {
           name: file.name,
           type: fileType,
           size: file.size,
-          uploadedAt: new Date().toISOString(),
           sheets: parsed.sheets,
+          data: parsed.sheets[0]?.rawData || null,
           rowCount: parsed.sheets.reduce((sum, s) => sum + s.rowCount, 0),
           colCount: parsed.sheets[0]?.colCount || 0
         };
         
-        setFiles(prev => [...prev, fileData]);
+        // Add to context (this handles both server and local storage)
+        const addedSource = await addDataSource(sourceData);
+        
         setSuccess(`Successfully uploaded: ${file.name}`);
         
         // Auto-select first file
         if (!selectedFile) {
-          selectFile(fileData);
+          selectDataSource(addedSource.id);
         }
       }
     } catch (err) {
@@ -215,19 +221,9 @@ const DataUploadPage = () => {
     }
   };
 
-  // Select a file
-  const selectFile = (file) => {
-    setSelectedFile(file);
-    setSheets(file.sheets || []);
-    setSelectedSheets(file.sheets?.map(s => s.name) || []);
-    
-    // Show preview of first sheet
-    if (file.sheets && file.sheets.length > 0) {
-      setPreviewData({
-        headers: file.sheets[0].headers,
-        rows: file.sheets[0].rows.slice(0, 100) // Preview first 100 rows
-      });
-    }
+  // Select a file from context
+  const handleSelectFile = (source) => {
+    selectDataSource(source.id);
   };
 
   // Toggle sheet selection
@@ -253,25 +249,18 @@ const DataUploadPage = () => {
   };
 
   // Delete file
-  const deleteFile = (fileId) => {
-    setFiles(prev => prev.filter(f => f.id !== fileId));
-    if (selectedFile?.id === fileId) {
-      setSelectedFile(null);
-      setSheets([]);
-      setPreviewData({ headers: [], rows: [] });
-    }
+  const handleDeleteFile = (sourceId) => {
+    removeDataSource(sourceId);
   };
 
   // Export as SQLite database
   const exportAsDatabase = () => {
-    // This would create a SQLite database from the data
     setSuccess('Database export feature - would download .db file');
     setTimeout(() => setSuccess(null), 3000);
   };
 
   // Convert files to database
   const convertToDatabase = () => {
-    // Store in IndexedDB for persistent storage
     setSuccess('Files converted and stored in database');
     setTimeout(() => setSuccess(null), 3000);
   };
@@ -284,19 +273,12 @@ const DataUploadPage = () => {
   };
 
   // ListFilter files by search
-  const filteredFiles = files.filter(f => 
+  const filteredFiles = dataSources.filter(f => 
     f.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Navigate to other VDA pages with data
   const navigateWithData = (page) => {
-    // Store selected data in sessionStorage for other pages
-    const dataToPass = {
-      fileId: selectedFile?.id,
-      fileName: selectedFile?.name,
-      sheets: selectedFile?.sheets?.filter(s => selectedSheets.includes(s.name))
-    };
-    sessionStorage.setItem('vda_active_data', JSON.stringify(dataToPass));
     navigate(page);
   };
 
@@ -309,7 +291,12 @@ const DataUploadPage = () => {
             <FolderOpen className="w-8 h-8" />
             <div>
               <h1 className="text-xl font-bold">Data Upload & Management</h1>
-              <p className="text-sm text-blue-100">Upload Excel, CSV, JSON, and SQLite files</p>
+              <p className="text-sm text-blue-100">
+                {isSubscribed 
+                  ? 'Upload Excel, CSV, JSON, and SQLite files (Server Storage)'
+                  : 'Upload Excel, CSV, JSON files (Local Storage - Upgrade for more)'
+                }
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -384,7 +371,10 @@ const DataUploadPage = () => {
                 {isDragging ? 'Drop files here' : 'Drop files or click to browse'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Excel, CSV, JSON, SQLite supported
+                {isSubscribed 
+                  ? 'Excel, CSV, JSON, SQLite supported'
+                  : 'Excel, CSV, JSON supported (SQLite for premium)'
+                }
               </p>
             </div>
             
@@ -392,7 +382,7 @@ const DataUploadPage = () => {
             <div className="mt-3 space-y-2">
               <button
                 onClick={convertToDatabase}
-                disabled={files.length === 0}
+                disabled={dataSources.length === 0}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               >
                 <Database className="w-4 h-4" />
@@ -400,7 +390,7 @@ const DataUploadPage = () => {
               </button>
               <button
                 onClick={exportAsDatabase}
-                disabled={files.length === 0}
+                disabled={dataSources.length === 0 || !isSubscribed}
                 className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               >
                 <Download className="w-4 h-4" />
@@ -423,6 +413,32 @@ const DataUploadPage = () => {
             </div>
           </div>
 
+          {/* Multi-select controls */}
+          {filteredFiles.length > 0 && (
+            <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {selectedSourceIds.length} of {filteredFiles.length} selected
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={selectAllSources}
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-600">|</span>
+                  <button
+                    onClick={deselectAllSources}
+                    className="text-xs text-gray-600 dark:text-gray-400 hover:underline"
+                  >
+                    Deselect All
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Files List */}
           <div className="flex-1 overflow-y-auto p-3">
             {filteredFiles.length === 0 ? (
@@ -435,23 +451,48 @@ const DataUploadPage = () => {
                 {filteredFiles.map(file => {
                   const FileTypeIcon = FILE_TYPES[file.type]?.icon || FileText;
                   const isExpanded = expandedFiles[file.id];
-                  const isSelected = selectedFile?.id === file.id;
+                  const isSelected = activeDataSource?.id === file.id;
+                  const isMultiSelected = selectedSourceIds.includes(file.id);
                   
                   return (
                     <div key={file.id}>
                       <div
-                        onClick={() => selectFile(file)}
                         className={`
-                          p-3 rounded-lg cursor-pointer transition-all
-                          ${isSelected 
-                            ? 'bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-500' 
+                          p-3 rounded-lg cursor-pointer transition-all relative
+                          ${isSelected
+                            ? 'bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-500'
                             : 'bg-gray-50 dark:bg-gray-700/50 border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600'
                           }
+                          ${isMultiSelected && !isSelected ? 'ring-2 ring-green-400 ring-offset-1' : ''}
                         `}
                       >
-                        <div className="flex items-start gap-3">
+                        {/* Multi-select checkbox */}
+                        <div
+                          className="absolute top-2 right-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={() => toggleSourceSelection(file.id)}
+                            className={`
+                              p-1 rounded transition-colors
+                              ${isMultiSelected
+                                ? 'text-green-500'
+                                : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+                              }
+                            `}
+                            title={isMultiSelected ? 'Deselect for multi-query' : 'Select for multi-query'}
+                          >
+                            {isMultiSelected ? (
+                              <CheckCircle2 className="w-5 h-5" />
+                            ) : (
+                              <CircleX className="w-4 h-4 opacity-50" />
+                            )}
+                          </button>
+                        </div>
+                        
+                        <div onClick={() => handleSelectFile(file)} className="flex items-start gap-3">
                           <FileTypeIcon className={`w-6 h-6 mt-0.5 ${FILE_TYPES[file.type]?.color || 'text-gray-500'}`} />
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 pr-8">
                             <p className="font-medium text-gray-900 dark:text-white truncate">{file.name}</p>
                             <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
                               <span>{formatSize(file.size)}</span>
@@ -466,7 +507,7 @@ const DataUploadPage = () => {
                             </div>
                           </div>
                           <button
-                            onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
+                            onClick={(e) => { e.stopPropagation(); handleDeleteFile(file.id); }}
                             className="p-1 text-gray-400 hover:text-red-500 transition"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -476,8 +517,8 @@ const DataUploadPage = () => {
                         {/* Expand/Collapse for multi-sheet files */}
                         {file.sheets?.length > 1 && (
                           <button
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setExpandedFiles(prev => ({ ...prev, [file.id]: !prev[file.id] }));
                             }}
                             className="mt-2 flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
@@ -610,39 +651,82 @@ const DataUploadPage = () => {
             )}
           </div>
 
-          {/* Action Buttons */}
-          {selectedFile && selectedSheets.length > 0 && (
-            <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  onClick={() => navigateWithData('/visual-query-builder')}
-                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center gap-2"
-                >
-                  <Search className="w-4 h-4" />
-                  Query Builder
-                </button>
-                <button
-                  onClick={() => navigateWithData('/visual-report-builder')}
-                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center gap-2"
-                >
-                  <FileChartColumn className="w-4 h-4" />
-                  Report Builder
-                </button>
-                <button
-                  onClick={() => navigateWithData('/visual-dashboard-builder')}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard Builder
-                </button>
-              </div>
+          {/* Action Buttons Panel */}
+          {(activeDataSource || selectedSourceIds.length > 0) && (
+            <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+              {/* Collapse/Expand Toggle */}
+              <button
+                onClick={() => setIsActionPanelCollapsed(!isActionPanelCollapsed)}
+                className="w-full px-4 py-2 flex items-center justify-between text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4" />
+                  <span className="text-sm font-medium">
+                    {selectedSourceIds.length > 0
+                      ? `${selectedSourceIds.length} source(s) selected for analysis`
+                      : 'Actions'
+                    }
+                  </span>
+                </div>
+                {isActionPanelCollapsed ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              
+              {/* Action Buttons - Collapsible */}
+              {!isActionPanelCollapsed && (
+                <div className="px-4 pb-4">
+                  {/* Multi-select info */}
+                  {selectedSourceIds.length > 1 && (
+                    <div className="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        <strong>{selectedSourceIds.length} sources selected.</strong> All selected sources will be available in Query Builder for cross-source analysis.
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={() => navigateWithData('/visual-query-builder')}
+                      disabled={selectedSourceIds.length === 0 && !activeDataSource}
+                      className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Search className="w-4 h-4" />
+                      Query Builder
+                      {selectedSourceIds.length > 1 && (
+                        <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded-full">
+                          {selectedSourceIds.length}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => navigateWithData('/visual-report-builder')}
+                      disabled={selectedSourceIds.length === 0 && !activeDataSource}
+                      className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FileChartColumn className="w-4 h-4" />
+                      Report Builder
+                    </button>
+                    <button
+                      onClick={() => navigateWithData('/visual-dashboard-builder')}
+                      disabled={selectedSourceIds.length === 0 && !activeDataSource}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard Builder
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
       {/* Loading Overlay */}
-      {isLoading && (
+      {(isLoading || contextLoading) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
             <LoaderCircle className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-3" />

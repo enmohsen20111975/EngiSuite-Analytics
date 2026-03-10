@@ -9,7 +9,8 @@
       "Bash(netstat -ano)",
       "Bash(findstr :8000)",
       "Bash(findstr LISTENING)",
-      "Bash(taskkill /PID 8728 /F)"
+      "Bash(taskkill /PID 8728 /F)",
+      "Bash(npm run build)"
     ]
   }
 }

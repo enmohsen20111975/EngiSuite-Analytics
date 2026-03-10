@@ -5,11 +5,9 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
-import { getWorkflowsDb } from '../services/database.service.js';
-import { 
-  CalculationEngine, 
-  EngineeringCalculations,
-  evaluateFormula 
+import { getWorkflowsDb, prepareWorkflows } from '../services/database.service.js';
+import {
+  CalculationEngine
 } from '../services/calculationEngine.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
 
@@ -552,22 +550,21 @@ function classifyDifficulty(pipeline: CalculationPipelineRow, stepCount: number)
  */
 router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const pipelines = db.prepare(`
+    const pipelines = prepareWorkflows(`
       SELECT cp.*, es.name as standard_name
       FROM calculation_pipelines cp
       LEFT JOIN engineering_standards es ON cp.standard_id = es.id
       WHERE cp.is_active = 1
       ORDER BY cp.name ASC
-    `).all() as CalculationPipelineRow[];
+    `).all() as unknown as CalculationPipelineRow[];
 
     const result = [];
     for (const pipeline of pipelines) {
-      const rawSteps = db.prepare(`
+      const rawSteps = prepareWorkflows(`
         SELECT * FROM calculation_steps
         WHERE pipeline_id = ? AND is_active = 1
         ORDER BY step_number ASC
-      `).all(pipeline.id) as CalculationStepRow[];
+      `).all(pipeline.id) as unknown as CalculationStepRow[];
       
       const steps = filterMeaningfulSteps(dedupeSteps(rawSteps));
       const stepCount = steps.length;
@@ -606,8 +603,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
  */
 router.get('/domains', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const domains = db.prepare(`
+    const domains = prepareWorkflows(`
       SELECT DISTINCT domain FROM calculation_pipelines WHERE is_active = 1 AND domain IS NOT NULL
     `).all() as { domain: string }[];
 
@@ -623,24 +619,22 @@ router.get('/domains', async (_req: Request, res: Response, next: NextFunction) 
  */
 router.get('/stats', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    
-    const totalPipelines = db.prepare(`
+    const totalPipelines = prepareWorkflows(`
       SELECT COUNT(*) as count FROM calculation_pipelines WHERE is_active = 1
     `).get() as { count: number };
 
-    const totalSteps = db.prepare(`
+    const totalSteps = prepareWorkflows(`
       SELECT COUNT(*) as count FROM calculation_steps WHERE is_active = 1
     `).get() as { count: number };
 
-    const byDomain = db.prepare(`
+    const byDomain = prepareWorkflows(`
       SELECT domain, COUNT(*) as count
       FROM calculation_pipelines
       WHERE is_active = 1
       GROUP BY domain
     `).all();
 
-    const byDifficulty = db.prepare(`
+    const byDifficulty = prepareWorkflows(`
       SELECT difficulty_level, COUNT(*) as count
       FROM calculation_pipelines
       WHERE is_active = 1
@@ -664,8 +658,7 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
  */
 router.get('/standards', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const standards = db.prepare(`
+    const standards = prepareWorkflows(`
       SELECT * FROM engineering_standards WHERE is_active = 1 ORDER BY standard_code ASC
     `).all();
 
@@ -682,37 +675,36 @@ router.get('/standards', async (_req: Request, res: Response, next: NextFunction
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idParam = String(req.params.id);
-    const db = getWorkflowsDb();
 
     // Try numeric id first, then pipeline_id string
     let pipeline: CalculationPipelineRow | undefined;
     const numericId = parseInt(idParam, 10);
     if (!isNaN(numericId)) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT cp.*, es.name as standard_name
         FROM calculation_pipelines cp
         LEFT JOIN engineering_standards es ON cp.standard_id = es.id
         WHERE cp.id = ? AND cp.is_active = 1
-      `).get(numericId) as CalculationPipelineRow | undefined;
+      `).get(numericId) as unknown as CalculationPipelineRow | undefined;
     }
     if (!pipeline) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT cp.*, es.name as standard_name
         FROM calculation_pipelines cp
         LEFT JOIN engineering_standards es ON cp.standard_id = es.id
         WHERE cp.pipeline_id = ? AND cp.is_active = 1
-      `).get(idParam) as CalculationPipelineRow | undefined;
+      `).get(idParam) as unknown as CalculationPipelineRow | undefined;
     }
 
     if (!pipeline) {
       throw new NotFoundError('Pipeline not found');
     }
 
-    const rawSteps = db.prepare(`
+    const rawSteps = prepareWorkflows(`
       SELECT * FROM calculation_steps
       WHERE pipeline_id = ? AND is_active = 1
       ORDER BY step_number ASC
-    `).all(pipeline.id) as CalculationStepRow[];
+    `).all(pipeline.id) as unknown as CalculationStepRow[];
 
     const steps = filterMeaningfulSteps(dedupeSteps(rawSteps));
 
@@ -754,14 +746,14 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     for (const step of steps) {
       const equationId = resolveEquationIdFromStep(step);
       if (equationId) {
-        const equation = db.prepare(`
+        const equation = prepareWorkflows(`
           SELECT * FROM equations WHERE equation_id = ? AND is_active = 1
-        `).get(equationId) as EquationRow | undefined;
+        `).get(equationId) as unknown as EquationRow | undefined;
 
         if (equation) {
-          const eqInputs = db.prepare(`
+          const eqInputs = prepareWorkflows(`
             SELECT * FROM equation_inputs WHERE equation_id = ? ORDER BY input_order ASC
-          `).all(equation.id) as EquationInputRow[];
+          `).all(equation.id) as unknown as EquationInputRow[];
 
           for (const inp of eqInputs) {
             if (!seenInputNames.has(inp.name)) {
@@ -834,14 +826,14 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     for (const step of steps) {
       const equationId = resolveEquationIdFromStep(step);
       if (equationId) {
-        const equation = db.prepare(`
+        const equation = prepareWorkflows(`
           SELECT * FROM equations WHERE equation_id = ? AND is_active = 1
-        `).get(equationId) as EquationRow | undefined;
+        `).get(equationId) as unknown as EquationRow | undefined;
 
         if (equation) {
-          const eqOutputs = db.prepare(`
+          const eqOutputs = prepareWorkflows(`
             SELECT * FROM equation_outputs WHERE equation_id = ? ORDER BY output_order ASC
-          `).all(equation.id) as EquationOutputRow[];
+          `).all(equation.id) as unknown as EquationOutputRow[];
 
           for (const out of eqOutputs) {
             if (!seenOutputNames.has(out.name)) {
@@ -860,7 +852,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // Get dependencies
-    const dependencies = db.prepare(`
+    const dependencies = prepareWorkflows(`
       SELECT * FROM calculation_dependencies WHERE pipeline_id = ?
     `).all(pipeline.id);
 
@@ -922,25 +914,24 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 router.get('/by-id/:pipelineId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const pipelineId = String(req.params.pipelineId);
-    const db = getWorkflowsDb();
 
-    const pipeline = db.prepare(`
+    const pipeline = prepareWorkflows(`
       SELECT cp.*, es.name as standard_name
       FROM calculation_pipelines cp
       LEFT JOIN engineering_standards es ON cp.standard_id = es.id
       WHERE cp.pipeline_id = ? AND cp.is_active = 1
-    `).get(pipelineId) as CalculationPipelineRow | undefined;
+    `).get(pipelineId) as unknown as CalculationPipelineRow | undefined;
 
     if (!pipeline) {
       throw new NotFoundError('Pipeline not found');
     }
 
     // Get steps and build full response (same logic as :id route)
-    const rawSteps = db.prepare(`
+    const rawSteps = prepareWorkflows(`
       SELECT * FROM calculation_steps
       WHERE pipeline_id = ? AND is_active = 1
       ORDER BY step_number ASC
-    `).all(pipeline.id) as CalculationStepRow[];
+    `).all(pipeline.id) as unknown as CalculationStepRow[];
 
     const steps = filterMeaningfulSteps(dedupeSteps(rawSteps));
 
@@ -986,26 +977,26 @@ router.post('/:id/execute', async (req: Request, res: Response, next: NextFuncti
     const { inputs } = req.body;
 
     // Try to find pipeline by numeric ID or pipeline_id string
-    const db = getWorkflowsDb();
     let pipeline: CalculationPipelineRow | undefined;
     const numericId = parseInt(idParam, 10);
     
     if (!isNaN(numericId)) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE id = ? AND is_active = 1
-      `).get(numericId) as CalculationPipelineRow | undefined;
+      `).get(numericId) as unknown as CalculationPipelineRow | undefined;
     }
     if (!pipeline) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE pipeline_id = ? AND is_active = 1
-      `).get(idParam) as CalculationPipelineRow | undefined;
+      `).get(idParam) as unknown as CalculationPipelineRow | undefined;
     }
 
     if (!pipeline) {
       throw new NotFoundError('Pipeline not found');
     }
 
-    // Use the enhanced calculation engine
+    // Use the enhanced calculation engine - get the db instance for the engine
+    const db = getWorkflowsDb();
     const engine = new CalculationEngine(db);
     
     try {
@@ -1048,17 +1039,16 @@ router.get('/:id/execution-history', async (req: Request, res: Response, next: N
     const idParam = String(req.params.id);
     const limit = parseInt(String(req.query.limit || '20'), 10);
 
-    const db = getWorkflowsDb();
     let pipeline: CalculationPipelineRow | undefined;
     const numericId = parseInt(idParam, 10);
     
     if (!isNaN(numericId)) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE id = ? AND is_active = 1
       `).get(numericId) as CalculationPipelineRow | undefined;
     }
     if (!pipeline) {
-      pipeline = db.prepare(`
+      pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE pipeline_id = ? AND is_active = 1
       `).get(idParam) as CalculationPipelineRow | undefined;
     }
@@ -1067,6 +1057,8 @@ router.get('/:id/execution-history', async (req: Request, res: Response, next: N
       throw new NotFoundError('Pipeline not found');
     }
 
+    // Get the db instance for the engine
+    const db = getWorkflowsDb();
     const engine = new CalculationEngine(db);
     const history = engine.getExecutionHistory(pipeline.pipeline_id, limit);
 

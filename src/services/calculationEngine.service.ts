@@ -4,8 +4,8 @@
  * Ported from Python backend calculation_pipeline/engine.py
  */
 
-import { Database } from 'better-sqlite3';
-import { getWorkflowsDb } from './database.service.js';
+import { getWorkflowsDb, queryWorkflows, execute, queryOne } from './database.service.js';
+import type { Database as SqlJsDatabase } from 'sql.js';
 
 // Type definitions
 interface CalculationStep {
@@ -346,36 +346,35 @@ export class EngineeringCalculations {
  * Engineering standards coefficient lookup engine
  */
 export class StandardsEngine {
-  private _db: Database | null = null;
+  private _db: SqlJsDatabase | null = null;
 
-  private get db(): Database {
+  private get db(): SqlJsDatabase {
     if (!this._db) {
       this._db = getWorkflowsDb();
     }
     return this._db;
   }
 
-  constructor(db?: Database) {
+  constructor(db?: SqlJsDatabase) {
     this._db = db || null;
   }
 
   getStandard(standardCode: string): EngineeringStandard | null {
-    const stmt = this.db.prepare(`
-      SELECT * FROM engineering_standards 
+    const results = queryWorkflows<EngineeringStandard>(`
+      SELECT * FROM engineering_standards
       WHERE standard_code = ? AND is_active = 1
-    `);
-    return stmt.get(standardCode) as EngineeringStandard | null;
+    `, [standardCode]);
+    return results[0] || null;
   }
 
   getCoefficient(standardCode: string, coefficientName: string, params: Record<string, unknown>): number | null {
     const standard = this.getStandard(standardCode);
     if (!standard) return null;
 
-    const stmt = this.db.prepare(`
-      SELECT * FROM standard_coefficients 
+    const coefficients = queryWorkflows<StandardCoefficient>(`
+      SELECT * FROM standard_coefficients
       WHERE standard_id = ? AND coefficient_name = ?
-    `);
-    const coefficients = stmt.all(standard.id, coefficientName) as StandardCoefficient[];
+    `, [standard.id, coefficientName]);
 
     for (const coeff of coefficients) {
       if (coeff.data_source === 'table') {
@@ -461,7 +460,7 @@ export class StandardsEngine {
  * Deterministic calculation pipeline engine with DAG-based execution
  */
 export class CalculationEngine {
-  private _db: Database | null = null;
+  private _db: SqlJsDatabase | null = null;
   private executionState: ExecutionContext = {};
   private validationResults: Record<string, unknown> = {};
   private _standardsEngine: StandardsEngine | null = null;
@@ -507,12 +506,12 @@ export class CalculationEngine {
     E: Math.E,
   };
 
-  constructor(db?: Database) {
+  constructor(db?: SqlJsDatabase) {
     this._db = db || null;
     this._standardsEngine = null;
   }
 
-  private get db(): Database {
+  private get db(): SqlJsDatabase {
     if (!this._db) {
       this._db = getWorkflowsDb();
     }
@@ -527,37 +526,35 @@ export class CalculationEngine {
   }
 
   loadPipeline(pipelineId: string): CalculationPipeline | null {
-    const stmt = this.db.prepare(`
-      SELECT * FROM calculation_pipelines 
+    const results = queryWorkflows<CalculationPipeline>(`
+      SELECT * FROM calculation_pipelines
       WHERE pipeline_id = ? AND is_active = 1
-    `);
-    return stmt.get(pipelineId) as CalculationPipeline | null;
+    `, [pipelineId]);
+    return results[0] || null;
   }
 
   loadPipelineById(id: number): CalculationPipeline | null {
-    const stmt = this.db.prepare(`
-      SELECT * FROM calculation_pipelines 
+    const results = queryWorkflows<CalculationPipeline>(`
+      SELECT * FROM calculation_pipelines
       WHERE id = ? AND is_active = 1
-    `);
-    return stmt.get(id) as CalculationPipeline | null;
+    `, [id]);
+    return results[0] || null;
   }
 
   getSteps(pipelineDbId: number): CalculationStep[] {
-    const stmt = this.db.prepare(`
-      SELECT * FROM calculation_steps 
+    return queryWorkflows<CalculationStep>(`
+      SELECT * FROM calculation_steps
       WHERE pipeline_id = ? AND is_active = 1
       ORDER BY step_number ASC
-    `);
-    return stmt.all(pipelineDbId) as CalculationStep[];
+    `, [pipelineDbId]);
   }
 
   getDependencies(pipelineDbId: number): CalculationDependency[] {
-    const stmt = this.db.prepare(`
+    return queryWorkflows<CalculationDependency>(`
       SELECT cd.* FROM calculation_dependencies cd
       JOIN calculation_steps cs ON cd.step_id = cs.id
       WHERE cs.pipeline_id = ?
-    `);
-    return stmt.all(pipelineDbId) as CalculationDependency[];
+    `, [pipelineDbId]);
   }
 
   /**
@@ -879,18 +876,17 @@ export class CalculationEngine {
   /**
    * Execute lookup-based calculation
    */
-  private executeLookupCalculation(step: CalculationStep, inputs: ExecutionContext): ExecutionContext {
+  private executeLookupCalculation(_step: CalculationStep, _inputs: ExecutionContext): ExecutionContext {
     const results: ExecutionContext = {};
 
     try {
       // Try to lookup coefficients from database
-      const stmt = this.db.prepare(`
-        SELECT es.standard_code, sc.* 
+      const coefficients = queryWorkflows<{ standard_code: string; coefficient_name: string; data_source: string; coefficient_table: string }>(`
+        SELECT es.standard_code, sc.*
         FROM engineering_standards es
         JOIN standard_coefficients sc ON sc.standard_id = es.id
         WHERE es.is_active = 1
       `);
-      const coefficients = stmt.all() as Array<{ standard_code: string; coefficient_name: string; data_source: string; coefficient_table: string }>;
 
       for (const coeff of coefficients) {
         if (coeff.data_source === 'table' && coeff.coefficient_table) {
@@ -978,13 +974,12 @@ export class CalculationEngine {
     }
 
     try {
-      const stmt = this.db.prepare(`
-        SELECT * FROM calculation_executions 
+      const executions = queryWorkflows<Record<string, unknown>>(`
+        SELECT * FROM calculation_executions
         WHERE pipeline_id = ?
         ORDER BY created_at DESC
         LIMIT ?
-      `);
-      const executions = stmt.all(pipeline.id, limit) as Array<Record<string, unknown>>;
+      `, [pipeline.id, limit]);
 
       return executions.map(exec => ({
         execution_id: exec.execution_id,

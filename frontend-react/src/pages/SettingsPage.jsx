@@ -1,28 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Settings as SettingsIcon, Palette, Globe, Bell, 
-  Shield, Database, Code, CircleQuestionMark, Moon, Sun, Monitor
+  Shield, Database, Code, CircleQuestionMark, Moon, Sun, Monitor,
+  Check
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useThemeStore } from '../stores/themeStore';
+import { useThemeStore, ACCENT_COLORS } from '../stores/themeStore';
+import { useTranslation } from '../stores/languageStore';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '../components/ui';
 
 // Settings sections
-const sections = [
-  { id: 'appearance', label: 'Appearance', icon: Palette },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'language', label: 'Language', icon: Globe },
-  { id: 'privacy', label: 'Privacy & Security', icon: Shield },
-  { id: 'data', label: 'Data & Storage', icon: Database },
-  { id: 'developer', label: 'Developer', icon: Code },
-  { id: 'about', label: 'About', icon: CircleQuestionMark },
+const getSections = (t) => [
+  { id: 'appearance', label: t('settings.sections.appearance'), icon: Palette },
+  { id: 'notifications', label: t('settings.sections.notifications'), icon: Bell },
+  { id: 'language', label: t('settings.sections.language'), icon: Globe },
+  { id: 'privacy', label: t('settings.sections.privacy'), icon: Shield },
+  { id: 'data', label: t('settings.sections.data'), icon: Database },
+  { id: 'developer', label: t('settings.sections.developer'), icon: Code },
+  { id: 'about', label: t('settings.sections.about'), icon: CircleQuestionMark },
+];
+
+// Available languages
+const LANGUAGES = [
+  { value: 'en', label: 'English', nativeLabel: 'English' },
+  { value: 'ar', label: 'Arabic', nativeLabel: 'العربية' },
+  { value: 'fr', label: 'French', nativeLabel: 'Français' },
+];
+
+// Available timezones
+const TIMEZONES = [
+  { value: 'UTC', label: 'UTC' },
+  { value: 'Africa/Cairo', label: 'Africa/Cairo (EET)' },
+  { value: 'Asia/Riyadh', label: 'Asia/Riyadh (AST)' },
+  { value: 'Asia/Dubai', label: 'Asia/Dubai (GST)' },
+  { value: 'Europe/London', label: 'Europe/London (GMT)' },
+  { value: 'Europe/Paris', label: 'Europe/Paris (CET)' },
+  { value: 'America/New_York', label: 'America/New_York (EST)' },
+  { value: 'America/Los_Angeles', label: 'America/Los_Angeles (PST)' },
 ];
 
 /**
  * Settings page component
  */
 function SettingsPage() {
-  const { theme, setTheme, resolvedTheme } = useThemeStore();
+  const { theme, setTheme, resolvedTheme, accentColor, setAccentColor } = useThemeStore();
+  const { language, setLanguage, timezone, setTimezone, t, direction } = useTranslation();
   const [activeSection, setActiveSection] = useState('appearance');
   const [notifications, setNotifications] = useState({
     email: true,
@@ -31,6 +53,8 @@ function SettingsPage() {
     updates: true,
   });
   
+  const sections = getSections(t);
+  
   const renderSection = () => {
     switch (activeSection) {
       case 'appearance':
@@ -38,13 +62,13 @@ function SettingsPage() {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-                Theme
+                {t('settings.appearance.theme.title')}
               </h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { value: 'light', label: 'Light', icon: Sun },
-                  { value: 'dark', label: 'Dark', icon: Moon },
-                  { value: 'system', label: 'System', icon: Monitor },
+                  { value: 'light', label: t('settings.appearance.theme.light'), icon: Sun },
+                  { value: 'dark', label: t('settings.appearance.theme.dark'), icon: Moon },
+                  { value: 'system', label: t('settings.appearance.theme.system'), icon: Monitor },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -72,19 +96,30 @@ function SettingsPage() {
             </div>
             
             <div className="pt-6 border-t border-[var(--color-border)]">
-              <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-                Accent Color
+              <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
+                {t('settings.appearance.accentColor.title')}
               </h3>
-              <div className="flex gap-3">
-                {['#0891b2', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'].map((color) => (
+              <p className="text-sm text-[var(--color-text-muted)] mb-4">
+                {t('settings.appearance.accentColor.description')}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {ACCENT_COLORS.map((color) => (
                   <button
-                    key={color}
+                    key={color.value}
+                    onClick={() => setAccentColor(color.value)}
                     className={cn(
-                      'w-10 h-10 rounded-full border-2 transition-transform hover:scale-110',
-                      color === '#0891b2' ? 'border-[var(--color-text-primary)]' : 'border-transparent'
+                      'relative w-10 h-10 rounded-full border-2 transition-transform hover:scale-110',
+                      accentColor === color.value 
+                        ? 'border-[var(--color-text-primary)] ring-2 ring-accent/30' 
+                        : 'border-transparent'
                     )}
-                    style={{ backgroundColor: color }}
-                  />
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  >
+                    {accentColor === color.value && (
+                      <Check className="absolute inset-0 m-auto w-5 h-5 text-white drop-shadow-md" />
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
@@ -95,13 +130,13 @@ function SettingsPage() {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              Notification Preferences
+              {t('settings.notifications.title')}
             </h3>
             {[
-              { key: 'email', label: 'Email Notifications', description: 'Receive email updates about your calculations' },
-              { key: 'push', label: 'Push Notifications', description: 'Receive push notifications in your browser' },
-              { key: 'weekly', label: 'Weekly Summary', description: 'Receive a weekly summary of your activity' },
-              { key: 'updates', label: 'Product Updates', description: 'Get notified about new features and improvements' },
+              { key: 'email', label: t('settings.notifications.email.label'), description: t('settings.notifications.email.description') },
+              { key: 'push', label: t('settings.notifications.push.label'), description: t('settings.notifications.push.description') },
+              { key: 'weekly', label: t('settings.notifications.weekly.label'), description: t('settings.notifications.weekly.description') },
+              { key: 'updates', label: t('settings.notifications.updates.label'), description: t('settings.notifications.updates.description') },
             ].map((item) => (
               <div key={item.key} className="flex items-center justify-between py-3">
                 <div>
@@ -117,7 +152,9 @@ function SettingsPage() {
                 >
                   <span className={cn(
                     'absolute top-1 w-4 h-4 rounded-full bg-white transition-transform',
-                    notifications[item.key] ? 'left-7' : 'left-1'
+                    notifications[item.key] 
+                      ? (direction === 'rtl' ? 'right-1' : 'left-7')
+                      : (direction === 'rtl' ? 'right-7' : 'left-1')
                   )} />
                 </button>
               </div>
@@ -129,39 +166,60 @@ function SettingsPage() {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              Language & Region
+              {t('settings.language.title')}
             </h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                  Language
+                  {t('settings.language.language')}
                 </label>
-                <select className={cn(
-                  'w-full px-4 py-2.5 rounded-lg',
-                  'bg-[var(--color-bg-secondary)] border border-[var(--color-border)]',
-                  'text-[var(--color-text-primary)]',
-                  'focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none'
-                )}>
-                  <option value="en">English</option>
-                  <option value="ar">العربية (Arabic)</option>
-                  <option value="fr">Français (French)</option>
+                <select 
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className={cn(
+                    'w-full px-4 py-2.5 rounded-lg',
+                    'bg-[var(--color-bg-secondary)] border border-[var(--color-border)]',
+                    'text-[var(--color-text-primary)]',
+                    'focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none'
+                  )}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang.value} value={lang.value}>
+                      {lang.nativeLabel} ({lang.label})
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                  Timezone
+                  {t('settings.language.timezone')}
                 </label>
-                <select className={cn(
-                  'w-full px-4 py-2.5 rounded-lg',
-                  'bg-[var(--color-bg-secondary)] border border-[var(--color-border)]',
-                  'text-[var(--color-text-primary)]',
-                  'focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none'
-                )}>
-                  <option value="utc">UTC</option>
-                  <option value="africa">Africa/Lome</option>
-                  <option value="europe">Europe/London</option>
-                  <option value="america">America/New_York</option>
+                <select 
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                  className={cn(
+                    'w-full px-4 py-2.5 rounded-lg',
+                    'bg-[var(--color-bg-secondary)] border border-[var(--color-border)]',
+                    'text-[var(--color-text-primary)]',
+                    'focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none'
+                  )}
+                >
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </option>
+                  ))}
                 </select>
+              </div>
+              
+              {/* Language Preview */}
+              <div className="mt-6 p-4 rounded-lg bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
+                <p className="text-sm font-medium text-[var(--color-text-muted)] mb-2">
+                  {language === 'ar' ? 'معاينة اللغة' : language === 'fr' ? 'Aperçu de la langue' : 'Language Preview'}
+                </p>
+                <p className="text-[var(--color-text-primary)]" dir={direction}>
+                  {t('dashboard.welcome', { name: language === 'ar' ? 'المستخدم' : language === 'fr' ? 'Utilisateur' : 'User' })}
+                </p>
               </div>
             </div>
           </div>
@@ -171,29 +229,41 @@ function SettingsPage() {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              Privacy & Security
+              {t('settings.privacy.title')}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">Two-Factor Authentication</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Add an extra layer of security</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.privacy.twoFactor.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.privacy.twoFactor.description')}
+                  </p>
                 </div>
-                <Button variant="secondary" size="sm">Enable</Button>
+                <Button variant="secondary" size="sm">{t('common.enable')}</Button>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">Active Sessions</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Manage your active sessions</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.privacy.sessions.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.privacy.sessions.description')}
+                  </p>
                 </div>
-                <Button variant="secondary" size="sm">Manage</Button>
+                <Button variant="secondary" size="sm">{t('common.manage')}</Button>
               </div>
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">Delete Account</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Permanently delete your account and data</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.privacy.deleteAccount.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.privacy.deleteAccount.description')}
+                  </p>
                 </div>
-                <Button variant="danger" size="sm">Delete</Button>
+                <Button variant="danger" size="sm">{t('common.delete')}</Button>
               </div>
             </div>
           </div>
@@ -203,24 +273,44 @@ function SettingsPage() {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              Data & Storage
+              {t('settings.data.title')}
             </h3>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-[var(--color-bg-secondary)]">
                 <div className="flex justify-between mb-2">
-                  <span className="text-[var(--color-text-primary)]">Storage Used</span>
+                  <span className="text-[var(--color-text-primary)]">
+                    {t('settings.data.storageUsed')}
+                  </span>
                   <span className="text-[var(--color-text-muted)]">2.4 GB / 10 GB</span>
                 </div>
                 <div className="h-2 rounded-full bg-[var(--color-bg-tertiary)]">
-                  <div className="h-full w-1/4 rounded-full bg-accent" />
+                  <div 
+                    className="h-full rounded-full transition-all"
+                    style={{ width: '24%', backgroundColor: accentColor }} 
+                  />
                 </div>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
+                <div>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.data.exportData.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.data.exportData.description')}
+                  </p>
+                </div>
+                <Button variant="secondary" size="sm">{t('common.export')}</Button>
               </div>
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">Export Data</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Download all your data</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.data.clearCache.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.data.clearCache.description')}
+                  </p>
                 </div>
-                <Button variant="secondary" size="sm">Export</Button>
+                <Button variant="secondary" size="sm">{t('common.delete')}</Button>
               </div>
             </div>
           </div>
@@ -230,22 +320,41 @@ function SettingsPage() {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              Developer Settings
+              {t('settings.developer.title')}
             </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">API Keys</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Manage your API access tokens</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.developer.apiKeys.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.developer.apiKeys.description')}
+                  </p>
                 </div>
-                <Button variant="secondary" size="sm">Manage</Button>
+                <Button variant="secondary" size="sm">{t('common.manage')}</Button>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
+                <div>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.developer.webhooks.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.developer.webhooks.description')}
+                  </p>
+                </div>
+                <Button variant="secondary" size="sm">{t('common.configure')}</Button>
               </div>
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-[var(--color-text-primary)]">Webhooks</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">Configure webhook endpoints</p>
+                  <p className="font-medium text-[var(--color-text-primary)]">
+                    {t('settings.developer.debugMode.label')}
+                  </p>
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t('settings.developer.debugMode.description')}
+                  </p>
                 </div>
-                <Button variant="secondary" size="sm">Configure</Button>
+                <Button variant="secondary" size="sm">{t('common.enable')}</Button>
               </div>
             </div>
           </div>
@@ -255,24 +364,34 @@ function SettingsPage() {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">
-              About EngiSuite Analytics
+              {t('settings.about.title')}
             </h3>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-[var(--color-bg-secondary)]">
-                <p className="font-medium text-[var(--color-text-primary)]">Version 2.0.0</p>
-                <p className="text-sm text-[var(--color-text-muted)]">Built with React + Vite</p>
+                <p className="font-medium text-[var(--color-text-primary)]">
+                  {t('settings.about.version')}
+                </p>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  {t('settings.about.builtWith')}
+                </p>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
-                <span className="text-[var(--color-text-primary)]">Documentation</span>
-                <a href="/api-docs" className="text-accent hover:underline">View</a>
+                <span className="text-[var(--color-text-primary)]">
+                  {t('settings.about.documentation')}
+                </span>
+                <a href="/api-docs" className="text-accent hover:underline">{t('common.view')}</a>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
-                <span className="text-[var(--color-text-primary)]">Terms of Service</span>
-                <a href="/terms" className="text-accent hover:underline">View</a>
+                <span className="text-[var(--color-text-primary)]">
+                  {t('settings.about.terms')}
+                </span>
+                <a href="/terms" className="text-accent hover:underline">{t('common.view')}</a>
               </div>
               <div className="flex items-center justify-between py-3">
-                <span className="text-[var(--color-text-primary)]">Privacy Policy</span>
-                <a href="/privacy" className="text-accent hover:underline">View</a>
+                <span className="text-[var(--color-text-primary)]">
+                  {t('settings.about.privacy')}
+                </span>
+                <a href="/privacy" className="text-accent hover:underline">{t('common.view')}</a>
               </div>
             </div>
           </div>
@@ -284,14 +403,14 @@ function SettingsPage() {
   };
   
   return (
-    <div className="space-y-6 animate-fade-up">
+    <div className="space-y-6 animate-fade-up" dir={direction}>
       {/* Page header */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)]">
-          Settings
+          {t('settings.title')}
         </h1>
         <p className="text-[var(--color-text-secondary)] mt-1">
-          Manage your application preferences and settings.
+          {t('settings.subtitle')}
         </p>
       </div>
       
@@ -308,11 +427,12 @@ function SettingsPage() {
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all',
                     activeSection === section.id
                       ? 'bg-accent/10 text-accent'
-                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]'
+                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]',
+                    direction === 'rtl' && 'flex-row-reverse text-right'
                   )}
                 >
-                  <section.icon className="w-5 h-5" />
-                  {section.label}
+                  <section.icon className={cn('w-5 h-5 shrink-0', direction === 'rtl' && 'ml-0 mr-2')} />
+                  <span>{section.label}</span>
                 </button>
               ))}
             </nav>

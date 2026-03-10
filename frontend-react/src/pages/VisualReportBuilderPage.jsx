@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FileText, Save, Download, Printer, Plus, Trash2, 
+import {
+  FileText, Save, Download, Printer, Plus, Trash2,
   ChevronDown, ChevronRight, X, Check, Settings, Copy,
   Move, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff,
   LayoutTemplate, Type, Image, Table2, ChartColumn, ChartPie, ChartLine,
@@ -12,6 +12,7 @@ import {
   Percent, Clock, MapPin, Pencil
 } from 'lucide-react';
 import Chart from 'chart.js/auto';
+import { useVDAData } from '../contexts/VDADataContext';
 
 // Widget Types
 const WIDGET_TYPES = {
@@ -89,6 +90,9 @@ const VisualReportBuilderPage = () => {
   const canvasRef = useRef(null);
   const chartRefs = useRef({});
   
+  // Get data from VDA context
+  const { dataSources, activeDataSource } = useVDAData();
+  
   // State management
   const [widgets, setWidgets] = useState([]);
   const [selectedWidget, setSelectedWidget] = useState(null);
@@ -104,22 +108,10 @@ const VisualReportBuilderPage = () => {
   const [showGrid, setShowGrid] = useState(true);
   const [pageWidth] = useState(794); // A4 width in pixels at 96 DPI
   const [pageHeight] = useState(1123); // A4 height in pixels at 96 DPI
-  const [dataSource, setDataSource] = useState(null);
   const [savedReports, setSavedReports] = useState([]);
 
-  // Load data from sessionStorage
+  // Load saved reports from localStorage
   useEffect(() => {
-    const storedData = sessionStorage.getItem('vda_active_data');
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        setDataSource(data);
-      } catch (e) {
-        console.error('Failed to load stored data:', e);
-      }
-    }
-    
-    // Load saved reports
     const saved = localStorage.getItem('vda_saved_reports');
     if (saved) {
       setSavedReports(JSON.parse(saved));
@@ -149,8 +141,8 @@ const VisualReportBuilderPage = () => {
       case 'table':
         return {
           title: 'Data Table',
-          headers: dataSource?.sheets?.[0]?.headers || ['Column 1', 'Column 2', 'Column 3'],
-          rows: dataSource?.sheets?.[0]?.rows?.slice(0, 10) || [
+          headers: activeDataSource?.sheets?.[0]?.headers || ['Column 1', 'Column 2', 'Column 3'],
+          rows: activeDataSource?.sheets?.[0]?.rows?.slice(0, 10) || [
             ['Data 1', 'Data 2', 'Data 3'],
             ['Data 4', 'Data 5', 'Data 6']
           ]
@@ -671,7 +663,7 @@ const VisualReportBuilderPage = () => {
               />
               <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                 <span>Generated: {new Date().toLocaleDateString()}</span>
-                {dataSource && <span>Data: {dataSource.fileName}</span>}
+                {activeDataSource && <span>Data: {activeDataSource.name}</span>}
               </div>
             </div>
             

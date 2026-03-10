@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './router';
 import { useAuthStore } from './stores/authStore';
 import { useCreditStore } from './stores/creditStore';
+import { VDADataProvider } from './contexts/VDADataContext';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -38,7 +39,9 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <VDADataProvider>
+        <RouterProvider router={router} />
+      </VDADataProvider>
     </QueryClientProvider>
   );
 }

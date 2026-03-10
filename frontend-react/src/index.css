@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -185,6 +185,17 @@
     @apply bg-accent/10 text-accent;
     @apply border-l-2 border-accent -ml-[2px] pl-[calc(0.75rem+2px)];
   }
+  
+  /* RTL Sidebar styles */
+  .rtl .sidebar-link.active {
+    border-left: 0;
+    border-right: 2px solid;
+    margin-left: 0;
+    margin-right: -2px;
+    padding-left: 0.75rem;
+    padding-right: calc(0.75rem + 2px);
+    border-color: var(--color-accent);
+  }
 }
 
 /* Utility classes */
@@ -229,5 +240,166 @@
       opacity: 1;
       transform: none;
     }
+  }
+}
+
+/* RTL (Right-to-Left) Support */
+@layer utilities {
+  /* RTL-specific styles */
+  .rtl {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .rtl body {
+    font-family: 'Noto Sans Arabic', 'DM Sans', sans-serif;
+  }
+  
+  /* RTL flexbox adjustments */
+  .rtl .flex-row {
+    flex-direction: row-reverse;
+  }
+  
+  /* RTL text alignment */
+  .rtl .text-left {
+    text-align: right;
+  }
+  
+  .rtl .text-right {
+    text-align: left;
+  }
+  
+  /* RTL margin and padding adjustments */
+  .rtl .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  
+  .rtl .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+  }
+  
+  .rtl .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+  .rtl .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+  .rtl .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+  .rtl .ml-4 { margin-left: 0; margin-right: 1rem; }
+  .rtl .ml-5 { margin-left: 0; margin-right: 1.25rem; }
+  .rtl .ml-6 { margin-left: 0; margin-right: 1.5rem; }
+  
+  .rtl .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+  .rtl .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+  .rtl .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+  .rtl .mr-4 { margin-right: 0; margin-left: 1rem; }
+  .rtl .mr-5 { margin-right: 0; margin-left: 1.25rem; }
+  .rtl .mr-6 { margin-right: 0; margin-left: 1.5rem; }
+  
+  .rtl .pl-1 { padding-left: 0; padding-right: 0.25rem; }
+  .rtl .pl-2 { padding-left: 0; padding-right: 0.5rem; }
+  .rtl .pl-3 { padding-left: 0; padding-right: 0.75rem; }
+  .rtl .pl-4 { padding-left: 0; padding-right: 1rem; }
+  .rtl .pl-5 { padding-left: 0; padding-right: 1.25rem; }
+  .rtl .pl-6 { padding-left: 0; padding-right: 1.5rem; }
+  
+  .rtl .pr-1 { padding-right: 0; padding-left: 0.25rem; }
+  .rtl .pr-2 { padding-right: 0; padding-left: 0.5rem; }
+  .rtl .pr-3 { padding-right: 0; padding-left: 0.75rem; }
+  .rtl .pr-4 { padding-right: 0; padding-left: 1rem; }
+  .rtl .pr-5 { padding-right: 0; padding-left: 1.25rem; }
+  .rtl .pr-6 { padding-right: 0; padding-left: 1.5rem; }
+  
+  /* RTL border radius adjustments */
+  .rtl .rounded-l { border-radius: 0; border-top-right-radius: 0.25rem; border-bottom-right-radius: 0.25rem; }
+  .rtl .rounded-r { border-radius: 0; border-top-left-radius: 0.25rem; border-bottom-left-radius: 0.25rem; }
+  .rtl .rounded-l-lg { border-radius: 0; border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; }
+  .rtl .rounded-r-lg { border-radius: 0; border-top-left-radius: 0.5rem; border-bottom-left-radius: 0.5rem; }
+  .rtl .rounded-l-xl { border-radius: 0; border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+  .rtl .rounded-r-xl { border-radius: 0; border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem; }
+  
+  /* RTL border adjustments - using plain CSS to avoid circular dependency */
+  .rtl .border-l { border-left-width: 0; border-right-width: 1px; }
+  .rtl .border-r { border-right-width: 0; border-left-width: 1px; }
+  .rtl .border-l-2 { border-left-width: 0; border-right-width: 2px; }
+  .rtl .border-r-2 { border-right-width: 0; border-left-width: 2px; }
+  
+  /* RTL absolute positioning */
+  .rtl .left-0 { left: auto; right: 0; }
+  .rtl .left-1 { left: auto; right: 0.25rem; }
+  .rtl .left-2 { left: auto; right: 0.5rem; }
+  .rtl .left-3 { left: auto; right: 0.75rem; }
+  .rtl .left-4 { left: auto; right: 1rem; }
+  .rtl .right-0 { right: auto; left: 0; }
+  .rtl .right-1 { right: auto; left: 0.25rem; }
+  .rtl .right-2 { right: auto; left: 0.5rem; }
+  .rtl .right-3 { right: auto; left: 0.75rem; }
+  .rtl .right-4 { right: auto; left: 1rem; }
+  
+  /* RTL icon rotation */
+  .rtl .rotate-180-rtl {
+    transform: rotate(180deg);
+  }
+  
+  /* RTL arrow icons */
+  .rtl .chevron-right {
+    transform: rotate(180deg);
+  }
+  
+  .rtl .chevron-left {
+    transform: rotate(180deg);
+  }
+  
+  /* RTL arrow icons using Lucide classes */
+  .rtl .lucide-chevron-right {
+    transform: rotate(180deg);
+  }
+  
+  .rtl .lucide-chevron-left {
+    transform: rotate(180deg);
+  }
+  
+  .rtl .lucide-arrow-right {
+    transform: rotate(180deg);
+  }
+  
+  .rtl .lucide-arrow-left {
+    transform: rotate(180deg);
+  }
+  
+  /* RTL input icon positioning */
+  .rtl .input-with-icon-left {
+    padding-left: 0.75rem;
+    padding-right: 2.5rem;
+  }
+  
+  .rtl .input-icon-left {
+    left: auto;
+    right: 0.75rem;
+  }
+  
+  /* RTL dropdown menu */
+  .rtl .dropdown-menu {
+    left: auto;
+    right: 0;
+  }
+  
+  /* RTL modal close button */
+  .rtl .modal-close {
+    right: auto;
+    left: 1rem;
+  }
+  
+  /* RTL list markers */
+  .rtl ul {
+    list-style-position: inside;
+  }
+  
+  /* RTL progress bar */
+  .rtl .progress-bar {
+    transform: scaleX(-1);
+  }
+  
+  /* RTL slider */
+  .rtl input[type="range"] {
+    direction: ltr;
   }
 }

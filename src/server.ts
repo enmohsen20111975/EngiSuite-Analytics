@@ -26,6 +26,7 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import vdaRoutes from './routes/vda.routes.js';
 import learningRoutes from './routes/learning.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
+import { subscriptionsRouter, creditsRouter } from './routes/subscriptions.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import postRoutes from './routes/post.routes.js';
@@ -143,6 +144,10 @@ app.use(`${API_PREFIX}/learning`, learningRoutes);
 
 // Payment routes
 app.use(`${API_PREFIX}/payments`, paymentRoutes);
+
+// Subscription & credits routes
+app.use(`${API_PREFIX}/subscriptions`, subscriptionsRouter);
+app.use(`${API_PREFIX}/credits`, creditsRouter);
 
 // AI routes
 app.use(`${API_PREFIX}/ai`, aiRoutes);

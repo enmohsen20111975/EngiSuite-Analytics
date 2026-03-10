@@ -5,8 +5,8 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
-import { prisma, getWorkflowsDb } from '../services/database.service.js';
-import { AppError, ValidationError, NotFoundError } from '../middleware/error.middleware.js';
+import { prisma, prepareWorkflows } from '../services/database.service.js';
+import { ValidationError, NotFoundError } from '../middleware/error.middleware.js';
 import { calculationRateLimiter } from '../middleware/rateLimit.middleware.js';
 import { evaluateFormula } from '../services/calculationEngine.service.js';
 
@@ -75,13 +75,12 @@ interface EquationOutputRow {
  */
 router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const equations = db.prepare(`
+    const equations = prepareWorkflows(`
       SELECT e.id, e.equation_id, e.name, e.description, e.domain, e.difficulty_level
       FROM equations e
       WHERE e.is_active = 1
       ORDER BY e.name ASC
-    `).all() as EquationRow[];
+    `).all() as unknown as EquationRow[];
 
     res.json(equations);
   } catch (error) {
@@ -95,17 +94,16 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
  */
 router.get('/init', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const domainCounts = db.prepare(`
+    const domainCounts = prepareWorkflows(`
       SELECT e.domain, COUNT(*) as count
       FROM equations e
       WHERE e.is_active = 1
       GROUP BY e.domain
-    `).all() as { domain: string; count: number }[];
+    `).all() as unknown as { domain: string; count: number }[];
 
-    const totalCount = db.prepare(`
+    const totalCount = prepareWorkflows(`
       SELECT COUNT(*) as count FROM equations WHERE is_active = 1
-    `).get() as { count: number };
+    `).get() as unknown as { count: number } | undefined;
 
     res.json({
       initialized: true,
@@ -124,7 +122,6 @@ router.get('/init', async (_req: Request, res: Response, next: NextFunction) => 
  */
 router.get('/equations/catalog', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
     const { category, domain, search, limit, subcategory, difficulty } = req.query;
 
     let whereClause = 'WHERE e.is_active = 1';
@@ -153,28 +150,28 @@ router.get('/equations/catalog', async (req: Request, res: Response, next: NextF
 
     const limitClause = limit ? `LIMIT ${parseInt(String(limit), 10)}` : '';
 
-    const equations = db.prepare(`
+    const equations = prepareWorkflows(`
       SELECT e.*, ec.name as category_name, ec.domain as category_domain
       FROM equations e
       LEFT JOIN equation_categories ec ON e.category_id = ec.id
       ${whereClause}
       ORDER BY e.name ASC
       ${limitClause}
-    `).all(...params) as EquationRow[];
+    `).all(...params) as unknown as EquationRow[];
 
     // Get inputs and outputs for each equation
     const equationsWithDetails = equations.map(eq => {
-      const inputs = db.prepare(`
+      const inputs = prepareWorkflows(`
         SELECT * FROM equation_inputs
         WHERE equation_id = ?
         ORDER BY input_order ASC
-      `).all(eq.id) as EquationInputRow[];
+      `).all(eq.id) as unknown as EquationInputRow[];
 
-      const outputs = db.prepare(`
+      const outputs = prepareWorkflows(`
         SELECT * FROM equation_outputs
         WHERE equation_id = ?
         ORDER BY output_order ASC
-      `).all(eq.id) as EquationOutputRow[];
+      `).all(eq.id) as unknown as EquationOutputRow[];
 
       return {
         ...eq,
@@ -195,8 +192,7 @@ router.get('/equations/catalog', async (req: Request, res: Response, next: NextF
  */
 router.get('/categories', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    const categories = db.prepare(`
+    const categories = prepareWorkflows(`
       SELECT ec.*,
         (SELECT COUNT(*) FROM equations e WHERE e.category_id = ec.id AND e.is_active = 1) as equation_count
       FROM equation_categories ec
@@ -216,46 +212,45 @@ router.get('/categories', async (_req: Request, res: Response, next: NextFunctio
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idParam = String(req.params.id);
-    const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
     const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.id = ? AND e.is_active = 1
-      `).get(numericId) as EquationRow;
+      `).get(numericId) as unknown as EquationRow;
     }
 
     if (!equation) {
       // Try to find by equation_id
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.equation_id = ? AND e.is_active = 1
-      `).get(idParam) as EquationRow;
+      `).get(idParam) as unknown as EquationRow;
     }
 
     if (!equation) {
       throw new NotFoundError('Equation not found');
     }
 
-    const inputs = db.prepare(`
+    const inputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
-    `).all(equation.id) as EquationInputRow[];
+    `).all(equation.id) as unknown as EquationInputRow[];
 
-    const outputs = db.prepare(`
+    const outputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
-    `).all(equation.id) as EquationOutputRow[];
+    `).all(equation.id) as unknown as EquationOutputRow[];
 
     // Return data directly for frontend compatibility
     res.json({ ...equation, inputs, outputs });
@@ -272,46 +267,45 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
   try {
     const idParam = String(req.params.id);
     const { inputs } = req.body;
-    const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
     const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.id = ? AND e.is_active = 1
-      `).get(numericId) as EquationRow;
+      `).get(numericId) as unknown as EquationRow;
     }
 
     if (!equation) {
       // Try to find by equation_id
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.equation_id = ? AND e.is_active = 1
-      `).get(idParam) as EquationRow;
+      `).get(idParam) as unknown as EquationRow;
     }
 
     if (!equation) {
       throw new NotFoundError('Equation not found');
     }
 
-    const equationInputs = db.prepare(`
+    const equationInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
-    `).all(equation.id) as EquationInputRow[];
+    `).all(equation.id) as unknown as EquationInputRow[];
 
-    const equationOutputs = db.prepare(`
+    const equationOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
-    `).all(equation.id) as EquationOutputRow[];
+    `).all(equation.id) as unknown as EquationOutputRow[];
 
     // Build context with input values
     const context: Record<string, number | string> = {};
@@ -389,46 +383,45 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
   try {
     const idParam = String(req.params.id);
     const { inputs } = req.body;
-    const db = getWorkflowsDb();
 
     // Try to find by numeric ID first, then by equation_id
     let equation: EquationRow | undefined;
     const numericId = parseInt(idParam, 10);
 
     if (!isNaN(numericId)) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.id = ? AND e.is_active = 1
-      `).get(numericId) as EquationRow;
+      `).get(numericId) as unknown as EquationRow;
     }
 
     if (!equation) {
       // Try to find by equation_id
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT e.*, ec.name as category_name, ec.domain as category_domain
         FROM equations e
         LEFT JOIN equation_categories ec ON e.category_id = ec.id
         WHERE e.equation_id = ? AND e.is_active = 1
-      `).get(idParam) as EquationRow;
+      `).get(idParam) as unknown as EquationRow;
     }
 
     if (!equation) {
       throw new NotFoundError('Equation not found');
     }
 
-    const equationInputs = db.prepare(`
+    const equationInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
-    `).all(equation.id) as EquationInputRow[];
+    `).all(equation.id) as unknown as EquationInputRow[];
 
-    const equationOutputs = db.prepare(`
+    const equationOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
-    `).all(equation.id) as EquationOutputRow[];
+    `).all(equation.id) as unknown as EquationOutputRow[];
 
     // Build context with input values
     const context: Record<string, number | string> = {};

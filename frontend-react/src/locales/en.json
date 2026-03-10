@@ -1,0 +1,616 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "enable": "Enable",
+    "disable": "Disable",
+    "manage": "Manage",
+    "view": "View",
+    "export": "Export",
+    "configure": "Configure",
+    "create": "Create",
+    "update": "Update",
+    "clear": "Clear",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "download": "Download",
+    "upload": "Upload",
+    "import": "Import",
+    "run": "Run",
+    "stop": "Stop",
+    "start": "Start",
+    "pause": "Pause",
+    "continue": "Continue",
+    "retry": "Retry",
+    "undo": "Undo",
+    "redo": "Redo",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "selectAll": "Select All",
+    "filter": "Filter",
+    "sort": "Sort",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "actions": "Actions",
+    "options": "Options",
+    "details": "Details",
+    "more": "More",
+    "less": "Less",
+    "show": "Show",
+    "hide": "Hide",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "required": "Required",
+    "optional": "Optional",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "online": "Online",
+    "offline": "Offline",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled",
+    "noData": "No data available",
+    "noResults": "No results found",
+    "tryAgain": "Try again",
+    "learnMore": "Learn more",
+    "getStarted": "Get Started",
+    "seeAll": "See All",
+    "viewAll": "View All",
+    "readMore": "Read More",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "thisYear": "This Year",
+    "allTime": "All Time"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your application preferences and settings.",
+    "sections": {
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "language": "Language",
+      "privacy": "Privacy & Security",
+      "data": "Data & Storage",
+      "developer": "Developer",
+      "about": "About"
+    },
+    "appearance": {
+      "theme": {
+        "title": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "accentColor": {
+        "title": "Accent Color",
+        "description": "Choose your preferred accent color for the application."
+      }
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "email": {
+        "label": "Email Notifications",
+        "description": "Receive email updates about your calculations"
+      },
+      "push": {
+        "label": "Push Notifications",
+        "description": "Receive push notifications in your browser"
+      },
+      "weekly": {
+        "label": "Weekly Summary",
+        "description": "Receive a weekly summary of your activity"
+      },
+      "updates": {
+        "label": "Product Updates",
+        "description": "Get notified about new features and improvements"
+      }
+    },
+    "language": {
+      "title": "Language & Region",
+      "language": "Language",
+      "timezone": "Timezone",
+      "languages": {
+        "en": "English",
+        "ar": "العربية (Arabic)",
+        "fr": "Français (French)"
+      },
+      "timezones": {
+        "utc": "UTC",
+        "africa": "Africa/Cairo",
+        "europe": "Europe/London",
+        "america": "America/New_York",
+        "asia": "Asia/Dubai",
+        "mecca": "Asia/Riyadh"
+      }
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "twoFactor": {
+        "label": "Two-Factor Authentication",
+        "description": "Add an extra layer of security"
+      },
+      "sessions": {
+        "label": "Active Sessions",
+        "description": "Manage your active sessions"
+      },
+      "deleteAccount": {
+        "label": "Delete Account",
+        "description": "Permanently delete your account and data"
+      }
+    },
+    "data": {
+      "title": "Data & Storage",
+      "storageUsed": "Storage Used",
+      "exportData": {
+        "label": "Export Data",
+        "description": "Download all your data"
+      },
+      "clearCache": {
+        "label": "Clear Cache",
+        "description": "Clear temporary files and cache"
+      }
+    },
+    "developer": {
+      "title": "Developer Settings",
+      "apiKeys": {
+        "label": "API Keys",
+        "description": "Manage your API access tokens"
+      },
+      "webhooks": {
+        "label": "Webhooks",
+        "description": "Configure webhook endpoints"
+      },
+      "debugMode": {
+        "label": "Debug Mode",
+        "description": "Enable debug logging"
+      }
+    },
+    "about": {
+      "title": "About EngiSuite Analytics",
+      "version": "Version 2.0.0",
+      "builtWith": "Built with React + Vite",
+      "documentation": "Documentation",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "calculators": "Calculators",
+    "simulators": "Simulators",
+    "learning": "Learning Center",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "home": "Home",
+    "tools": "Tools",
+    "help": "Help",
+    "support": "Support",
+    "feedback": "Feedback"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account",
+      "email": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "orContinueWith": "Or continue with",
+      "googleSignIn": "Sign in with Google"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Get started with EngiSuite",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "agreeTerms": "I agree to the Terms of Service and Privacy Policy",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign In",
+      "passwordStrength": "Password Strength",
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to reset your password",
+      "email": "Email Address",
+      "submit": "Send Reset Link",
+      "backToLogin": "Back to Login",
+      "checkEmail": "Check your email for the reset link"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your new password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "submit": "Reset Password"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}}!",
+    "recentProjects": "Recent Projects",
+    "quickActions": "Quick Actions",
+    "statistics": "Statistics",
+    "activity": "Recent Activity",
+    "overview": "Overview",
+    "totalProjects": "Total Projects",
+    "totalCalculations": "Total Calculations",
+    "creditsUsed": "Credits Used",
+    "creditsRemaining": "Credits Remaining",
+    "newProject": "New Project",
+    "viewAllProjects": "View All Projects",
+    "recentCalculations": "Recent Calculations",
+    "noRecentActivity": "No recent activity",
+    "startWorking": "Start working to see your activity here"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage your engineering projects",
+    "newProject": "New Project",
+    "searchPlaceholder": "Search projects...",
+    "noProjects": "No projects found",
+    "createFirst": "Create your first project to get started",
+    "createProject": "Create Project",
+    "editProject": "Edit Project",
+    "deleteProject": "Delete Project",
+    "projectName": "Project Name",
+    "projectDescription": "Description",
+    "projectType": "Project Type",
+    "createdAt": "Created",
+    "updatedAt": "Last Updated",
+    "status": "Status",
+    "actions": "Actions",
+    "confirmDelete": "Are you sure you want to delete this project?",
+    "deleteWarning": "This action cannot be undone."
+  },
+  "calculators": {
+    "title": "Engineering Calculators",
+    "subtitle": "Perform complex engineering calculations with ease",
+    "searchPlaceholder": "Search calculators...",
+    "categories": {
+      "all": "All",
+      "electrical": "Electrical",
+      "mechanical": "Mechanical",
+      "civil": "Civil",
+      "chemical": "Chemical",
+      "physics": "Physics",
+      "mathematics": "Mathematics"
+    },
+    "electrical": {
+      "title": "Electrical Calculators",
+      "ohmsLaw": "Ohm's Law Calculator",
+      "powerCalc": "Power Calculator",
+      "voltageDrop": "Voltage Drop Calculator",
+      "cableSizing": "Cable Sizing Calculator",
+      "powerFactor": "Power Factor Calculator",
+      "transformer": "Transformer Calculator",
+      "motor": "Motor Calculator"
+    },
+    "mechanical": {
+      "title": "Mechanical Calculators",
+      "stressStrain": "Stress & Strain Calculator",
+      "beamDeflection": "Beam Deflection Calculator",
+      "gearRatio": "Gear Ratio Calculator",
+      "torque": "Torque Calculator",
+      "fluidFlow": "Fluid Flow Calculator",
+      "heatTransfer": "Heat Transfer Calculator"
+    },
+    "input": "Input",
+    "output": "Output",
+    "calculate": "Calculate",
+    "result": "Result",
+    "history": "History",
+    "clearHistory": "Clear History",
+    "saveCalculation": "Save Calculation",
+    "exportResult": "Export Result"
+  },
+  "simulators": {
+    "title": "Interactive Simulators",
+    "subtitle": "Visualize and simulate engineering concepts",
+    "electrical": "Electrical Simulator",
+    "hydraulic": "Hydraulic Simulator",
+    "pneumatic": "Pneumatic Simulator",
+    "logic": "Logic Gate Simulator",
+    "fluid": "Fluid Dynamics Simulator",
+    "startSimulation": "Start Simulation",
+    "stopSimulation": "Stop Simulation",
+    "resetSimulation": "Reset",
+    "parameters": "Parameters",
+    "results": "Results",
+    "addComponent": "Add Component",
+    "removeComponent": "Remove Component",
+    "connectComponents": "Connect Components",
+    "disconnectComponents": "Disconnect Components",
+    "saveCircuit": "Save Circuit",
+    "loadCircuit": "Load Circuit",
+    "clearCircuit": "Clear Circuit",
+    "components": {
+      "title": "Components",
+      "resistor": "Resistor",
+      "capacitor": "Capacitor",
+      "inductor": "Inductor",
+      "diode": "Diode",
+      "transistor": "Transistor",
+      "led": "LED",
+      "switch": "Switch",
+      "battery": "Battery",
+      "ground": "Ground",
+      "motor": "Motor",
+      "pump": "Pump",
+      "valve": "Valve",
+      "cylinder": "Cylinder",
+      "tank": "Tank"
+    }
+  },
+  "learning": {
+    "title": "Learning Center",
+    "subtitle": "Expand your engineering knowledge",
+    "courses": "Courses",
+    "progress": "Your Progress",
+    "continue": "Continue Learning",
+    "startCourse": "Start Course",
+    "completeCourse": "Complete Course",
+    "courseCompleted": "Course Completed",
+    "lessons": "Lessons",
+    "exercises": "Exercises",
+    "quizzes": "Quizzes",
+    "certificate": "Certificate",
+    "downloadCertificate": "Download Certificate",
+    "categories": {
+      "all": "All Courses",
+      "electrical": "Electrical Engineering",
+      "mechanical": "Mechanical Engineering",
+      "civil": "Civil Engineering",
+      "chemical": "Chemical Engineering",
+      "programming": "Programming",
+      "automation": "Industrial Automation"
+    },
+    "courseDetails": {
+      "duration": "Duration",
+      "level": "Level",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "students": "Students Enrolled",
+      "rating": "Rating",
+      "reviews": "Reviews",
+      "lastUpdated": "Last Updated"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Analyze your engineering data",
+    "overview": "Overview",
+    "trends": "Trends",
+    "reports": "Reports",
+    "exportData": "Export Data",
+    "dateRange": "Date Range",
+    "customRange": "Custom Range",
+    "compare": "Compare",
+    "metrics": {
+      "totalCalculations": "Total Calculations",
+      "totalSimulations": "Total Simulations",
+      "creditsUsed": "Credits Used",
+      "timeSpent": "Time Spent",
+      "projectsCreated": "Projects Created",
+      "coursesCompleted": "Courses Completed"
+    },
+    "charts": {
+      "bar": "Bar Chart",
+      "line": "Line Chart",
+      "pie": "Pie Chart",
+      "area": "Area Chart"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Generate and manage reports",
+    "newReport": "New Report",
+    "myReports": "My Reports",
+    "sharedReports": "Shared Reports",
+    "templates": "Templates",
+    "generateReport": "Generate Report",
+    "downloadPdf": "Download PDF",
+    "shareReport": "Share Report",
+    "deleteReport": "Delete Report",
+    "reportName": "Report Name",
+    "reportType": "Report Type",
+    "createdAt": "Created",
+    "status": "Status",
+    "draft": "Draft",
+    "generating": "Generating",
+    "ready": "Ready",
+    "error": "Error"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account settings",
+    "personalInfo": "Personal Information",
+    "accountSettings": "Account Settings",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "company": "Company",
+    "jobTitle": "Job Title",
+    "country": "Country",
+    "city": "City",
+    "bio": "Bio",
+    "avatar": "Profile Picture",
+    "changeAvatar": "Change Picture",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "emailNotifications": "Email Notifications",
+    "pushNotifications": "Push Notifications",
+    "subscription": {
+      "title": "Subscription",
+      "plan": "Current Plan",
+      "credits": "Credits",
+      "usage": "Usage",
+      "upgrade": "Upgrade Plan",
+      "manage": "Manage Subscription",
+      "nextBilling": "Next Billing Date",
+      "cancel": "Cancel Subscription"
+    }
+  },
+  "subscription": {
+    "title": "Subscription Plans",
+    "subtitle": "Choose the plan that fits your needs",
+    "currentPlan": "Current Plan",
+    "upgradePlan": "Upgrade Plan",
+    "downgradePlan": "Downgrade Plan",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "Free",
+        "description": "Perfect for getting started",
+        "features": [
+          "10 calculations per month",
+          "Basic simulators",
+          "Community support"
+        ]
+      },
+      "basic": {
+        "name": "Basic",
+        "price": "$9.99/month",
+        "description": "For individual engineers",
+        "features": [
+          "100 calculations per month",
+          "All simulators",
+          "Email support",
+          "Export results"
+        ]
+      },
+      "pro": {
+        "name": "Professional",
+        "price": "$29.99/month",
+        "description": "For power users",
+        "features": [
+          "Unlimited calculations",
+          "All simulators",
+          "Priority support",
+          "API access",
+          "Custom reports"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For teams and organizations",
+        "features": [
+          "Everything in Pro",
+          "Team collaboration",
+          "SSO authentication",
+          "Dedicated support",
+          "Custom integrations"
+        ]
+      }
+    },
+    "credits": {
+      "title": "Credits",
+      "balance": "Your Balance",
+      "buyMore": "Buy More Credits",
+      "usageHistory": "Usage History",
+      "noCredits": "You have no credits remaining",
+      "lowCredits": "You are running low on credits"
+    }
+  },
+  "errors": {
+    "general": "Something went wrong",
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "serverError": "Server error",
+    "networkError": "Network error. Please check your connection.",
+    "validationError": "Please check your input",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "tryAgain": "Please try again",
+    "contactSupport": "If the problem persists, please contact support"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be no more than {{max}} characters",
+    "min": "Must be at least {{min}}",
+    "max": "Must be no more than {{max}}",
+    "number": "Please enter a valid number",
+    "url": "Please enter a valid URL",
+    "phone": "Please enter a valid phone number"
+  },
+  "messages": {
+    "saveSuccess": "Saved successfully",
+    "saveError": "Failed to save",
+    "deleteSuccess": "Deleted successfully",
+    "deleteError": "Failed to delete",
+    "updateSuccess": "Updated successfully",
+    "updateError": "Failed to update",
+    "createSuccess": "Created successfully",
+    "createError": "Failed to create",
+    "copySuccess": "Copied to clipboard",
+    "uploadSuccess": "Uploaded successfully",
+    "uploadError": "Failed to upload",
+    "downloadSuccess": "Download started",
+    "downloadError": "Failed to download"
+  },
+  "footer": {
+    "copyright": "© 2024 EngiSuite. All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "about": "About",
+    "blog": "Blog",
+    "careers": "Careers",
+    "documentation": "Documentation",
+    "apiDocs": "API Documentation",
+    "status": "Status",
+    "social": {
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "github": "GitHub",
+      "youtube": "YouTube"
+    }
+  }
+}

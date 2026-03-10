@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
-import { prisma, getWorkflowsDb } from '../services/database.service.js';
+import { prepareWorkflows } from '../services/database.service.js';
 import { NotFoundError, ValidationError } from '../middleware/error.middleware.js';
 
 const router = Router();
@@ -15,15 +15,13 @@ const router = Router();
  */
 router.get('/stats', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    
     // Get total equations count
-    const totalEquations = db.prepare(`
+    const totalEquations = prepareWorkflows(`
       SELECT COUNT(*) as count FROM equations WHERE is_active = 1
-    `).get() as { count: number };
+    `).get() as { count: number } | undefined;
 
     // Get equations by domain
-    const byDomain = db.prepare(`
+    const byDomain = prepareWorkflows(`
       SELECT domain, COUNT(*) as count
       FROM equations
       WHERE is_active = 1 AND domain IS NOT NULL
@@ -31,7 +29,7 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
     `).all() as { domain: string; count: number }[];
 
     // Get equations by difficulty
-    const byDifficulty = db.prepare(`
+    const byDifficulty = prepareWorkflows(`
       SELECT difficulty_level, COUNT(*) as count
       FROM equations
       WHERE is_active = 1 AND difficulty_level IS NOT NULL
@@ -39,23 +37,23 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
     `).all() as { difficulty_level: string; count: number }[];
 
     // Get total categories (equation_categories has no is_active column)
-    const totalCategories = db.prepare(`
+    const totalCategories = prepareWorkflows(`
       SELECT COUNT(*) as count FROM equation_categories
-    `).get() as { count: number };
+    `).get() as { count: number } | undefined;
 
     // Get total inputs/outputs
-    const totalInputs = db.prepare(`
+    const totalInputs = prepareWorkflows(`
       SELECT COUNT(*) as count FROM equation_inputs
-    `).get() as { count: number };
+    `).get() as { count: number } | undefined;
 
-    const totalOutputs = db.prepare(`
+    const totalOutputs = prepareWorkflows(`
       SELECT COUNT(*) as count FROM equation_outputs
-    `).get() as { count: number };
+    `).get() as { count: number } | undefined;
 
     res.json({
       success: true,
       data: {
-        total: totalEquations.count,
+        total: totalEquations?.count || 0,
         byDomain: byDomain.reduce((acc, item) => {
           acc[item.domain] = item.count;
           return acc;
@@ -64,9 +62,9 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
           acc[item.difficulty_level] = item.count;
           return acc;
         }, {} as Record<string, number>),
-        categories: totalCategories.count,
-        inputs: totalInputs.count,
-        outputs: totalOutputs.count,
+        categories: totalCategories?.count || 0,
+        inputs: totalInputs?.count || 0,
+        outputs: totalOutputs?.count || 0,
       },
     });
   } catch (error) {
@@ -80,9 +78,7 @@ router.get('/stats', async (_req: Request, res: Response, next: NextFunction) =>
  */
 router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    
-    const equations = db.prepare(`
+    const equations = prepareWorkflows(`
       SELECT 
         e.*,
         ec.name as category_name
@@ -94,13 +90,13 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 
     // Get inputs and outputs for each equation
     const equationsWithDetails = equations.map((eq: any) => {
-      const inputs = db.prepare(`
+      const inputs = prepareWorkflows(`
         SELECT * FROM equation_inputs 
         WHERE equation_id = ? 
         ORDER BY input_order ASC
       `).all(eq.id);
 
-      const outputs = db.prepare(`
+      const outputs = prepareWorkflows(`
         SELECT * FROM equation_outputs 
         WHERE equation_id = ? 
         ORDER BY output_order ASC
@@ -128,9 +124,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
  */
 router.get('/categories', async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const db = getWorkflowsDb();
-    
-    const categories = db.prepare(`
+    const categories = prepareWorkflows(`
       SELECT 
         ec.*,
         (SELECT COUNT(*) FROM equations WHERE category_id = ec.id AND is_active = 1) as equation_count
@@ -155,14 +149,13 @@ router.get('/categories', async (_req: Request, res: Response, next: NextFunctio
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const idParam = String(req.params.id);
-    const db = getWorkflowsDb();
 
     // Try numeric ID first, then equation_id string
     let equation: any = null;
     const numericId = parseInt(idParam, 10);
     
     if (!isNaN(numericId)) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT 
           e.*,
           ec.name as category_name
@@ -173,7 +166,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     }
     
     if (!equation) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT 
           e.*,
           ec.name as category_name
@@ -188,14 +181,14 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // Get inputs
-    const inputs = db.prepare(`
+    const inputs = prepareWorkflows(`
       SELECT * FROM equation_inputs 
       WHERE equation_id = ? 
       ORDER BY input_order ASC
     `).all(equation.id);
 
     // Get outputs
-    const outputs = db.prepare(`
+    const outputs = prepareWorkflows(`
       SELECT * FROM equation_outputs 
       WHERE equation_id = ? 
       ORDER BY output_order ASC
@@ -222,20 +215,19 @@ router.post('/:id/solve', async (req: Request, res: Response, next: NextFunction
   try {
     const idParam = String(req.params.id);
     const inputs = req.body;
-    const db = getWorkflowsDb();
 
     // Try to find equation
     let equation: any = null;
     const numericId = parseInt(idParam, 10);
     
     if (!isNaN(numericId)) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT * FROM equations WHERE id = ? AND is_active = 1
       `).get(numericId);
     }
     
     if (!equation) {
-      equation = db.prepare(`
+      equation = prepareWorkflows(`
         SELECT * FROM equations WHERE equation_id = ? AND is_active = 1
       `).get(idParam);
     }
@@ -245,12 +237,12 @@ router.post('/:id/solve', async (req: Request, res: Response, next: NextFunction
     }
 
     // Get equation inputs
-    const equationInputs = db.prepare(`
+    const equationInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs WHERE equation_id = ? ORDER BY input_order ASC
     `).all(equation.id) as any[];
 
     // Get equation outputs
-    const equationOutputs = db.prepare(`
+    const equationOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs WHERE equation_id = ? ORDER BY output_order ASC
     `).all(equation.id) as any[];
 

@@ -1,298 +1,233 @@
 /**
- * Visual Data Analysis (VDA) Service
- * Handles all API calls for data upload, queries, reports, and dashboards
+ * VDA (Visual Data Analysis) Service
+ * Handles all API calls for data upload, query builder, report builder, and dashboard builder
  */
 
-import api from './apiClient';
-
-const VDA_BASE = '/api/vda';
-
-// ============== Data Upload & Sources ==============
+const API_BASE = '/api/vda';
 
 /**
- * Upload a data file (Excel, CSV, JSON, SQLite)
+ * Upload data to the server
+ * @param {Object} params - Upload parameters
+ * @param {string} params.name - Name of the dataset
+ * @param {Array|Object} params.data - The data to upload
+ * @param {string} params.type - Type of data (csv, excel, json)
+ * @returns {Promise<Object>} The created dataset
  */
-export const uploadFile = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const response = await api.post(`${VDA_BASE}/upload`, formData, {
+export async function uploadData({ name, data, type }) {
+  const response = await fetch(`${API_BASE}/upload`, {
+    method: 'POST',
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
     },
+    credentials: 'include',
+    body: JSON.stringify({ name, data, type, dataType: type }),
   });
-  return response.data;
-};
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to upload data');
+  }
+
+  return response.json();
+}
 
 /**
- * Get all uploaded data sources
+ * Get all datasets for the current user
+ * @returns {Promise<Array>} List of datasets
  */
-export const getDataSources = async () => {
-  const response = await api.get(`${VDA_BASE}/data-sources`);
-  return response.data;
-};
-
-/**
- * Get a specific data source
- */
-export const getDataSource = async (sourceId) => {
-  const response = await api.get(`${VDA_BASE}/data-sources/${sourceId}`);
-  return response.data;
-};
-
-/**
- * Delete a data source
- */
-export const deleteDataSource = async (sourceId) => {
-  const response = await api.delete(`${VDA_BASE}/data-sources/${sourceId}`);
-  return response.data;
-};
-
-// ============== Query Operations ==============
-
-/**
- * Execute a visual query
- */
-export const executeQuery = async (queryConfig) => {
-  const response = await api.post(`${VDA_BASE}/query`, queryConfig);
-  return response.data;
-};
-
-/**
- * Save a query
- */
-export const saveQuery = async (queryConfig, name) => {
-  const response = await api.post(`${VDA_BASE}/query/save?name=${encodeURIComponent(name)}`, queryConfig);
-  return response.data;
-};
-
-/**
- * Get all saved queries
- */
-export const getSavedQueries = async () => {
-  const response = await api.get(`${VDA_BASE}/queries`);
-  return response.data;
-};
-
-// ============== Report Operations ==============
-
-/**
- * Save a report
- */
-export const saveReport = async (reportConfig) => {
-  const response = await api.post(`${VDA_BASE}/reports`, reportConfig);
-  return response.data;
-};
-
-/**
- * Get all saved reports
- */
-export const getReports = async () => {
-  const response = await api.get(`${VDA_BASE}/reports`);
-  return response.data;
-};
-
-/**
- * Get a specific report
- */
-export const getReport = async (reportId) => {
-  const response = await api.get(`${VDA_BASE}/reports/${reportId}`);
-  return response.data;
-};
-
-/**
- * Delete a report
- */
-export const deleteReport = async (reportId) => {
-  const response = await api.delete(`${VDA_BASE}/reports/${reportId}`);
-  return response.data;
-};
-
-/**
- * Export report as HTML
- */
-export const exportReportHtml = async (reportId) => {
-  const response = await api.get(`${VDA_BASE}/reports/${reportId}/export/html`, {
-    responseType: 'blob',
+export async function getDatasets() {
+  const response = await fetch(`${API_BASE}/datasets`, {
+    credentials: 'include',
   });
-  return response.data;
-};
 
-// ============== Dashboard Operations ==============
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to fetch datasets');
+  }
 
-/**
- * Save a dashboard
- */
-export const saveDashboard = async (dashboardConfig) => {
-  const response = await api.post(`${VDA_BASE}/dashboards`, dashboardConfig);
-  return response.data;
-};
+  const result = await response.json();
+  return result.data || [];
+}
 
 /**
- * Get all saved dashboards
+ * Get a single dataset by ID
+ * @param {string} id - Dataset ID
+ * @returns {Promise<Object>} The dataset
  */
-export const getDashboards = async () => {
-  const response = await api.get(`${VDA_BASE}/dashboards`);
-  return response.data;
-};
-
-/**
- * Get a specific dashboard
- */
-export const getDashboard = async (dashboardId) => {
-  const response = await api.get(`${VDA_BASE}/dashboards/${dashboardId}`);
-  return response.data;
-};
-
-/**
- * Delete a dashboard
- */
-export const deleteDashboard = async (dashboardId) => {
-  const response = await api.delete(`${VDA_BASE}/dashboards/${dashboardId}`);
-  return response.data;
-};
-
-// ============== Export Operations ==============
-
-/**
- * Export data as CSV
- */
-export const exportCsv = async (data) => {
-  const response = await api.post(`${VDA_BASE}/export/csv`, data, {
-    responseType: 'blob',
+export async function getDataset(id) {
+  const response = await fetch(`${API_BASE}/datasets/${id}`, {
+    credentials: 'include',
   });
-  return response.data;
-};
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to fetch dataset');
+  }
+
+  return response.json();
+}
 
 /**
- * Export data as JSON
+ * Analyze data
+ * @param {Object} params - Analysis parameters
+ * @param {string} params.datasetId - Dataset ID
+ * @param {string} params.analysisType - Type of analysis (statistics, correlation)
+ * @param {Array} params.columns - Columns to analyze
+ * @returns {Promise<Object>} Analysis results
  */
-export const exportJson = async (data) => {
-  const response = await api.post(`${VDA_BASE}/export/json`, data, {
-    responseType: 'blob',
+export async function analyzeData({ datasetId, analysisType, columns }) {
+  const response = await fetch(`${API_BASE}/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ datasetId, analysisType, columns }),
   });
-  return response.data;
-};
 
-// ============== Statistics ==============
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to analyze data');
+  }
 
-/**
- * Calculate statistics for data
- */
-export const calculateStatistics = async (data) => {
-  const response = await api.post(`${VDA_BASE}/statistics`, data);
-  return response.data;
-};
-
-// ============== Local Storage Helpers ==============
+  return response.json();
+}
 
 /**
- * Store data in sessionStorage for cross-page sharing
+ * Generate chart data
+ * @param {Object} params - Chart parameters
+ * @param {string} params.datasetId - Dataset ID
+ * @param {string} params.chartType - Type of chart (line, bar, pie, scatter)
+ * @param {string} params.xAxis - X-axis column
+ * @param {string} params.yAxis - Y-axis column
+ * @returns {Promise<Object>} Chart data
  */
-export const storeActiveData = (data) => {
-  sessionStorage.setItem('vda_active_data', JSON.stringify(data));
-};
+export async function generateChart({ datasetId, chartType, xAxis, yAxis }) {
+  const response = await fetch(`${API_BASE}/chart`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ datasetId, chartType, xAxis, yAxis }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to generate chart');
+  }
+
+  return response.json();
+}
 
 /**
- * Get active data from sessionStorage
+ * Delete a dataset
+ * @param {string} id - Dataset ID
+ * @returns {Promise<void>}
  */
-export const getActiveData = () => {
-  const data = sessionStorage.getItem('vda_active_data');
-  return data ? JSON.parse(data) : null;
-};
+export async function deleteDataset(id) {
+  const response = await fetch(`${API_BASE}/datasets/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to delete dataset');
+  }
+
+  return response.json();
+}
 
 /**
- * Clear active data from sessionStorage
+ * Parse file content locally before uploading
+ * @param {File} file - The file to parse
+ * @returns {Promise<Object>} Parsed data with sheets
  */
-export const clearActiveData = () => {
-  sessionStorage.removeItem('vda_active_data');
-};
+export async function parseFileLocally(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    const fileType = getFileType(file.name);
+    
+    reader.onload = async (e) => {
+      try {
+        let result = { sheets: [], type: fileType };
+        
+        if (fileType === 'xlsx' || fileType === 'csv') {
+          const { default: XLSX } = await import('xlsx');
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          result.sheets = workbook.SheetNames.map(name => {
+            const worksheet = workbook.Sheets[name];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            const headers = jsonData[0] || [];
+            const rows = jsonData.slice(1);
+            
+            return {
+              name,
+              headers,
+              rows,
+              rowCount: rows.length,
+              colCount: headers.length,
+              rawData: jsonData
+            };
+          });
+        } else if (fileType === 'json') {
+          const jsonData = JSON.parse(e.target.result);
+          const dataArray = Array.isArray(jsonData) ? jsonData : [jsonData];
+          
+          if (dataArray.length > 0) {
+            const headers = Object.keys(dataArray[0]);
+            const rows = dataArray.map(item => headers.map(h => item[h]));
+            
+            result.sheets = [{
+              name: 'Data',
+              headers,
+              rows,
+              rowCount: rows.length,
+              colCount: headers.length,
+              rawData: dataArray
+            }];
+          }
+        }
+        
+        resolve(result);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    
+    if (fileType === 'json') {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
+}
 
 /**
- * Store uploaded files metadata in localStorage
+ * Get file type from filename
+ * @param {string} filename - The filename
+ * @returns {string} The file type
  */
-export const storeUploadedFiles = (files) => {
-  localStorage.setItem('vda_uploaded_files', JSON.stringify(files));
-};
-
-/**
- * Get uploaded files metadata from localStorage
- */
-export const getUploadedFiles = () => {
-  const files = localStorage.getItem('vda_uploaded_files');
-  return files ? JSON.parse(files) : [];
-};
-
-/**
- * Store saved reports in localStorage (backup)
- */
-export const storeSavedReports = (reports) => {
-  localStorage.setItem('vda_saved_reports', JSON.stringify(reports));
-};
-
-/**
- * Get saved reports from localStorage (backup)
- */
-export const getSavedReports = () => {
-  const reports = localStorage.getItem('vda_saved_reports');
-  return reports ? JSON.parse(reports) : [];
-};
-
-/**
- * Store saved dashboards in localStorage (backup)
- */
-export const storeSavedDashboards = (dashboards) => {
-  localStorage.setItem('vda_saved_dashboards', JSON.stringify(dashboards));
-};
-
-/**
- * Get saved dashboards from localStorage (backup)
- */
-export const getSavedDashboards = () => {
-  const dashboards = localStorage.getItem('vda_saved_dashboards');
-  return dashboards ? JSON.parse(dashboards) : [];
-};
+function getFileType(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  if (['xlsx', 'xls'].includes(ext)) return 'xlsx';
+  if (ext === 'csv') return 'csv';
+  if (ext === 'json') return 'json';
+  if (['db', 'sqlite', 'sqlite3'].includes(ext)) return 'db';
+  return 'csv';
+}
 
 export default {
-  // Data Sources
-  uploadFile,
-  getDataSources,
-  getDataSource,
-  deleteDataSource,
-  
-  // Queries
-  executeQuery,
-  saveQuery,
-  getSavedQueries,
-  
-  // Reports
-  saveReport,
-  getReports,
-  getReport,
-  deleteReport,
-  exportReportHtml,
-  
-  // Dashboards
-  saveDashboard,
-  getDashboards,
-  getDashboard,
-  deleteDashboard,
-  
-  // Export
-  exportCsv,
-  exportJson,
-  
-  // Statistics
-  calculateStatistics,
-  
-  // Local Storage
-  storeActiveData,
-  getActiveData,
-  clearActiveData,
-  storeUploadedFiles,
-  getUploadedFiles,
-  storeSavedReports,
-  getSavedReports,
-  storeSavedDashboards,
-  getSavedDashboards,
+  uploadData,
+  getDatasets,
+  getDataset,
+  analyzeData,
+  generateChart,
+  deleteDataset,
+  parseFileLocally,
 };

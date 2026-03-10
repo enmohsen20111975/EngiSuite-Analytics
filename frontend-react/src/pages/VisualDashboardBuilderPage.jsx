@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, Save, Download, Plus, Trash2, 
+import {
+  LayoutDashboard, Save, Download, Plus, Trash2,
   ChevronDown, ChevronRight, X, Settings, Copy, RefreshCw,
   Move, ZoomIn, ZoomOut, RotateCcw, Eye, EyeOff,
   ChartColumn, ChartPie, ChartLine, TrendingUp, TrendingDown,
@@ -12,6 +12,7 @@ import {
   Gauge, Target, Zap, Star, Heart
 } from 'lucide-react';
 import Chart from 'chart.js/auto';
+import { useVDAData } from '../contexts/VDADataContext';
 
 // Widget Types
 const WIDGET_TYPES = {
@@ -102,6 +103,9 @@ const VisualDashboardBuilderPage = () => {
   const dashboardRef = useRef(null);
   const chartRefs = useRef({});
   
+  // Get data from VDA context
+  const { dataSources, activeDataSource } = useVDAData();
+  
   // State management
   const [widgets, setWidgets] = useState([]);
   const [selectedWidget, setSelectedWidget] = useState(null);
@@ -115,25 +119,13 @@ const VisualDashboardBuilderPage = () => {
   const [dashboardTitle, setDashboardTitle] = useState('Untitled Dashboard');
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [refreshInterval, setRefreshInterval] = useState(30);
-  const [dataSource, setDataSource] = useState(null);
   const [savedDashboards, setSavedDashboards] = useState([]);
   const [editMode, setEditMode] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Load data from sessionStorage
+  // Load saved dashboards from localStorage
   useEffect(() => {
-    const storedData = sessionStorage.getItem('vda_active_data');
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        setDataSource(data);
-      } catch (e) {
-        console.error('Failed to load stored data:', e);
-      }
-    }
-    
-    // Load saved dashboards
     const saved = localStorage.getItem('vda_saved_dashboards');
     if (saved) {
       setSavedDashboards(JSON.parse(saved));
@@ -227,8 +219,8 @@ const VisualDashboardBuilderPage = () => {
         };
       case 'table':
         return {
-          headers: dataSource?.sheets?.[0]?.headers || ['Column 1', 'Column 2', 'Column 3'],
-          rows: dataSource?.sheets?.[0]?.rows?.slice(0, 5) || [
+          headers: activeDataSource?.sheets?.[0]?.headers || ['Column 1', 'Column 2', 'Column 3'],
+          rows: activeDataSource?.sheets?.[0]?.rows?.slice(0, 5) || [
             ['Data 1', 'Data 2', 'Data 3'],
             ['Data 4', 'Data 5', 'Data 6']
           ],

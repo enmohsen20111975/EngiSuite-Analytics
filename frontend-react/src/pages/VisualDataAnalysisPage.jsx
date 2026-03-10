@@ -17,6 +17,7 @@ import {
   Layers, Play, Pause, Calculator, Search
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useVDAData } from '../contexts/VDADataContext';
 
 // Chart types
 const CHART_TYPES = {
@@ -640,19 +641,37 @@ function QueryBuilderPanel({ dataSource, onQuery, result }) {
  * Main Visual Data Analysis Page
  */
 export default function VisualDataAnalysisPage() {
+  // Get data from shared context
+  const {
+    dataSources: contextDataSources,
+    activeDataSource: contextActiveDataSource,
+    selectDataSource,
+    addDataSource,
+    isLoading: contextLoading
+  } = useVDAData();
+  
   // State
   const [widgets, setWidgets] = useState([]);
   const [selectedWidgetId, setSelectedWidgetId] = useState(null);
   const [currentDashboard, setCurrentDashboard] = useState(null);
   const [viewport, setViewport] = useState({ zoom: 1, offset: { x: 0, y: 0 } });
   const [status, setStatus] = useState('Ready');
-  const [dataSources, setDataSources] = useState([
-    { id: 'sample_1', name: 'Sample Sales Data', type: 'sample', fields: ['category', 'value', 'date', 'region'] },
-    { id: 'sample_2', name: 'Sample Analytics', type: 'sample', fields: ['metric', 'count', 'timestamp'] }
-  ]);
-  const [activeDataSource, setActiveDataSource] = useState(null);
   const [widgetData, setWidgetData] = useState({});
   const [showQueryBuilder, setShowQueryBuilder] = useState(false);
+  
+  // Use context data sources with sample data fallback
+  const dataSources = useMemo(() => {
+    if (contextDataSources && contextDataSources.length > 0) {
+      return contextDataSources;
+    }
+    // Fallback sample data when no uploaded data
+    return [
+      { id: 'sample_1', name: 'Sample Sales Data', type: 'sample', fields: ['category', 'value', 'date', 'region'] },
+      { id: 'sample_2', name: 'Sample Analytics', type: 'sample', fields: ['metric', 'count', 'timestamp'] }
+    ];
+  }, [contextDataSources]);
+  
+  const activeDataSource = contextActiveDataSource;
   
   const canvasRef = useRef(null);
   const queryClient = useQueryClient();
@@ -788,7 +807,7 @@ export default function VisualDataAnalysisPage() {
       viewport,
       widgets,
       widgetData,
-      dataSources,
+      // Note: dataSources are now managed by VDADataContext, not saved with dashboard
       metadata: {
         name: currentDashboard?.name || 'Untitled Dashboard',
         type: 'dashboard'
@@ -813,7 +832,7 @@ export default function VisualDataAnalysisPage() {
       console.error('Save failed:', error);
       setStatus('Save failed');
     }
-  }, [widgets, widgetData, viewport, currentDashboard, dataSources, createMutation, updateMutation]);
+  }, [widgets, widgetData, viewport, currentDashboard, createMutation, updateMutation]);
 
   // Load dashboard
   const handleLoad = useCallback(async (dashboard) => {
@@ -823,7 +842,7 @@ export default function VisualDataAnalysisPage() {
       setViewport(state.viewport || { zoom: 1, offset: { x: 0, y: 0 } });
       setWidgets(state.widgets || []);
       setWidgetData(state.widgetData || {});
-      setDataSources(state.dataSources || dataSources);
+      // Note: dataSources are now managed by VDADataContext, not locally
       setCurrentDashboard(canvas);
       setSelectedWidgetId(null);
       setStatus(`Loaded: ${canvas.name}`);
@@ -831,7 +850,7 @@ export default function VisualDataAnalysisPage() {
       console.error('Load failed:', error);
       setStatus('Load failed');
     }
-  }, [dataSources]);
+  }, []);
 
   // New dashboard
   const handleNew = useCallback(() => {
@@ -857,19 +876,31 @@ export default function VisualDataAnalysisPage() {
   }, [currentDashboard]);
 
   // Handle data upload
-  const handleDataUpload = useCallback((name, data) => {
-    const newSource = {
-      id: `data_${Date.now()}`,
-      name,
-      type: 'uploaded',
-      data,
-      fields: Object.keys(data?.[0] || {})
-    };
+  const handleDataUpload = useCallback(async (name, data) => {
+    const fields = Object.keys(data?.[0] || {});
     
-    setDataSources(prev => [...prev, newSource]);
-    setActiveDataSource(newSource);
-    setStatus(`Uploaded: ${name}`);
-  }, []);
+    try {
+      // Add to shared context (this handles both server and localStorage)
+      await addDataSource({
+        name,
+        type: 'uploaded',
+        data,
+        fields,
+        tables: [{
+          id: `table_${Date.now()}`,
+          name: name.replace(/\.[^/.]+$/, ''), // Remove file extension
+          data,
+          fields,
+          rowCount: data.length
+        }]
+      });
+      
+      setStatus(`Uploaded: ${name}`);
+    } catch (error) {
+      console.error('Error uploading data:', error);
+      setStatus('Upload failed');
+    }
+  }, [addDataSource]);
 
   // Handle query
   const handleQuery = useCallback((query) => {
@@ -1033,7 +1064,7 @@ export default function VisualDataAnalysisPage() {
             onDataUpload={handleDataUpload}
             dataSources={dataSources}
             activeSource={activeDataSource}
-            onSelectSource={setActiveDataSource}
+            onSelectSource={selectDataSource}
           />
           {showQueryBuilder && activeDataSource && (
             <QueryBuilderPanel

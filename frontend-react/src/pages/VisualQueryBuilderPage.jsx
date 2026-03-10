@@ -1,15 +1,16 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Database, Table2, Play, Save, Download, Trash2, Plus, 
+import {
+  Database, Table2, Play, Save, Download, Trash2, Plus,
   ChevronDown, ChevronRight, X, Check, ListFilter, ArrowUpAZ, ArrowDownAZ,
-  ChartColumn, ChartPie, ChartLine, TrendingUp, Layers, 
-  Move, ZoomIn, ZoomOut, RotateCcw, Settings, Copy, 
+  ChartColumn, ChartPie, ChartLine, TrendingUp, Layers,
+  Move, ZoomIn, ZoomOut, RotateCcw, Settings, Copy,
   FileCode, FileSpreadsheet, Eye, EyeOff, CircleAlert, CircleCheck,
   GripVertical, ArrowRight, ArrowLeft, Minus, Equal,
   Group, Hash, TrendingDown, Search
 } from 'lucide-react';
 import Chart from 'chart.js/auto';
+import { useVDAData } from '../contexts/VDADataContext';
 
 // SQL Operators
 const SQL_OPERATORS = {
@@ -44,6 +45,9 @@ const VisualQueryBuilderPage = () => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   
+  // Get data from VDA context
+  const { dataSources, activeDataSource, getTablesForQueryBuilder } = useVDAData();
+  
   // State management
   const [tables, setTables] = useState([]);
   const [canvasTables, setCanvasTables] = useState([]);
@@ -76,36 +80,17 @@ const VisualQueryBuilderPage = () => {
     aggregate: true
   });
 
-  // Load data from sessionStorage
+  // Load data from VDA context
   useEffect(() => {
-    const storedData = sessionStorage.getItem('vda_active_data');
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        if (data.sheets) {
-          const loadedTables = data.sheets.map(sheet => ({
-            id: `table_${sheet.name.toLowerCase().replace(/\s+/g, '_')}`,
-            name: sheet.name,
-            fields: sheet.headers?.map((h, idx) => ({
-              name: h,
-              type: inferType(sheet.rows?.[0]?.[idx]),
-              selected: false
-            })) || [],
-            position: { x: 50, y: 50 },
-            rowCount: sheet.rowCount || 0,
-            data: sheet.rows || []
-          }));
-          setTables(loadedTables);
-          setCanvasTables(loadedTables.map(t => ({
-            ...t,
-            position: { x: 50 + loadedTables.indexOf(t) * 300, y: 50 }
-          })));
-        }
-      } catch (e) {
-        console.error('Failed to load stored data:', e);
-      }
+    const contextTables = getTablesForQueryBuilder();
+    if (contextTables && contextTables.length > 0) {
+      setTables(contextTables);
+      setCanvasTables(contextTables.map((t, idx) => ({
+        ...t,
+        position: { x: 50 + idx * 300, y: 50 }
+      })));
     }
-  }, []);
+  }, [dataSources, activeDataSource]);
 
   // Infer field type from value
   const inferType = (value) => {
