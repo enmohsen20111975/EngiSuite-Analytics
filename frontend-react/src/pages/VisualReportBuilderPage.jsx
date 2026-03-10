@@ -91,7 +91,14 @@ const VisualReportBuilderPage = () => {
   const chartRefs = useRef({});
   
   // Get data from VDA context
-  const { dataSources, activeDataSource } = useVDAData();
+  const {
+    dataSources,
+    activeDataSource,
+    getTablesForSelectedSources,
+    getTablesForQueryBuilder,
+    selectedSourceIds,
+    selectedCount
+  } = useVDAData();
   
   // State management
   const [widgets, setWidgets] = useState([]);
@@ -457,7 +464,12 @@ const VisualReportBuilderPage = () => {
                 <FileText className="w-6 h-6" />
                 Report Builder
               </h1>
-              <p className="text-xs text-green-200">Design professional reports</p>
+              <p className="text-xs text-green-200">
+                {selectedCount > 0
+                  ? `${selectedCount} source(s) selected for analysis`
+                  : 'Design professional reports'
+                }
+              </p>
             </div>
           </div>
           

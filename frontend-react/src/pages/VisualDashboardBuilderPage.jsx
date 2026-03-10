@@ -104,7 +104,13 @@ const VisualDashboardBuilderPage = () => {
   const chartRefs = useRef({});
   
   // Get data from VDA context
-  const { dataSources, activeDataSource } = useVDAData();
+  const {
+    dataSources,
+    activeDataSource,
+    getTablesForSelectedSources,
+    selectedSourceIds,
+    selectedCount
+  } = useVDAData();
   
   // State management
   const [widgets, setWidgets] = useState([]);
@@ -619,7 +625,12 @@ const VisualDashboardBuilderPage = () => {
                 <LayoutDashboard className="w-6 h-6" />
                 Dashboard Builder
               </h1>
-              <p className="text-xs text-purple-200">Create interactive dashboards</p>
+              <p className="text-xs text-purple-200">
+                {selectedCount > 0
+                  ? `${selectedCount} source(s) selected for analysis`
+                  : 'Create interactive dashboards'
+                }
+              </p>
             </div>
           </div>
           

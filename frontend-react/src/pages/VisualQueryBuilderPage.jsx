@@ -46,7 +46,14 @@ const VisualQueryBuilderPage = () => {
   const chartInstanceRef = useRef(null);
   
   // Get data from VDA context
-  const { dataSources, activeDataSource, getTablesForQueryBuilder } = useVDAData();
+  const {
+    dataSources,
+    activeDataSource,
+    getTablesForQueryBuilder,
+    getTablesForSelectedSources,
+    selectedSourceIds,
+    selectedCount
+  } = useVDAData();
   
   // State management
   const [tables, setTables] = useState([]);
@@ -80,17 +87,27 @@ const VisualQueryBuilderPage = () => {
     aggregate: true
   });
 
-  // Load data from VDA context
+  // Load data from VDA context - use selected sources if available, otherwise all sources
   useEffect(() => {
-    const contextTables = getTablesForQueryBuilder();
+    // Priority: selected sources > all sources
+    let contextTables;
+    if (selectedSourceIds && selectedSourceIds.length > 0) {
+      contextTables = getTablesForSelectedSources();
+    } else {
+      contextTables = getTablesForQueryBuilder();
+    }
+    
     if (contextTables && contextTables.length > 0) {
       setTables(contextTables);
       setCanvasTables(contextTables.map((t, idx) => ({
         ...t,
         position: { x: 50 + idx * 300, y: 50 }
       })));
+    } else {
+      setTables([]);
+      setCanvasTables([]);
     }
-  }, [dataSources, activeDataSource]);
+  }, [dataSources, activeDataSource, selectedSourceIds]);
 
   // Infer field type from value
   const inferType = (value) => {
@@ -461,7 +478,12 @@ const VisualQueryBuilderPage = () => {
                 <Database className="w-6 h-6" />
                 Visual Query Builder
               </h1>
-              <p className="text-xs text-indigo-200">Build SQL queries visually</p>
+              <p className="text-xs text-indigo-200">
+                {selectedCount > 0
+                  ? `${selectedCount} source(s) selected for analysis`
+                  : 'Build SQL queries visually'
+                }
+              </p>
             </div>
           </div>
           

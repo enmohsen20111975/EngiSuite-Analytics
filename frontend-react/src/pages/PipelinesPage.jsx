@@ -252,6 +252,10 @@ function groupByDomain(pipelines) {
   return groups;
 }
 
+function humanizeFieldName(name) {
+  return String(name || '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\w/g, c => c.toUpperCase());
+}
+
 function inferSubClassification(pipeline) {
   const text = `${pipeline.name || ''} ${pipeline.description || ''}`.toLowerCase();
   const rules = {
@@ -312,6 +316,7 @@ function normalizePipelines(pipelines) {
   }).map((pipeline) => ({
     ...pipeline,
     id: pipeline.id || pipeline.pipeline_id,
+    _source: pipeline._source || 'db',
     description: pipeline.description || '',
     estimated_time: pipeline.estimated_time || (pipeline.estimated_time_minutes ? `${pipeline.estimated_time_minutes} min` : 'N/A'),
     difficulty: pipeline.difficulty || pipeline.difficulty_level || 'beginner',
@@ -359,11 +364,11 @@ export default function PipelinesPage() {
         const local = results[0];
         const global = results[1];
         if (local.status === 'fulfilled') {
-          const localData = local.value?.data?.data || [];
+          const localData = (local.value?.data?.data || []).map(p => ({ ...p, _source: 'local' }));
           merged.push(...localData);
         }
         if (global.status === 'fulfilled') {
-          const globalData = Array.isArray(global.value?.data) ? global.value.data : (global.value?.data?.data || []);
+          const globalData = (Array.isArray(global.value?.data) ? global.value.data : (global.value?.data?.data || [])).map(p => ({ ...p, _source: 'db' }));
           merged.push(...globalData);
         }
         setPipelines(normalizePipelines(merged));
@@ -387,10 +392,53 @@ export default function PipelinesPage() {
     return vals;
   };
 
-  const openPipeline = async (id) => {
+  const normalizeDbStep = (step) => ({
+    stepNumber: step.step_number,
+    name: step.name,
+    description: step.description || '',
+    standard_ref: step.formula_ref || '',
+    formula_display: step.formula ? [step.formula] : [],
+    inputs: (step.input_config || []).map(inp => ({
+      name: inp.name || '',
+      label: inp.label || humanizeFieldName(inp.name || ''),
+      unit: inp.placeholder || inp.unit || '',
+      type: inp.type === 'select' ? 'select' : 'number',
+      options: inp.options ? inp.options.map(o => ({ value: o, label: o })) : undefined,
+      default: inp.default_value ?? inp.default,
+      required: inp.required !== false,
+      min: inp.min_value,
+      max: inp.max_value,
+      help: inp.help_text || '',
+    })),
+    outputs: (step.output_config || []).map(out => ({
+      name: out.name || '',
+      label: out.label || humanizeFieldName(out.name || ''),
+      unit: out.unit || '',
+      precision: out.precision ?? 2,
+    })),
+  });
+
+  const openPipeline = async (p) => {
+    const id = typeof p === 'string' ? p : p.id;
+    const source = typeof p === 'object' ? (p._source || 'db') : 'local';
     try {
-      const r = await axios.get(`${API}/${id}`);
-      const pl = r.data.data;
+      let pl;
+      if (source === 'local') {
+        const r = await axios.get(`${API}/${id}`);
+        pl = { ...r.data.data, _source: 'local' };
+      } else {
+        const r = await axios.get(`/api/pipelines/${id}`);
+        const raw = r.data;
+        pl = {
+          ...raw,
+          _source: 'db',
+          steps: (raw.steps || []).map(normalizeDbStep),
+        };
+      }
+      if (!pl.steps || pl.steps.length === 0) {
+        alert('This pipeline has no steps configured yet.');
+        return;
+      }
       const defaults = buildDefaultInputs(pl.steps[0], {});
       setActivePipeline(pl);
       setCurrentStepIdx(0);
@@ -426,15 +474,33 @@ export default function PipelinesPage() {
     setCalculating(true);
     setCalcError(null);
     try {
-      const r = await axios.post(
-        `${API}/${activePipeline.id}/steps/${currentStep.stepNumber}/calculate`,
-        { inputs: currentInputs }
-      );
-      const { outputs, formula_display, warnings: warns } = r.data.data;
-      const sn = currentStep.stepNumber;
-      setStepOutputs(prev => ({ ...prev, [sn]: outputs }));
-      setFormulaDisplay(prev => ({ ...prev, [sn]: formula_display }));
-      setWarnings(prev => ({ ...prev, [sn]: warns }));
+      if (activePipeline._source === 'db') {
+        // Collect all inputs across all steps for a single execute call
+        const allInputs = {};
+        activePipeline.steps.forEach(s => {
+          Object.assign(allInputs, stepInputs[s.stepNumber] || {});
+        });
+        Object.assign(allInputs, currentInputs);
+        const r = await axios.post(`/api/pipelines/${activePipeline.id}/execute`, { inputs: allInputs });
+        const execData = r.data;
+        // Map step results back by step_number
+        const sn = currentStep.stepNumber;
+        const stepResult = (execData.steps || []).find(s => s.step_id === currentStep.id || s.step_number === sn);
+        const outputs = stepResult?.outputs || execData.outputs || {};
+        setStepOutputs(prev => ({ ...prev, [sn]: outputs }));
+        setFormulaDisplay(prev => ({ ...prev, [sn]: currentStep.formula_display || [] }));
+        setWarnings(prev => ({ ...prev, [sn]: [] }));
+      } else {
+        const r = await axios.post(
+          `${API}/${activePipeline.id}/steps/${currentStep.stepNumber}/calculate`,
+          { inputs: currentInputs }
+        );
+        const { outputs, formula_display, warnings: warns } = r.data.data;
+        const sn = currentStep.stepNumber;
+        setStepOutputs(prev => ({ ...prev, [sn]: outputs }));
+        setFormulaDisplay(prev => ({ ...prev, [sn]: formula_display }));
+        setWarnings(prev => ({ ...prev, [sn]: warns }));
+      }
     } catch (err) {
       setCalcError(err.response?.data?.error ?? 'Calculation failed. Check your inputs.');
     } finally {
@@ -471,9 +537,17 @@ export default function PipelinesPage() {
           inputs: stepInputs[s.stepNumber] ?? {},
           outputs: stepOutputs[s.stepNumber] ?? {}
         }));
-      const r = await axios.post(`${API}/${activePipeline.id}/report`, { stepResults });
-      setReportHtml(r.data.data.html);
-      setReportJson(r.data.data.json);
+      let html, json;
+      if (activePipeline._source === 'db') {
+        json = { pipeline: { id: activePipeline.id, name: activePipeline.name, domain: activePipeline.domain }, generated_at: new Date().toISOString(), steps: stepResults };
+        html = `<html><body><h1>${activePipeline.name}</h1><pre>${JSON.stringify(json, null, 2)}</pre></body></html>`;
+      } else {
+        const r = await axios.post(`${API}/${activePipeline.id}/report`, { stepResults });
+        html = r.data.data.html;
+        json = r.data.data.json;
+      }
+      setReportHtml(html);
+      setReportJson(json);
       setShowReport(true);
     } catch {
       alert('Failed to generate report.');
@@ -675,7 +749,7 @@ export default function PipelinesPage() {
                       <span style={S.groupCount}>{groups[d].length} pipeline{groups[d].length !== 1 ? 's' : ''}</span>
                     </div>
                     <div style={S.grid}>
-                      {groups[d].map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p.id)} />)}
+                      {groups[d].map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p)} />)}
                     </div>
                   </div>
                 );
@@ -683,7 +757,7 @@ export default function PipelinesPage() {
           ) : (
             // ── Flat grid view ─────────────────────────────────────────────
             <div style={S.grid}>
-              {filtered.map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p.id)} />)}
+              {filtered.map(p => <PipelineCard key={p.id} p={p} onClick={() => openPipeline(p)} />)}
             </div>
           )
         )}
