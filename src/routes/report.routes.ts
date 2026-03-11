@@ -73,7 +73,7 @@ router.get('/templates/:id', async (req: Request, res: Response, next: NextFunct
  */
 router.get('/templates/slug/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const slug = req.params.slug;
+    const slug = req.params.slug as string;
     const template = await reportGenerator.getTemplateBySlug(slug);
     
     if (!template) {

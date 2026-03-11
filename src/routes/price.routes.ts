@@ -37,7 +37,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
  */
 router.get('/:service', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { service } = req.params;
+    const service = req.params.service as string;
 
     const prices = await prisma.priceConfig.findMany({
       where: { service, isActive: true },

@@ -1045,12 +1045,12 @@ router.get('/:id/execution-history', async (req: Request, res: Response, next: N
     if (!isNaN(numericId)) {
       pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE id = ? AND is_active = 1
-      `).get(numericId) as CalculationPipelineRow | undefined;
+      `).get(numericId) as unknown as CalculationPipelineRow | undefined;
     }
     if (!pipeline) {
       pipeline = prepareWorkflows(`
         SELECT * FROM calculation_pipelines WHERE pipeline_id = ? AND is_active = 1
-      `).get(idParam) as CalculationPipelineRow | undefined;
+      `).get(idParam) as unknown as CalculationPipelineRow | undefined;
     }
 
     if (!pipeline) {

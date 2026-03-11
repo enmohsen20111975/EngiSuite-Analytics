@@ -12,6 +12,7 @@
     "build:server": "tsc",
     "build:client": "cd frontend-react && npm run build",
     "build:prod": "cp prisma/schema.prisma.production prisma/schema.prisma && npm run build && git checkout prisma/schema.prisma",
+    "postinstall": "prisma generate && prisma db push",
     "start": "node dist/server.js",
     "start:prod": "NODE_ENV=production node dist/server.js",
     "db:migrate": "prisma migrate dev",
@@ -52,7 +53,8 @@
     "uuid": "^10.0.0",
     "ws": "^8.18.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "prisma": "5.22.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -75,7 +77,6 @@
     "@typescript-eslint/parser": "^8.13.0",
     "concurrently": "^9.0.1",
     "eslint": "^9.14.0",
-    "prisma": "5.22.0",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",

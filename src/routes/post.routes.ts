@@ -47,7 +47,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 router.get('/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { slug } = req.params;
+    const slug = req.params.slug as string;
 
     const post = await prisma.post.findFirst({
       where: { slug, status: 'published' },
@@ -124,7 +124,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
  */
 router.post('/:id/comments', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const postId = parseInt(req.params.id, 10);
+    const postId = parseInt(req.params.id as string, 10);
     const userId = 1; // TODO: Get from auth middleware
     const { content, parentId } = req.body;
 
