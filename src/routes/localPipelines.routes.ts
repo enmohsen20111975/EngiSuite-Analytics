@@ -41,7 +41,7 @@ router.get('/', (_req: Request, res: Response) => {
 // ─── GET /api/local-pipelines/:id ────────────────────────────────────────────
 
 router.get('/:id', (req: Request, res: Response) => {
-  const pipeline = getPipelineById(req.params.id);
+  const pipeline = getPipelineById(req.params.id as string);
   if (!pipeline) {
     return res.status(404).json({ success: false, error: 'Pipeline not found' });
   }
@@ -51,12 +51,12 @@ router.get('/:id', (req: Request, res: Response) => {
 // ─── POST /api/local-pipelines/:id/steps/:stepNumber/calculate ───────────────
 
 router.post('/:id/steps/:stepNumber/calculate', (req: Request, res: Response) => {
-  const pipeline = getPipelineById(req.params.id);
+  const pipeline = getPipelineById(req.params.id as string);
   if (!pipeline) {
     return res.status(404).json({ success: false, error: 'Pipeline not found' });
   }
 
-  const stepNumber = parseInt(req.params.stepNumber, 10);
+  const stepNumber = parseInt(req.params.stepNumber as string, 10);
   const step = pipeline.steps.find(s => s.stepNumber === stepNumber);
   if (!step) {
     return res.status(404).json({ success: false, error: `Step ${stepNumber} not found in pipeline` });
@@ -125,7 +125,7 @@ interface StepResult {
 }
 
 router.post('/:id/report', (req: Request, res: Response) => {
-  const pipeline = getPipelineById(req.params.id);
+  const pipeline = getPipelineById(req.params.id as string);
   if (!pipeline) {
     return res.status(404).json({ success: false, error: 'Pipeline not found' });
   }

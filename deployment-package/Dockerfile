@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
+# Install dependencies (mysql2 is pure JS - no native compilation needed)
 RUN npm ci --only=production
 
 # Generate Prisma client
@@ -19,12 +19,12 @@ COPY dist ./dist/
 COPY public ./public/
 
 # Create data and logs directories
-RUN mkdir -p /app/logs /app/uploads
+RUN mkdir -p /app/data /app/logs /app/uploads
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=8000
-# Set DATABASE_URL as runtime env: mysql://USER:PASS@HOST:3306/DBNAME
+# DATABASE_URL must be set at runtime via environment variable or docker-compose
 
 # Expose port
 EXPOSE 8000

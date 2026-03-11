@@ -30,9 +30,9 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
  * Generate JWT tokens
  */
 function generateTokens(userId: number): { token: string; refreshToken: string } {
-  const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
   const refreshToken = jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { 
-    expiresIn: JWT_REFRESH_EXPIRES_IN 
+    expiresIn: '30d' 
   });
   return { token, refreshToken };
 }

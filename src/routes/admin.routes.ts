@@ -95,7 +95,7 @@ router.get('/users', async (req: Request, res: Response, next: NextFunction) => 
  */
 router.put('/users/:id/tier', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = parseInt(req.params.id as string, 10);
     const { tier } = req.body;
 
     if (!tier) {
