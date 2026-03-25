@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, rmSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -45,6 +45,11 @@ function ensureFrontendDeps() {
 }
 
 try {
+  const distDir = join(rootDir, 'dist');
+  if (existsSync(distDir)) {
+    rmSync(distDir, { recursive: true, force: true });
+  }
+
   ensureRootBuildDeps();
   ensureFrontendDeps();
 
