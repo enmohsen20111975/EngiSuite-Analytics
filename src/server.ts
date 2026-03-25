@@ -227,15 +227,18 @@ app.use(errorHandler);
 // Server Initialization
 // ============================================
 async function startServer() {
+  // Initialize database — failure is non-fatal so the frontend still loads
   try {
-    // Initialize database connection
     await initDatabase();
     console.log('✅ Database initialized');
-
-    // Start schedulers (subscription checks, backups, etc.)
     startSchedulers();
     console.log('✅ Schedulers started');
+  } catch (error) {
+    console.error('⚠️  Database init failed — running in degraded mode (frontend still served):', error);
+    console.error('⚠️  Fix DATABASE_URL in Hostinger environment variables and redeploy.');
+  }
 
+  try {
     // Start listening
     server.listen(PORT, () => {
       console.log(`
@@ -251,7 +254,7 @@ async function startServer() {
       `);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('❌ Failed to start HTTP server:', error);
     process.exit(1);
   }
 }

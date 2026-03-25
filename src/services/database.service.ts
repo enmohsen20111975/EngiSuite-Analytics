@@ -37,8 +37,14 @@ let workflowsDb: SqlJsDatabase | null = null;
  */
 export async function initDatabase(): Promise<void> {
   try {
-    // Initialize sql.js
-    SQL = await initSqlJs();
+    // Initialize sql.js with explicit WASM path for production environments
+    SQL = await initSqlJs({
+      locateFile: (file: string) => {
+        const wasmPath = path.resolve(__dirname, `../../node_modules/sql.js/dist/${file}`);
+        if (fs.existsSync(wasmPath)) return wasmPath;
+        return path.resolve(__dirname, `../node_modules/sql.js/dist/${file}`);
+      }
+    });
     console.log('✅ sql.js initialized');
 
     // Connect Prisma to users database
