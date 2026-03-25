@@ -33,6 +33,7 @@ try {
     run('npx prisma db push');
   }
 } catch (error) {
-  console.error('[prepare-db] Failed:', error.message);
-  process.exit(1);
+  console.error('[prepare-db] Warning: DB preparation failed:', error.message);
+  console.error('[prepare-db] Server will still start — check DATABASE_URL in environment variables.');
+  // Do NOT exit(1) — let the server start even if DB prep fails
 }
