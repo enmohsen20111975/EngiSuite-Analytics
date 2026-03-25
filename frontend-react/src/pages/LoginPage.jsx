@@ -26,7 +26,7 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  
+
   // Redirect if already logged in
   useEffect(() => {
     if (user && isAuthenticated) {
@@ -37,17 +37,14 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const oauthError = params.get('oauth_error');
-    if (!oauthError) {
-      return;
+    if (oauthError) {
+      const oauthMessages = {
+        invalid_state: 'Google sign-in failed due to an invalid session state. Please try again.',
+        access_denied: 'Google sign-in was cancelled or denied.',
+        authentication_failed: 'Google authentication failed. Please verify OAuth redirect settings and try again.'
+      };
+      setError(oauthMessages[oauthError] || `Google sign-in failed: ${oauthError}`);
     }
-
-    const oauthMessages = {
-      invalid_state: 'Google sign-in failed due to an invalid session state. Please try again.',
-      access_denied: 'Google sign-in was cancelled or denied.',
-      authentication_failed: 'Google authentication failed. Please verify OAuth redirect settings and try again.'
-    };
-
-    setError(oauthMessages[oauthError] || `Google sign-in failed: ${oauthError}`);
   }, [location.search]);
 
   // Handle email/password login
@@ -183,6 +180,7 @@ export default function LoginPage() {
                   className="pl-10"
                   disabled={isLoading}
                   autoComplete="email"
+                  required
                 />
               </div>
             </div>
@@ -200,9 +198,10 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pl-10 pr-10"
+                  className="pl-10"
                   disabled={isLoading}
                   autoComplete="current-password"
+                  required
                 />
                 <button
                   type="button"
@@ -225,6 +224,7 @@ export default function LoginPage() {
                 />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Remember me</span>
               </label>
+              
               <Link
                 to="/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"

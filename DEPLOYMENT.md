@@ -8,6 +8,19 @@ The project has been reconfigured to use MySQL for production (via `mysql2` - pu
 
 ## Deployment Steps
 
+## Hostinger Business Quick Path
+
+Use the automated packaging flow:
+
+```bash
+npm run build:hostinger
+```
+
+Then follow:
+
+- `HOSTINGER_BUSINESS_DEPLOYMENT.md`
+- `deployment-package/hostinger-business/DEPLOY_HOSTINGER_BUSINESS.md`
+
 ### 1. Upload New Files to Server
 
 Upload these modified files to your server:

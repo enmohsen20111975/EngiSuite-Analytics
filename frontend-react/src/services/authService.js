@@ -163,7 +163,7 @@ export const authService = {
   },
 
   /**
-   * Sign in with Google (client-side GIS flow)
+   * Sign in with Google (using OAuth 2.0 popup flow)
    */
   async signInWithGoogle() {
     // Use server-side redirect if configured
@@ -177,48 +177,88 @@ export const authService = {
       throw new Error('Google OAuth is not configured. Set VITE_GOOGLE_CLIENT_ID in frontend-react/.env');
     }
     
-    try {
-      const google = await this.initGoogleAuth();
-      
-      return new Promise((resolve, reject) => {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: async (response) => {
-            if (response.credential) {
-              try {
-                // Send credential to backend for verification
-                const result = await apiClient.post('/auth/google', {
-                  idToken: response.credential,  // Backend expects 'idToken', not 'credential'
-                });
-                
-                const { token, user } = result.data.data || result.data; // Backend returns nested data
-                
-                // Store token
-                localStorage.setItem('token', token);
-                localStorage.setItem('user', JSON.stringify(user));
-                document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
-                
-                resolve({ user, token });
-              } catch (error) {
-                reject(error);
-              }
-            } else {
-              reject(new Error('No credential received from Google'));
-            }
-          },
-        });
+    // Use direct OAuth 2.0 popup flow (more reliable than One Tap)
+    return this.signInWithGooglePopup();
+  },
 
-        // Prompt Google Sign-In popup
-        google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            reject(new Error('Google Sign-In popup was not displayed. Check browser popup settings and Google OAuth configuration.'));
+  /**
+   * Sign in with Google using popup (fallback method)
+   */
+  async signInWithGooglePopup(google) {
+    return new Promise((resolve, reject) => {
+      // Create a unique state for CSRF protection
+      const state = Math.random().toString(36).substring(7);
+      const redirectUri = `${window.location.origin}/auth/callback`;
+      const scope = 'email profile';
+      
+      // Build OAuth URL
+      const oauthUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+      oauthUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+      oauthUrl.searchParams.set('redirect_uri', redirectUri);
+      oauthUrl.searchParams.set('response_type', 'token id_token');
+      oauthUrl.searchParams.set('scope', scope);
+      oauthUrl.searchParams.set('state', state);
+      oauthUrl.searchParams.set('prompt', 'select_account');
+      
+      // Open popup
+      const width = 500;
+      const height = 600;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      
+      const popup = window.open(
+        oauthUrl.toString(),
+        'GoogleSignIn',
+        `width=${width},height=${height},left=${left},top=${top},resizable,scrollbars`
+      );
+      
+      if (!popup) {
+        reject(new Error('Popup blocked. Please allow popups for Google Sign-In.'));
+        return;
+      }
+      
+      // Listen for messages from popup
+      const messageHandler = async (event) => {
+        if (event.origin !== window.location.origin) return;
+        
+        if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+          window.removeEventListener('message', messageHandler);
+          popup.close();
+          
+          try {
+            // Send credential to backend
+            const result = await apiClient.post('/auth/google', {
+              idToken: event.data.idToken,
+            });
+            
+            const { token, user } = result.data.data || result.data;
+            
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`;
+            
+            resolve({ user, token });
+          } catch (error) {
+            reject(error);
           }
-        });
-      });
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      throw error;
-    }
+        } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+          window.removeEventListener('message', messageHandler);
+          popup.close();
+          reject(new Error(event.data.error || 'Google authentication failed'));
+        }
+      };
+      
+      window.addEventListener('message', messageHandler);
+      
+      // Check if popup was closed manually
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          window.removeEventListener('message', messageHandler);
+          reject(new Error('Sign-in was cancelled'));
+        }
+      }, 500);
+    });
   },
 
   /**

@@ -14,6 +14,7 @@ import {
   AdminPricesPage, AdminSettingsPage, AdminSystemPage
 } from '../pages';
 import ScientificCalculatorPage from '../pages/ScientificCalculatorPage';
+import AuthCallbackPage from '../pages/AuthCallbackPage';
 // VDA Pages (Visual Data Analysis)
 import DataUploadPage from '../pages/DataUploadPage';
 import VisualQueryBuilderPage from '../pages/VisualQueryBuilderPage';
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
   {
     path: '/terms',
     element: <TermsPage />,
+  },
+  {
+    path: '/auth/callback',
+    element: <AuthCallbackPage />,
   },
 
   // Full screen tool routes (no layout)

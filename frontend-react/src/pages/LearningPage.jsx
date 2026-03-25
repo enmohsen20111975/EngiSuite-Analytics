@@ -8,12 +8,13 @@ import {
   Zap, Building2, Cog, Wrench, Atom, Calculator, Search,
   ArrowLeft, Target, Lightbulb, PenTool, Bookmark, ChartColumn,
   Lock, LockOpen, Star, Play, Pause, RotateCcw, Menu, X, Plane,
-  Settings, Activity
+  Settings, Activity, Circle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import InteractiveSimulation from '../components/learning/InteractiveSimulation';
 import { SINAMICS_COURSE, SINAMICS_MODULES } from '../data/sinamicsCourseData';
 import { KINETIC_GEOMETRY_COURSE, KINETIC_GEOMETRY_MODULES } from '../data/kineticGeometryCourseData';
+import { CERTIFICATIONS } from '../data/certificationsData';
 import SinamicsMotorLab from '../components/learning/simulations/SinamicsMotorLab';
 import SinamicsPIDLab from '../components/learning/simulations/SinamicsPIDLab';
 import SinamicsInverterFlow from '../components/learning/simulations/SinamicsInverterFlow';
@@ -70,6 +71,102 @@ const levelColors = {
   intermediate: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
   advanced: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
 };
+
+const certificationIcons = {
+  award: Award,
+  chartColumn: ChartColumn,
+  activity: Activity,
+  bookmark: Bookmark,
+  circle: Circle,
+  wrench: Wrench,
+  star: Star,
+};
+
+const certificationColorStyles = {
+  green: {
+    card: 'border-green-200 dark:border-green-800/80',
+    iconWrap: 'bg-green-100 dark:bg-green-900/30',
+    icon: 'text-green-600 dark:text-green-300',
+    badge: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+    accent: 'text-green-600 dark:text-green-300',
+  },
+  blue: {
+    card: 'border-blue-200 dark:border-blue-800/80',
+    iconWrap: 'bg-blue-100 dark:bg-blue-900/30',
+    icon: 'text-blue-600 dark:text-blue-300',
+    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+    accent: 'text-blue-600 dark:text-blue-300',
+  },
+  purple: {
+    card: 'border-purple-200 dark:border-purple-800/80',
+    iconWrap: 'bg-purple-100 dark:bg-purple-900/30',
+    icon: 'text-purple-600 dark:text-purple-300',
+    badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+    accent: 'text-purple-600 dark:text-purple-300',
+  },
+  indigo: {
+    card: 'border-indigo-200 dark:border-indigo-800/80',
+    iconWrap: 'bg-indigo-100 dark:bg-indigo-900/30',
+    icon: 'text-indigo-600 dark:text-indigo-300',
+    badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+    accent: 'text-indigo-600 dark:text-indigo-300',
+  },
+  emerald: {
+    card: 'border-emerald-200 dark:border-emerald-800/80',
+    iconWrap: 'bg-emerald-100 dark:bg-emerald-900/30',
+    icon: 'text-emerald-600 dark:text-emerald-300',
+    badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+    accent: 'text-emerald-600 dark:text-emerald-300',
+  },
+  teal: {
+    card: 'border-teal-200 dark:border-teal-800/80',
+    iconWrap: 'bg-teal-100 dark:bg-teal-900/30',
+    icon: 'text-teal-600 dark:text-teal-300',
+    badge: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
+    accent: 'text-teal-600 dark:text-teal-300',
+  },
+  rose: {
+    card: 'border-rose-200 dark:border-rose-800/80',
+    iconWrap: 'bg-rose-100 dark:bg-rose-900/30',
+    icon: 'text-rose-600 dark:text-rose-300',
+    badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+    accent: 'text-rose-600 dark:text-rose-300',
+  },
+};
+
+const hasText = (value, minLength = 3) => typeof value === 'string' && value.trim().length >= minLength;
+
+const isCourseComplete = (course) => (
+  Boolean(course?.id)
+  && hasText(course?.title, 3)
+  && hasText(course?.description, 12)
+  && Number(course?.totalLessons) > 0
+);
+
+const isCertificationComplete = (certification) => {
+  if (!certification) return false;
+
+  const validLearningObjects = Array.isArray(certification.learningObjects)
+    && certification.learningObjects.length >= 3
+    && certification.learningObjects.every((item) => hasText(item?.title, 3) && hasText(item?.description, 8));
+
+  return (
+    hasText(certification?.title, 8)
+    && hasText(certification?.description, 20)
+    && validLearningObjects
+    && Array.isArray(certification.features)
+    && certification.features.length >= 2
+    && Number(certification.totalLessons) > 0
+    && hasText(certification.duration, 3)
+    && hasText(certification.level, 3)
+  );
+};
+
+const getCertificationStatus = (certification) => (
+  isCertificationComplete(certification) && certification.status === 'available'
+    ? 'available'
+    : 'coming-soon'
+);
 
 export default function LearningPage() {
   // State management
@@ -556,35 +653,139 @@ function LearningSidebar({
 /**
  * Course Grid View
  */
+function CollapsibleSectionCard({
+  icon: Icon,
+  title,
+  description,
+  badge,
+  meta,
+  isOpen,
+  onToggle,
+  className,
+  iconWrapClassName,
+  iconClassName,
+  children,
+}) {
+  return (
+    <Card className={cn('p-6', className)}>
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-4 min-w-0">
+          <div className={cn('p-3 rounded-xl', iconWrapClassName)}>
+            <Icon className={cn('w-8 h-8', iconClassName)} />
+          </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
+              {badge}
+            </div>
+            {description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
+            )}
+            {meta && <div className="flex flex-wrap items-center gap-3 mt-3">{meta}</div>}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onToggle}
+          className="inline-flex items-center justify-center gap-2 self-start rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/50 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+        >
+          {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isOpen ? 'Hide section' : 'Show section'}
+        </button>
+      </div>
+
+      {isOpen && <div className="mt-6">{children}</div>}
+    </Card>
+  );
+}
+
 function CourseGridView({ courses, onSelect, progress }) {
+  const isSinamicsComplete = isCourseComplete(SINAMICS_COURSE) && SINAMICS_MODULES.length > 0;
+  const isKineticComplete = isCourseComplete(KINETIC_GEOMETRY_COURSE) && KINETIC_GEOMETRY_MODULES.length > 0;
+
+  const [openSections, setOpenSections] = useState({
+    recommended: true,
+    sinamics: true,
+    kineticGeometry: true,
+    certifications: true,
+  });
+  const [openCertificationIds, setOpenCertificationIds] = useState(() =>
+    CERTIFICATIONS.reduce((state, certification, index) => {
+      state[certification.id] = index === 0;
+      return state;
+    }, {})
+  );
+
+  const certificationStats = useMemo(() => {
+    const totalHours = CERTIFICATIONS.reduce((sum, certification) => {
+      const numericHours = Number.parseInt(certification.duration, 10);
+      return sum + (Number.isFinite(numericHours) ? numericHours : 0);
+    }, 0);
+
+    return {
+      totalPrograms: CERTIFICATIONS.length,
+      totalLearningObjects: CERTIFICATIONS.reduce(
+        (sum, certification) => sum + (certification.learningObjects?.length || 0),
+        0
+      ),
+      availableNow: CERTIFICATIONS.filter((certification) => getCertificationStatus(certification) === 'available').length,
+      totalHours,
+    };
+  }, []);
+
+  const toggleSection = (sectionKey) => {
+    setOpenSections((current) => ({
+      ...current,
+      [sectionKey]: !current[sectionKey],
+    }));
+  };
+
+  const toggleCertification = (certificationId) => {
+    setOpenCertificationIds((current) => ({
+      ...current,
+      [certificationId]: !current[certificationId],
+    }));
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => {
           const Icon = disciplineIcons[course.discipline] || disciplineIcons[course.id] || BookOpen;
-          const completedLessons = Object.keys(progress).filter(id => 
-            progress[id]?.completed
-          ).length;
-          
+          const completedLessons = Object.keys(progress).filter((id) => progress[id]?.completed).length;
+          const courseIsComplete = isCourseComplete(course);
+
           return (
             <Card
               key={course.id}
-              className="p-6 cursor-pointer hover:shadow-lg transition-all group"
-              onClick={() => onSelect(course)}
+              className={cn(
+                'p-6 transition-all group',
+                courseIsComplete ? 'cursor-pointer hover:shadow-lg' : 'opacity-75 cursor-not-allowed'
+              )}
+              onClick={() => {
+                if (!courseIsComplete) return;
+                onSelect(course);
+              }}
             >
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl group-hover:scale-110 transition-transform">
                   <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    {course.title}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      {course.title}
+                    </h3>
+                    {!courseIsComplete && (
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        Coming soon
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                     {course.description || 'Engineering fundamentals and advanced concepts'}
                   </p>
-                  
-                  {/* Progress */}
                   <div className="mt-3">
                     <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                       <span>{course.totalLessons || 0} lessons</span>
@@ -594,27 +795,33 @@ function CourseGridView({ courses, onSelect, progress }) {
                       <div
                         className="h-full bg-green-500 rounded-full transition-all"
                         style={{
-                          width: `${course.totalLessons > 0 
-                            ? (completedLessons / course.totalLessons) * 100 
-                            : 0}%`
+                          width: `${course.totalLessons > 0 ? (completedLessons / course.totalLessons) * 100 : 0}%`
                         }}
                       />
                     </div>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
+                {courseIsComplete ? (
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
+                ) : (
+                  <Lock className="w-5 h-5 text-amber-500" />
+                )}
               </div>
             </Card>
           );
         })}
       </div>
 
-      {/* Recommended Section */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Star className="w-5 h-5 text-yellow-500" />
-          Recommended for You
-        </h3>
+      <CollapsibleSectionCard
+        icon={Star}
+        title="Recommended for You"
+        description="Quick starts selected from the core learning catalog."
+        badge={<span className="px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">3 picks</span>}
+        isOpen={openSections.recommended}
+        onToggle={() => toggleSection('recommended')}
+        iconWrapClassName="bg-yellow-100 dark:bg-yellow-900/30"
+        iconClassName="text-yellow-600 dark:text-yellow-300"
+      >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <RecommendedCard
             icon={Zap}
@@ -638,37 +845,31 @@ function CourseGridView({ courses, onSelect, progress }) {
             duration="50 min"
           />
         </div>
-      </Card>
+      </CollapsibleSectionCard>
 
-      {/* SINAMICS Masterclass Section */}
-      <Card className="p-6 border-2 border-cyan-200 dark:border-cyan-800">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 bg-cyan-100 dark:bg-cyan-900/30 rounded-xl">
-            <Zap className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              {SINAMICS_COURSE.title}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {SINAMICS_COURSE.description}
-            </p>
-            <div className="flex items-center gap-4 mt-3">
-              <span className="px-2 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
-                {SINAMICS_COURSE.level}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {SINAMICS_COURSE.duration}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {SINAMICS_COURSE.totalLessons} lessons
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* SINAMICS Features */}
+      <CollapsibleSectionCard
+        icon={Zap}
+        title={SINAMICS_COURSE.title}
+        description={SINAMICS_COURSE.description}
+        badge={!isSinamicsComplete ? <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Coming soon</span> : null}
+        meta={(
+          <>
+            <span className="px-2 py-1 text-xs rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300">
+              {SINAMICS_COURSE.level}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {SINAMICS_COURSE.duration}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{SINAMICS_COURSE.totalLessons} lessons</span>
+          </>
+        )}
+        isOpen={openSections.sinamics}
+        onToggle={() => toggleSection('sinamics')}
+        className="border-2 border-cyan-200 dark:border-cyan-800"
+        iconWrapClassName="bg-cyan-100 dark:bg-cyan-900/30"
+        iconClassName="text-cyan-600 dark:text-cyan-400"
+      >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {SINAMICS_COURSE.features.map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
@@ -678,7 +879,6 @@ function CourseGridView({ courses, onSelect, progress }) {
           ))}
         </div>
 
-        {/* SINAMICS Modules Preview */}
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Course Modules
@@ -707,61 +907,56 @@ function CourseGridView({ courses, onSelect, progress }) {
           </div>
         </div>
 
-        {/* SINAMICS Quick Access Buttons */}
         <div className="flex flex-wrap gap-3 mt-6">
           <Button
             onClick={() => {
-              // Navigate to SINAMICS course
+              if (!isSinamicsComplete) return;
               onSelect({ id: 'sinamics-masterclass', title: SINAMICS_COURSE.title, description: SINAMICS_COURSE.description, totalLessons: SINAMICS_COURSE.totalLessons, discipline: 'sinamics' });
             }}
             className="bg-cyan-600 hover:bg-cyan-700"
+            disabled={!isSinamicsComplete}
           >
             <Play className="w-4 h-4 mr-2" />
-            Start Course
+            {isSinamicsComplete ? 'Start Course' : 'Coming soon'}
           </Button>
           <Button
             variant="outline"
             onClick={() => {
-              // Open Motor Lab directly - for now just start the course
+              if (!isSinamicsComplete) return;
               onSelect({ id: 'sinamics-masterclass', title: SINAMICS_COURSE.title, description: SINAMICS_COURSE.description, totalLessons: SINAMICS_COURSE.totalLessons, discipline: 'sinamics' });
             }}
             className="border-cyan-300 dark:border-cyan-700 text-cyan-700 dark:text-cyan-300"
+            disabled={!isSinamicsComplete}
           >
             <FlaskConical className="w-4 h-4 mr-2" />
-            Try Motor Lab Demo
+            {isSinamicsComplete ? 'Try Motor Lab Demo' : 'Coming soon'}
           </Button>
         </div>
-      </Card>
+      </CollapsibleSectionCard>
 
-      {/* KineticGeometry Lab Section */}
-      <Card className="p-6 border-2 border-purple-200 dark:border-purple-800">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-            <Calculator className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              {KINETIC_GEOMETRY_COURSE.title}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {KINETIC_GEOMETRY_COURSE.description}
-            </p>
-            <div className="flex items-center gap-4 mt-3">
-              <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                {KINETIC_GEOMETRY_COURSE.level}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {KINETIC_GEOMETRY_COURSE.duration}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {KINETIC_GEOMETRY_COURSE.totalLessons} lessons
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* KineticGeometry Features */}
+      <CollapsibleSectionCard
+        icon={Calculator}
+        title={KINETIC_GEOMETRY_COURSE.title}
+        description={KINETIC_GEOMETRY_COURSE.description}
+        badge={!isKineticComplete ? <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Coming soon</span> : null}
+        meta={(
+          <>
+            <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+              {KINETIC_GEOMETRY_COURSE.level}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {KINETIC_GEOMETRY_COURSE.duration}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{KINETIC_GEOMETRY_COURSE.totalLessons} lessons</span>
+          </>
+        )}
+        isOpen={openSections.kineticGeometry}
+        onToggle={() => toggleSection('kineticGeometry')}
+        className="border-2 border-purple-200 dark:border-purple-800"
+        iconWrapClassName="bg-purple-100 dark:bg-purple-900/30"
+        iconClassName="text-purple-600 dark:text-purple-400"
+      >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {KINETIC_GEOMETRY_COURSE.features.map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
@@ -771,7 +966,6 @@ function CourseGridView({ courses, onSelect, progress }) {
           ))}
         </div>
 
-        {/* KineticGeometry Modules Preview */}
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
             Course Modules
@@ -800,29 +994,170 @@ function CourseGridView({ courses, onSelect, progress }) {
           </div>
         </div>
 
-        {/* KineticGeometry Quick Access Buttons */}
         <div className="flex flex-wrap gap-3 mt-6">
           <Button
             onClick={() => {
+              if (!isKineticComplete) return;
               onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
             }}
             className="bg-purple-600 hover:bg-purple-700"
+            disabled={!isKineticComplete}
           >
             <Play className="w-4 h-4 mr-2" />
-            Start Course
+            {isKineticComplete ? 'Start Course' : 'Coming soon'}
           </Button>
           <Button
             variant="outline"
             onClick={() => {
+              if (!isKineticComplete) return;
               onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
             }}
             className="border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300"
+            disabled={!isKineticComplete}
           >
             <Atom className="w-4 h-4 mr-2" />
-            Explore Lissajous Curves
+            {isKineticComplete ? 'Explore Lissajous Curves' : 'Coming soon'}
           </Button>
         </div>
-      </Card>
+      </CollapsibleSectionCard>
+
+      <CollapsibleSectionCard
+        icon={Award}
+        title="Master Industry-Leading Certifications"
+        description="This section now renders the real certification tracks you added, with open and close controls for the whole section and for each certification item."
+        badge={<span className="px-2 py-0.5 text-xs bg-amber-500 text-white rounded-full">New</span>}
+        meta={(
+          <>
+            <span className="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              {certificationStats.totalPrograms} certification paths
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{certificationStats.availableNow} available now</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{certificationStats.totalHours} guided hours</span>
+          </>
+        )}
+        isOpen={openSections.certifications}
+        onToggle={() => toggleSection('certifications')}
+        className="border-2 border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20"
+        iconWrapClassName="bg-amber-100 dark:bg-amber-900/30"
+        iconClassName="text-amber-600 dark:text-amber-400"
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-white/60 dark:bg-gray-900/30 rounded-xl mb-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{certificationStats.totalPrograms}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Real certification tracks</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{certificationStats.totalLearningObjects}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Learning objects</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{certificationStats.availableNow}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Open now</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{certificationStats.totalHours}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400">Planned learning hours</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {CERTIFICATIONS.map((certification) => {
+            const Icon = certificationIcons[certification.icon] || Award;
+            const styles = certificationColorStyles[certification.color] || certificationColorStyles.blue;
+            const isCertificationOpen = !!openCertificationIds[certification.id];
+            const certificationStatus = getCertificationStatus(certification);
+
+            return (
+              <div
+                key={certification.id}
+                className={cn(
+                  'rounded-2xl border bg-white/90 dark:bg-gray-900/70 shadow-sm overflow-hidden',
+                  styles.card
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleCertification(certification.id)}
+                  className="w-full p-4 text-left"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className={cn('p-2.5 rounded-xl', styles.iconWrap)}>
+                        <Icon className={cn('w-5 h-5', styles.icon)} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="font-semibold text-gray-900 dark:text-white">{certification.shortTitle}</h4>
+                          <span className={cn('px-2 py-0.5 text-xs rounded-full', styles.badge)}>
+                            {certificationStatus === 'available' ? 'Available' : 'Coming soon'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{certification.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-gray-500 dark:text-gray-400">
+                          <span className={cn('px-2 py-1 rounded-full', levelColors[certification.level] || levelColors.intermediate)}>
+                            {certification.level}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {certification.duration}
+                          </span>
+                          <span>{certification.totalLessons} lessons</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-1 text-gray-400 dark:text-gray-500">
+                      {isCertificationOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                    </div>
+                  </div>
+                </button>
+
+                {isCertificationOpen && (
+                  <div className="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800">
+                    <p className="pt-4 text-sm text-gray-600 dark:text-gray-300">
+                      {certification.description}
+                    </p>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                        What you will study
+                      </div>
+                      <ul className="space-y-2">
+                        {certification.learningObjects.map((item) => (
+                          <li key={item.title} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                            <CircleCheck className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
+                            <span>
+                              <strong>{item.title}</strong>
+                              {' - '}
+                              {item.description}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {certification.features.map((feature) => (
+                        <span
+                          key={feature}
+                          className="px-2.5 py-1 rounded-full text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={styles.accent}>{certification.learningObjects.length} structured modules</span>
+                      <span className="text-gray-500 dark:text-gray-400">Open close enabled</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CollapsibleSectionCard>
     </div>
   );
 }
