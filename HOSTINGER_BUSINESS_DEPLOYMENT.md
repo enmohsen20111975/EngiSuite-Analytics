@@ -26,6 +26,14 @@ SKIP_DB_SYNC=false
 
 `AUTO_DB_PUSH_ON_START=true` is the key for no-terminal deployment. It lets the app run `prisma db push` automatically during startup.
 
+The root `npm run build` is now Hostinger-safe:
+
+- It installs missing root dev dependencies if TypeScript is missing.
+- It installs missing `frontend-react` dependencies if Vite is missing.
+- It then builds both backend and frontend.
+
+So warnings like `sh: tsc: command not found` should be resolved after redeploying the updated code.
+
 ## 1. Build and package for Hostinger
 
 Run from project root:
@@ -145,3 +153,15 @@ npm run db:deploy
 ```bash
 npx pm2 restart ecosystem.config.cjs --env production --update-env
 ```
+
+## Troubleshooting build error: `tsc: command not found`
+
+If Hostinger shows:
+
+`sh: tsc: command not found`
+
+That means the platform installed production dependencies only, so TypeScript was missing.
+
+This repository now handles that automatically during `npm run build`, so after pushing the latest code you can redeploy again.
+
+The `eslint-visitor-keys` `EBADENGINE` output is only a warning and is not the build blocker.
