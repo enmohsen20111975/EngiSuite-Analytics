@@ -53,6 +53,7 @@ const server = createServer(app);
 
 // Environment configuration
 const PORT = parseInt(process.env.PORT || '8000', 10);
+const HOST = '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const isProduction = NODE_ENV === 'production';
 
@@ -240,13 +241,14 @@ async function startServer() {
 
   try {
     // Start listening
-    server.listen(PORT, () => {
+    server.listen(PORT, HOST, () => {
       console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║   🚀 EngiSuite Analytics - Node.js Server                   ║
 ║                                                              ║
 ║   Environment: ${NODE_ENV.padEnd(45)}║
+  ║   Host:        ${HOST.padEnd(45)}║
 ║   Port:        ${PORT.toString().padEnd(45)}║
 ║   API URL:     http://localhost:${PORT}/api`.padEnd(60) + '║' + `
 ║                                                              ║
