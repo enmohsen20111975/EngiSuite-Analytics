@@ -1,11 +1,8 @@
 /**
- * Multi-Database Service - Handles multiple SQLite databases
- * Uses Prisma for users database (ORM) and sql.js for courses/workflows
- * sql.js is a pure JavaScript implementation that works on shared hosting
+ * Database Service - MySQL via Prisma (primary) + sql.js SQLite (optional local caches)
  */
 
 import { PrismaClient } from '@prisma/client';
-import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,70 +10,60 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Database paths - relative to project root
-const DB_PATHS = {
-  users: path.resolve(__dirname, '../../Databases/users.db'),
-  courses: path.resolve(__dirname, '../../Databases/engmastery.db'),
-  workflows: path.resolve(__dirname, '../../Databases/workflows.db'),
-};
-
-// Prisma client for users database
+// Prisma client for MySQL database
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' 
-    ? ['query', 'error', 'warn'] 
+  log: process.env.NODE_ENV === 'development'
+    ? ['query', 'error', 'warn']
     : ['error'],
 });
 
-// sql.js connections for courses and workflows
-let SQL: initSqlJs.SqlJsStatic | null = null;
-let coursesDb: SqlJsDatabase | null = null;
-let workflowsDb: SqlJsDatabase | null = null;
+// sql.js connections (optional — only used for local SQLite caches)
+let coursesDb: any = null;
+let workflowsDb: any = null;
+
+// Database paths for optional local SQLite caches
+const DB_PATHS = {
+  courses: path.resolve(__dirname, '../../Databases/engmastery.db'),
+  workflows: path.resolve(__dirname, '../../Databases/workflows.db'),
+};
 
 /**
  * Initialize all database connections
  */
 export async function initDatabase(): Promise<void> {
+  // Connect Prisma to MySQL — this is the primary database
+  await prisma.$connect();
+  console.log('✅ MySQL database (Prisma) connected');
+
+  // sql.js SQLite caches are optional — failures here must NOT crash the server
   try {
-    // Initialize sql.js with explicit WASM path for production environments
-    SQL = await initSqlJs({
+    const initSqlJs = (await import('sql.js')).default;
+    const SQL = await initSqlJs({
       locateFile: (file: string) => {
         const wasmPath = path.resolve(__dirname, `../../node_modules/sql.js/dist/${file}`);
         if (fs.existsSync(wasmPath)) return wasmPath;
         return path.resolve(__dirname, `../node_modules/sql.js/dist/${file}`);
       }
     });
-    console.log('✅ sql.js initialized');
 
-    // Connect Prisma to users database
-    await prisma.$connect();
-    console.log(`✅ Users database (Prisma) connected: ${DB_PATHS.users}`);
-
-    // Initialize sql.js connections for courses
     if (fs.existsSync(DB_PATHS.courses)) {
-      const coursesBuffer = fs.readFileSync(DB_PATHS.courses);
-      coursesDb = new SQL.Database(coursesBuffer);
-      console.log(`✅ Courses database connected: ${DB_PATHS.courses}`);
+      coursesDb = new SQL.Database(fs.readFileSync(DB_PATHS.courses));
     } else {
       coursesDb = new SQL.Database();
-      console.log(`✅ Courses database created: ${DB_PATHS.courses}`);
     }
 
-    // Initialize sql.js connections for workflows
     if (fs.existsSync(DB_PATHS.workflows)) {
-      const workflowsBuffer = fs.readFileSync(DB_PATHS.workflows);
-      workflowsDb = new SQL.Database(workflowsBuffer);
-      console.log(`✅ Workflows database connected: ${DB_PATHS.workflows}`);
+      workflowsDb = new SQL.Database(fs.readFileSync(DB_PATHS.workflows));
     } else {
       workflowsDb = new SQL.Database();
-      console.log(`✅ Workflows database created: ${DB_PATHS.workflows}`);
     }
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📊 All databases initialized');
-    }
+    console.log('✅ sql.js SQLite caches initialized');
   } catch (error) {
-    console.error('❌ Failed to connect to databases:', error);
-    throw error;
+    console.warn('⚠️  sql.js SQLite caches unavailable (non-fatal):', (error as Error).message);
+    // Provide empty stub databases so routes that try to use them don't crash import
+    coursesDb = null;
+    workflowsDb = null;
   }
 }
 
@@ -123,17 +110,11 @@ export function getPrisma(): PrismaClient {
 /**
  * Get direct SQLite database connections
  */
-export function getCoursesDb(): SqlJsDatabase {
-  if (!coursesDb) {
-    throw new Error('Courses database not initialized. Call initDatabase() first.');
-  }
+export function getCoursesDb(): any {
   return coursesDb;
 }
 
-export function getWorkflowsDb(): SqlJsDatabase {
-  if (!workflowsDb) {
-    throw new Error('Workflows database not initialized. Call initDatabase() first.');
-  }
+export function getWorkflowsDb(): any {
   return workflowsDb;
 }
 
@@ -149,7 +130,7 @@ export interface Statement {
 /**
  * Create a statement-like wrapper for sql.js database
  */
-export function prepare(db: SqlJsDatabase, sql: string): Statement {
+export function prepare(db: any, sql: string): Statement {
   return {
     run(...params: unknown[]): { changes: number; lastInsertRowid: number } {
       db.run(sql, params as (string | number | null | Uint8Array)[]);
@@ -196,14 +177,18 @@ export function prepare(db: SqlJsDatabase, sql: string): Statement {
  * Create a prepared statement for courses database
  */
 export function prepareCourses(sql: string): Statement {
-  return prepare(getCoursesDb(), sql);
+  const db = getCoursesDb();
+  if (!db) throw new Error('Courses database unavailable');
+  return prepare(db, sql);
 }
 
 /**
  * Create a prepared statement for workflows database
  */
 export function prepareWorkflows(sql: string): Statement {
-  return prepare(getWorkflowsDb(), sql);
+  const db = getWorkflowsDb();
+  if (!db) throw new Error('Workflows database unavailable');
+  return prepare(db, sql);
 }
 
 /**
@@ -225,7 +210,7 @@ export function queryWorkflows<T = unknown>(sql: string, params: unknown[] = [])
 /**
  * Helper function to run a single query
  */
-export function queryOne<T = unknown>(db: SqlJsDatabase, sql: string, params: unknown[] = []): T | undefined {
+export function queryOne<T = unknown>(db: any, sql: string, params: unknown[] = []): T | undefined {
   const stmt = prepare(db, sql);
   return stmt.get(...params) as T | undefined;
 }
@@ -233,7 +218,7 @@ export function queryOne<T = unknown>(db: SqlJsDatabase, sql: string, params: un
 /**
  * Helper function to run insert/update/delete
  */
-export function execute(db: SqlJsDatabase, sql: string, params: unknown[] = []): { changes: number; lastInsertRowid: number } {
+export function execute(db: any, sql: string, params: unknown[] = []): { changes: number; lastInsertRowid: number } {
   const stmt = prepare(db, sql);
   return stmt.run(...params);
 }
@@ -241,7 +226,7 @@ export function execute(db: SqlJsDatabase, sql: string, params: unknown[] = []):
 /**
  * Helper to run transactions (simplified for sql.js)
  */
-export function transaction<T>(db: SqlJsDatabase, fn: () => T): T {
+export function transaction<T>(db: any, fn: () => T): T {
   db.run('BEGIN TRANSACTION');
   try {
     const result = fn();
