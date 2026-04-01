@@ -1,6 +1,6 @@
 /**
  * Price Routes
- * Converted from Python FastAPI prices router
+ * prices router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

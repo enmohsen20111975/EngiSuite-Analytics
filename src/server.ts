@@ -1,6 +1,5 @@
 /**
  * EngiSuite Analytics - Node.js Backend Server
- * Converted from Python FastAPI to Express.js
  */
 
 import 'dotenv/config';
@@ -56,6 +55,7 @@ const PORT = parseInt(process.env.PORT || '8000', 10);
 const HOST = '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const isProduction = NODE_ENV === 'production';
+const FILE_DATA_MODE = process.env.FILE_DATA_MODE === 'true';
 
 // ============================================
 // Security Middleware
@@ -114,65 +114,67 @@ app.get('/health', (req, res) => {
 // ============================================
 const API_PREFIX = '/api';
 
-// Authentication routes
-app.use(`${API_PREFIX}/auth`, authRoutes);
-
-// User routes
-app.use(`${API_PREFIX}/users`, userRoutes);
-
 // Calculator routes
 app.use(`${API_PREFIX}/calculators`, calculatorRoutes);
 app.use(`${API_PREFIX}/calculators`, calculatorRoutes); // Also available at /calculators for backward compatibility
 
-// Workflow routes
-app.use(`${API_PREFIX}/workflows`, workflowRoutes);
+if (!FILE_DATA_MODE) {
+  // Authentication routes
+  app.use(`${API_PREFIX}/auth`, authRoutes);
 
-// Equation routes
-app.use(`${API_PREFIX}/equations`, equationRoutes);
+  // User routes
+  app.use(`${API_PREFIX}/users`, userRoutes);
 
-// Pipeline routes
-app.use(`${API_PREFIX}/pipelines`, pipelineRoutes);
-app.use(`${API_PREFIX}/calculation-pipeline`, pipelineRoutes);
+  // Workflow routes
+  app.use(`${API_PREFIX}/workflows`, workflowRoutes);
 
-// Analytics routes
-app.use(`${API_PREFIX}/analytics`, analyticsRoutes);
+  // Equation routes
+  app.use(`${API_PREFIX}/equations`, equationRoutes);
 
-// Visual Data Analysis routes
-app.use(`${API_PREFIX}/vda`, vdaRoutes);
+  // Pipeline routes
+  app.use(`${API_PREFIX}/pipelines`, pipelineRoutes);
+  app.use(`${API_PREFIX}/calculation-pipeline`, pipelineRoutes);
 
-// Learning routes
-app.use(`${API_PREFIX}/learning`, learningRoutes);
+  // Analytics routes
+  app.use(`${API_PREFIX}/analytics`, analyticsRoutes);
 
-// Payment routes
-app.use(`${API_PREFIX}/payments`, paymentRoutes);
+  // Visual Data Analysis routes
+  app.use(`${API_PREFIX}/vda`, vdaRoutes);
 
-// Subscription & credits routes
-app.use(`${API_PREFIX}/subscriptions`, subscriptionsRouter);
-app.use(`${API_PREFIX}/credits`, creditsRouter);
+  // Learning routes
+  app.use(`${API_PREFIX}/learning`, learningRoutes);
 
-// AI routes
-app.use(`${API_PREFIX}/ai`, aiRoutes);
+  // Payment routes
+  app.use(`${API_PREFIX}/payments`, paymentRoutes);
 
-// Project routes
-app.use(`${API_PREFIX}/projects`, projectRoutes);
+  // Subscription & credits routes
+  app.use(`${API_PREFIX}/subscriptions`, subscriptionsRouter);
+  app.use(`${API_PREFIX}/credits`, creditsRouter);
 
-// Post/Comment routes
-app.use(`${API_PREFIX}/posts`, postRoutes);
+  // AI routes
+  app.use(`${API_PREFIX}/ai`, aiRoutes);
 
-// Price routes
-app.use(`${API_PREFIX}/prices`, priceRoutes);
+  // Project routes
+  app.use(`${API_PREFIX}/projects`, projectRoutes);
 
-// Canvas routes
-app.use(`${API_PREFIX}/canvas`, canvasRoutes);
+  // Post/Comment routes
+  app.use(`${API_PREFIX}/posts`, postRoutes);
 
-// Hostinger integration routes
-app.use(`${API_PREFIX}/hostinger`, hostingerRoutes);
+  // Price routes
+  app.use(`${API_PREFIX}/prices`, priceRoutes);
 
-// Admin routes
-app.use(`${API_PREFIX}/admin`, adminRoutes);
+  // Canvas routes
+  app.use(`${API_PREFIX}/canvas`, canvasRoutes);
 
-// Report routes
-app.use(`${API_PREFIX}/reports`, reportRoutes);
+  // Hostinger integration routes
+  app.use(`${API_PREFIX}/hostinger`, hostingerRoutes);
+
+  // Admin routes
+  app.use(`${API_PREFIX}/admin`, adminRoutes);
+
+  // Report routes
+  app.use(`${API_PREFIX}/reports`, reportRoutes);
+}
 
 // Local engineering pipeline routes (no DB dependency, real calculations)
 app.use(`${API_PREFIX}/local-pipelines`, localPipelinesRoutes);
@@ -228,15 +230,19 @@ app.use(errorHandler);
 // Server Initialization
 // ============================================
 async function startServer() {
-  // Initialize database — failure is non-fatal so the frontend still loads
-  try {
-    await initDatabase();
-    console.log('✅ Database initialized');
-    startSchedulers();
-    console.log('✅ Schedulers started');
-  } catch (error) {
-    console.error('⚠️  Database init failed — running in degraded mode (frontend still served):', error);
-    console.error('⚠️  Fix DATABASE_URL in Hostinger environment variables and redeploy.');
+  if (!FILE_DATA_MODE) {
+    // Initialize database — failure is non-fatal so the frontend still loads
+    try {
+      await initDatabase();
+      console.log('✅ Database initialized');
+      startSchedulers();
+      console.log('✅ Schedulers started');
+    } catch (error) {
+      console.error('⚠️  Database init failed — running in degraded mode (frontend still served):', error);
+      console.error('⚠️  Fix DATABASE_URL in environment variables and redeploy.');
+    }
+  } else {
+    console.log('✅ FILE_DATA_MODE enabled: running without database initialization');
   }
 
   try {
@@ -251,6 +257,7 @@ async function startServer() {
   ║   Host:        ${HOST.padEnd(45)}║
 ║   Port:        ${PORT.toString().padEnd(45)}║
 ║   API URL:     http://localhost:${PORT}/api`.padEnd(60) + '║' + `
+║   Data Mode:   ${(FILE_DATA_MODE ? 'file-only' : 'database').padEnd(45)}║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
       `);

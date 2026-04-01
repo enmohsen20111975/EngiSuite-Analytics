@@ -1,6 +1,6 @@
 # EngiSuite Analytics - Node.js Full Stack Application
 
-A complete Node.js full stack application converted from Python FastAPI, ready for deployment on Hostinger.
+A complete Node.js full stack application ready for deployment on Hostinger.
 
 ## 🚀 Features
 
@@ -113,20 +113,6 @@ pm2 save
 pm2 startup
 ```
 
-### Option 3: Using Docker
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY prisma ./prisma/
-RUN npx prisma generate
-COPY dist ./dist/
-EXPOSE 8000
-CMD ["node", "dist/server.js"]
-```
-
 ## 📡 API Endpoints
 
 ### Authentication
@@ -174,7 +160,8 @@ CMD ["node", "dist/server.js"]
 |----------|-------------|---------|
 | `NODE_ENV` | Environment | development |
 | `PORT` | Server port | 8000 |
-| `DATABASE_URL` | SQLite database path | file:./data/engisuite.db |
+| `FILE_DATA_MODE` | Run app with local TS/JSON data mode | false |
+| `DATABASE_URL` | Database connection string | mysql://USER:PASSWORD@HOST:3306/DATABASE |
 | `JWT_SECRET` | JWT signing secret | (required) |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID | (optional) |
 | `TELEGRAM_BOT_TOKEN` | Telegram bot token | (optional) |

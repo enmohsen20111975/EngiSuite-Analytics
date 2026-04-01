@@ -100,6 +100,47 @@ function getNodeHeight(node) {
     + 36;
 }
 
+function getPortKey(nodeId, portIndex) {
+  return `${nodeId}:${portIndex}`;
+}
+
+function getPortSymbol(port) {
+  return normalizeValue(port?.symbol || port?.name);
+}
+
+function getLinkedInputTargets(connections, nodeId, portIndex) {
+  const targets = new Set([getPortKey(nodeId, portIndex)]);
+  const queue = [getPortKey(nodeId, portIndex)];
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    const [currNodeId, currPortIndexRaw] = current.split(':');
+    const currPortIndex = Number(currPortIndexRaw);
+
+    for (const conn of connections) {
+      if (conn.kind !== 'shared-input') continue;
+
+      const fromKey = getPortKey(conn.from.nodeId, conn.from.portIndex);
+      const toKey = getPortKey(conn.to.nodeId, conn.to.portIndex);
+
+      if (fromKey === getPortKey(currNodeId, currPortIndex) && !targets.has(toKey)) {
+        targets.add(toKey);
+        queue.push(toKey);
+      }
+
+      if (toKey === getPortKey(currNodeId, currPortIndex) && !targets.has(fromKey)) {
+        targets.add(fromKey);
+        queue.push(fromKey);
+      }
+    }
+  }
+
+  return [...targets].map((k) => {
+    const [nId, pIndex] = k.split(':');
+    return { nodeId: nId, portIndex: Number(pIndex) };
+  });
+}
+
 // Main engineering categories with icons
 const MAIN_CATEGORIES = [
   { 
@@ -631,8 +672,11 @@ function ConnectionLine({ connection, nodes, animated = false }) {
   if (!fromNode || !toNode) return null;
   
   // Calculate port positions
-  const fromX = fromNode.x + NODE_WIDTH;
-  const fromY = getOutputPortY(fromNode, connection.from.portIndex);
+  const isSharedInput = connection.kind === 'shared-input';
+  const fromX = isSharedInput ? fromNode.x : fromNode.x + NODE_WIDTH;
+  const fromY = isSharedInput
+    ? getInputPortY(fromNode, connection.from.portIndex)
+    : getOutputPortY(fromNode, connection.from.portIndex);
   const toX = toNode.x;
   const toY = getInputPortY(toNode, connection.to.portIndex);
   
@@ -645,12 +689,12 @@ function ConnectionLine({ connection, nodes, animated = false }) {
       <path
         d={path}
         fill="none"
-        stroke="#3b82f6"
+        stroke={isSharedInput ? '#a855f7' : '#3b82f6'}
         strokeWidth={2}
         strokeLinecap="round"
         className="pointer-events-none"
       />
-      {animated && (
+      {animated && !isSharedInput && (
         <circle r="4" fill="#3b82f6">
           <animateMotion
             dur="2s"
@@ -740,6 +784,8 @@ export default function VisualWorkflowPage() {
   // Execution state
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionResults, setExecutionResults] = useState(null);
+  const [linkSameSymbolInputs, setLinkSameSymbolInputs] = useState(true);
+  const [commonInputValues, setCommonInputValues] = useState({});
   
   const canvasRef = useRef(null);
   const nodeIdCounter = useRef(0);
@@ -764,6 +810,34 @@ export default function VisualWorkflowPage() {
       return true;
     });
   }, [equationsData]);
+
+  const commonInputPorts = useMemo(() => {
+    const groups = new Map();
+    for (const node of nodes) {
+      for (let i = 0; i < (node.inputs?.length || 0); i += 1) {
+        const input = node.inputs[i];
+        const symbol = getPortSymbol(input);
+        if (!symbol) continue;
+        if (!groups.has(symbol)) groups.set(symbol, []);
+        groups.get(symbol).push({ nodeId: node.id, portIndex: i, nodeName: node.name, unit: input.unit || '' });
+      }
+    }
+    return [...groups.entries()]
+      .filter(([, ports]) => ports.length > 1)
+      .map(([symbol, ports]) => ({ symbol, ports, unit: ports[0]?.unit || '' }));
+  }, [nodes]);
+
+  const commonOutputSymbols = useMemo(() => {
+    const counts = new Map();
+    for (const node of nodes) {
+      for (const output of (node.outputs || [])) {
+        const symbol = getPortSymbol(output);
+        if (!symbol) continue;
+        counts.set(symbol, (counts.get(symbol) || 0) + 1);
+      }
+    }
+    return [...counts.entries()].filter(([, count]) => count > 1).map(([symbol, count]) => ({ symbol, count }));
+  }, [nodes]);
   
   // Execute workflow mutation
   const executeMutation = useMutation({
@@ -993,7 +1067,50 @@ export default function VisualWorkflowPage() {
       }
       
       if (connectingPort.portType === portType) {
-        setStatus('Cannot connect same port types');
+        if (portType !== 'input') {
+          setStatus('Cannot connect same port types');
+          setConnectingPort(null);
+          return;
+        }
+
+        const exists = connections.some((conn) => (
+          conn.kind === 'shared-input' &&
+          ((conn.from.nodeId === connectingPort.nodeId && conn.from.portIndex === connectingPort.portIndex && conn.to.nodeId === nodeId && conn.to.portIndex === portIndex) ||
+          (conn.to.nodeId === connectingPort.nodeId && conn.to.portIndex === connectingPort.portIndex && conn.from.nodeId === nodeId && conn.from.portIndex === portIndex))
+        ));
+
+        if (exists) {
+          setStatus('These inputs are already linked');
+          setConnectingPort(null);
+          return;
+        }
+
+        const sharedConnection = {
+          id: `conn_${Date.now()}`,
+          kind: 'shared-input',
+          from: { nodeId: connectingPort.nodeId, portIndex: connectingPort.portIndex },
+          to: { nodeId, portIndex },
+        };
+
+        setConnections((prev) => [...prev, sharedConnection]);
+
+        setNodes((prev) => prev.map((n) => {
+          if (n.id === sharedConnection.from.nodeId || n.id === sharedConnection.to.nodeId) {
+            const inputs = n.inputs?.map((inp, i) => {
+              if (
+                (n.id === sharedConnection.from.nodeId && i === sharedConnection.from.portIndex) ||
+                (n.id === sharedConnection.to.nodeId && i === sharedConnection.to.portIndex)
+              ) {
+                return { ...inp, connected: true };
+              }
+              return inp;
+            });
+            return { ...n, inputs };
+          }
+          return n;
+        }));
+
+        setStatus('Shared input link created');
         setConnectingPort(null);
         return;
       }
@@ -1038,15 +1155,42 @@ export default function VisualWorkflowPage() {
   
   // Handle value change
   const handleValueChange = (nodeId, portType, portIndex, value) => {
-    setNodes(prev => prev.map(n => {
-      if (n.id === nodeId) {
-        const inputs = n.inputs?.map((inp, i) => 
-          i === portIndex ? { ...inp, value: value === '' ? undefined : Number(value) } : inp
-        );
+    const parsedValue = value === '' ? undefined : Number(value);
+    const directTargets = getLinkedInputTargets(connections, nodeId, portIndex);
+
+    setNodes((prev) => {
+      const sourceNode = prev.find((n) => n.id === nodeId);
+      const sourceInput = sourceNode?.inputs?.[portIndex];
+      const sourceSymbol = getPortSymbol(sourceInput);
+
+      return prev.map((n) => {
+        const inputs = n.inputs?.map((inp, i) => {
+          const isDirectTarget = directTargets.some((t) => t.nodeId === n.id && t.portIndex === i);
+          const isSameSymbol = linkSameSymbolInputs && sourceSymbol && getPortSymbol(inp) === sourceSymbol;
+
+          if (isDirectTarget || isSameSymbol) {
+            return { ...inp, value: parsedValue };
+          }
+
+          return inp;
+        });
+
         return { ...n, inputs };
-      }
-      return n;
-    }));
+      });
+    });
+  };
+
+  const applyCommonInputValue = (symbol, rawValue) => {
+    const parsedValue = rawValue === '' ? undefined : Number(rawValue);
+
+    setCommonInputValues((prev) => ({ ...prev, [symbol]: rawValue }));
+
+    setNodes((prev) => prev.map((n) => ({
+      ...n,
+      inputs: n.inputs?.map((inp) => (
+        getPortSymbol(inp) === symbol ? { ...inp, value: parsedValue } : inp
+      ))
+    })));
   };
   
   // Handle grouping
@@ -1515,6 +1659,62 @@ export default function VisualWorkflowPage() {
             Nodes: {nodes.length} | Connections: {connections.length} | Groups: {groups.length}
           </span>
         </div>
+
+        {(commonInputPorts.length > 0 || commonOutputSymbols.length > 0) && (
+          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 space-y-2">
+            {commonInputPorts.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Common Inputs</div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {commonInputPorts.map((entry) => {
+                    const sampleNode = nodes.find((n) => n.id === entry.ports[0]?.nodeId);
+                    const sampleInput = sampleNode?.inputs?.[entry.ports[0]?.portIndex];
+                    const currentValue = commonInputValues[entry.symbol] ?? sampleInput?.value ?? '';
+
+                    return (
+                      <label key={entry.symbol} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded px-2 py-1">
+                        <span className="font-medium text-blue-700 dark:text-blue-300">{entry.symbol}</span>
+                        <span className="text-gray-500">({entry.ports.length} nodes)</span>
+                        <input
+                          type="number"
+                          step="any"
+                          value={currentValue}
+                          onChange={(e) => applyCommonInputValue(entry.symbol, e.target.value)}
+                          className="w-20 px-1 py-0.5 border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-gray-900"
+                        />
+                        {entry.unit && <span className="text-gray-400">{entry.unit}</span>}
+                      </label>
+                    );
+                  })}
+                  <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 ml-2">
+                    <input
+                      type="checkbox"
+                      checked={linkSameSymbolInputs}
+                      onChange={(e) => setLinkSameSymbolInputs(e.target.checked)}
+                    />
+                    Auto-sync same symbol inputs
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {commonOutputSymbols.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Common Outputs</div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {commonOutputSymbols.map((entry) => (
+                    <span
+                      key={entry.symbol}
+                      className="text-xs bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded px-2 py-1"
+                    >
+                      {entry.symbol} ({entry.count})
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Canvas */}
         <div

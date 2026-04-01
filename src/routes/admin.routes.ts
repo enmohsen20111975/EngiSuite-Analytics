@@ -1,6 +1,6 @@
 /**
  * Admin Routes
- * Converted from Python FastAPI admin router
+ * admin router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

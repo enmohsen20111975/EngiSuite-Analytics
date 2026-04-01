@@ -1,7 +1,7 @@
 # EngiSuite Deployment Guide
 
 ## Problem
-The original error was caused by `better-sqlite3` - a native Node.js module that requires C++ compilation tools (`make`, `node-gyp`, Python) which are not available on shared hosting.
+The original error was caused by `better-sqlite3` - a native Node.js module that requires native build tools (`make`, `node-gyp`) that are not available on shared hosting.
 
 ## Solution
 The project has been reconfigured to use MySQL for production (via `mysql2` - pure JavaScript, no compilation needed) while keeping SQLite for local development.

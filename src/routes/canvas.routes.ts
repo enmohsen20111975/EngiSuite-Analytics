@@ -1,6 +1,6 @@
 /**
  * Canvas Routes
- * Converted from Python FastAPI canvas router
+ * canvas router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

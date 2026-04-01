@@ -1,6 +1,6 @@
 /**
  * Analytics Routes
- * Converted from Python FastAPI analytics router
+ * analytics router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

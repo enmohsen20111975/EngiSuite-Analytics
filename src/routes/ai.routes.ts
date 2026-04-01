@@ -1,6 +1,6 @@
 /**
  * AI Routes
- * Converted from Python FastAPI AI router
+ * AI router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

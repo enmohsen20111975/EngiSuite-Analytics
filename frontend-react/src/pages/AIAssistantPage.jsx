@@ -41,8 +41,8 @@ const sampleHistory = [
   },
   {
     id: 2,
-    title: 'Python structural analysis',
-    preview: 'Write a Python script for...',
+    title: 'Structural analysis script',
+    preview: 'Write a JavaScript script for...',
     timestamp: 'Yesterday',
   },
   {
@@ -428,33 +428,26 @@ Power can be calculated using: **P = V × I = I²R = V²/R**
 Would you like me to help you with a specific calculation?`;
   }
 
-  if (lowerInput.includes('python') || lowerInput.includes('code')) {
-    return `Here's a Python example for engineering calculations:
+  if (lowerInput.includes('code') || lowerInput.includes('script')) {
+    return `Here's a JavaScript example for engineering calculations:
 
-\`\`\`python
-import numpy as np
+\`\`\`javascript
+function calculateBeamDeflection(load, length, elasticity, momentOfInertia) {
+  // Formula: delta = (P * L^3) / (48 * E * I)
+  return (load * length ** 3) / (48 * elasticity * momentOfInertia);
+}
 
-def calculate_beam_deflection(load, length, elasticity, moment_of_inertia):
-    """
-    Calculate maximum deflection for a simply supported beam
-    with a point load at the center.
-    
-    Formula: δ = (P × L³) / (48 × E × I)
-    """
-    deflection = (load * length**3) / (48 * elasticity * moment_of_inertia)
-    return deflection
+// Example usage
+const P = 10000;     // Load in Newtons
+const L = 5;         // Length in meters
+const E = 200e9;     // Young's modulus for steel (Pa)
+const I = 8.33e-5;   // Moment of inertia (m^4)
 
-# Example usage
-P = 10000  # Load in Newtons
-L = 5      # Length in meters
-E = 200e9  # Young's modulus for steel (Pa)
-I = 8.33e-5  # Moment of inertia (m^4)
-
-max_deflection = calculate_beam_deflection(P, L, E, I)
-print(f"Maximum deflection: {max_deflection*1000:.2f} mm")
+const maxDeflection = calculateBeamDeflection(P, L, E, I);
+console.log('Maximum deflection: ' + (maxDeflection * 1000).toFixed(2) + ' mm');
 \`\`\`
 
-This calculates beam deflection using the standard formula. Would you like me to modify this for your specific use case?`;
+This calculates beam deflection using the standard formula. Would you like me to adapt this for your exact use case?`;
   }
 
   if (lowerInput.includes('beam') || lowerInput.includes('deflection') || lowerInput.includes('structural')) {
@@ -491,7 +484,7 @@ Need help with a specific beam calculation?`;
 As your engineering AI assistant, I can help you with:
 
 1. **Engineering Calculations** - Structural, electrical, mechanical, and more
-2. **Code Generation** - Python, MATLAB, JavaScript for engineering applications
+2. **Code Generation** - TypeScript, MATLAB, JavaScript for engineering applications
 3. **Concept Explanations** - Clear explanations of engineering principles
 4. **Documentation** - Technical writing and report generation
 

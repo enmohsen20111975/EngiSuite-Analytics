@@ -498,9 +498,9 @@ function Connection({ connection, shapes, isSelected, onClick }) {
  */
 function ToolPalette({ activeTool, onToolChange, onAddShape }) {
   return (
-    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Tools</h3>
-      <div className="grid grid-cols-3 gap-1 mb-3">
+    <div className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm border border-gray-200 dark:border-gray-700">
+      <h3 className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1">Tools</h3>
+      <div className="grid grid-cols-2 gap-0.5 mb-1">
         {[
           { id: 'select', icon: MousePointer, label: 'Select' },
           { id: 'pan', icon: Move, label: 'Pan' },
@@ -511,30 +511,30 @@ function ToolPalette({ activeTool, onToolChange, onAddShape }) {
             key={tool.id}
             onClick={() => onToolChange(tool.id)}
             className={cn(
-              "p-2 rounded-md transition-colors flex flex-col items-center",
+              "p-0.5 rounded text-xs transition-colors flex flex-col items-center",
               activeTool === tool.id
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
-                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                ? "bg-blue-500 text-white dark:bg-blue-600"
+                : "hover:bg-gray-200 dark:hover:bg-gray-700"
             )}
             title={tool.label}
           >
-            <tool.icon className="w-4 h-4" />
-            <span className="text-[10px] mt-1">{tool.label}</span>
+            <tool.icon className="w-2.5 h-2.5" />
+            <span className="text-[7px] mt-0.5 leading-tight">{tool.label}</span>
           </button>
         ))}
       </div>
       
-      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Shapes</h3>
-      <div className="grid grid-cols-3 gap-1 max-h-48 overflow-y-auto">
+      <h3 className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1">Shapes</h3>
+      <div className="grid grid-cols-2 gap-0.5 max-h-20 overflow-y-auto">
         {Object.entries(SHAPE_TYPES).map(([type, config]) => (
           <button
             key={type}
             onClick={() => onAddShape(type)}
-            className="p-2 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 flex flex-col items-center"
+            className="p-0.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center transition-colors"
             title={config.name}
           >
-            <config.icon className="w-4 h-4" />
-            <span className="text-[9px] mt-1 truncate w-full text-center">{config.name}</span>
+            <config.icon className="w-2.5 h-2.5" />
+            <span className="text-[6px] mt-0.5 truncate w-full text-center leading-tight">{config.name}</span>
           </button>
         ))}
       </div>
@@ -901,17 +901,16 @@ function PropertiesPanel({ selectedShape, onUpdateShape, onDeleteShape }) {
  */
 function TemplatesPanel({ onLoadTemplate }) {
   return (
-    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Examples</h3>
-      <div className="space-y-1 max-h-64 overflow-y-auto">
+    <div className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm border border-gray-200 dark:border-gray-700">
+      <h3 className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1">Examples</h3>
+      <div className="space-y-0.5 max-h-24 overflow-y-auto">
         {Object.entries(DIAGRAM_TEMPLATES).map(([key, template]) => (
           <button
             key={key}
             onClick={() => onLoadTemplate(key)}
-            className="w-full px-3 py-2 text-left rounded-md border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+            className="w-full px-1 py-0.5 text-left rounded text-[9px] border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
           >
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{template.name}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">{template.description}</div>
+            <div className="font-medium text-gray-700 dark:text-gray-300 truncate text-[9px]">{template.name}</div>
           </button>
         ))}
       </div>
@@ -924,32 +923,32 @@ function TemplatesPanel({ onLoadTemplate }) {
  */
 function LayersPanel({ shapes, selectedId, onSelect, onReorder, onToggleVisibility, onLock }) {
   return (
-    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">Layers</h3>
-      <div className="space-y-1 max-h-48 overflow-y-auto">
+    <div className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm border border-gray-200 dark:border-gray-700">
+      <h3 className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase mb-1">Layers</h3>
+      <div className="space-y-0.5 max-h-24 overflow-y-auto">
         {[...shapes].reverse().map((shape, index) => (
           <div
             key={shape.id}
             onClick={() => onSelect(shape.id)}
             className={cn(
-              "flex items-center gap-2 px-2 py-1 rounded cursor-pointer text-xs",
+              "flex items-center gap-0.5 px-1 py-0.5 rounded cursor-pointer text-[8px]",
               selectedId === shape.id
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                ? "bg-blue-500 text-white dark:bg-blue-600"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
           >
-            <span className="flex-1 truncate">{shape.text || shape.type}</span>
+            <span className="flex-1 truncate text-[8px]">{shape.text || shape.type}</span>
             <button
               onClick={(e) => { e.stopPropagation(); onToggleVisibility(shape.id); }}
-              className={cn("p-1", shape.hidden && "opacity-30")}
+              className="p-0.5"
             >
-              <Eye className="w-3 h-3" />
+              <Eye className="w-2.5 h-2.5" />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onLock(shape.id); }}
-              className={cn("p-1", shape.locked && "text-yellow-500")}
+              className={cn("p-0.5", shape.locked && "text-yellow-500")}
             >
-              <Lock className="w-3 h-3" />
+              <Lock className="w-2.5 h-2.5" />
             </button>
           </div>
         ))}
@@ -975,9 +974,26 @@ export default function DiagramStudioPage() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [connectingFrom, setConnectingFrom] = useState(null);
+  const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [showRightPanel, setShowRightPanel] = useState(true);
+  const [leftPanelState, setLeftPanelState] = useState({ x: 12, y: 84, w: 300, h: 560 });
+  const [rightPanelState, setRightPanelState] = useState(() => {
+    const fallbackX = 980;
+    if (typeof window === 'undefined') {
+      return { x: fallbackX, y: 84, w: 360, h: 560 };
+    }
+    return {
+      x: Math.max(window.innerWidth - 380, 560),
+      y: 84,
+      w: 360,
+      h: 560,
+    };
+  });
   
   const canvasRef = useRef(null);
   const dragRef = useRef(null);
+  const panelDragRef = useRef(null);
+  const panelResizeRef = useRef(null);
   const queryClient = useQueryClient();
 
   // Selected shape for properties panel
@@ -1478,6 +1494,70 @@ export default function DiagramStudioPage() {
     setStatus('Playing animations');
   }, []);
 
+  const startPanelDrag = useCallback((panel, e) => {
+    e.preventDefault();
+    const state = panel === 'left' ? leftPanelState : rightPanelState;
+    panelDragRef.current = {
+      panel,
+      startX: e.clientX,
+      startY: e.clientY,
+      originalX: state.x,
+      originalY: state.y,
+    };
+  }, [leftPanelState, rightPanelState]);
+
+  const startPanelResize = useCallback((panel, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const state = panel === 'left' ? leftPanelState : rightPanelState;
+    panelResizeRef.current = {
+      panel,
+      startX: e.clientX,
+      startY: e.clientY,
+      originalW: state.w,
+      originalH: state.h,
+    };
+  }, [leftPanelState, rightPanelState]);
+
+  useEffect(() => {
+    const handlePanelMouseMove = (e) => {
+      if (panelDragRef.current) {
+        const { panel, startX, startY, originalX, originalY } = panelDragRef.current;
+        const nextX = Math.max(0, originalX + (e.clientX - startX));
+        const nextY = Math.max(56, originalY + (e.clientY - startY));
+        if (panel === 'left') {
+          setLeftPanelState(prev => ({ ...prev, x: nextX, y: nextY }));
+        } else {
+          setRightPanelState(prev => ({ ...prev, x: nextX, y: nextY }));
+        }
+      }
+
+      if (panelResizeRef.current) {
+        const { panel, startX, startY, originalW, originalH } = panelResizeRef.current;
+        const nextW = Math.max(240, originalW + (e.clientX - startX));
+        const nextH = Math.max(280, originalH + (e.clientY - startY));
+        if (panel === 'left') {
+          setLeftPanelState(prev => ({ ...prev, w: nextW, h: nextH }));
+        } else {
+          setRightPanelState(prev => ({ ...prev, w: nextW, h: nextH }));
+        }
+      }
+    };
+
+    const handlePanelMouseUp = () => {
+      panelDragRef.current = null;
+      panelResizeRef.current = null;
+    };
+
+    document.addEventListener('mousemove', handlePanelMouseMove);
+    document.addEventListener('mouseup', handlePanelMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handlePanelMouseMove);
+      document.removeEventListener('mouseup', handlePanelMouseUp);
+    };
+  }, []);
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
@@ -1558,148 +1638,190 @@ export default function DiagramStudioPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left sidebar */}
-        <div className="p-4 space-y-4">
-          <ToolPalette
-            activeTool={activeTool}
-            onToolChange={setActiveTool}
-            onAddShape={handleAddShape}
-          />
-          <TemplatesPanel onLoadTemplate={handleLoadTemplate} />
-          <LayersPanel
-            shapes={shapes}
-            selectedId={selectedIds[0]}
-            onSelect={(id) => setSelectedIds([id])}
-            onToggleVisibility={(id) => handleUpdateShape(id, { hidden: !shapes.find(s => s.id === id)?.hidden })}
-            onLock={(id) => handleUpdateShape(id, { locked: !shapes.find(s => s.id === id)?.locked })}
-          />
+      <div className="flex-1 relative overflow-hidden">
+        <svg
+          ref={canvasRef}
+          className="w-full h-full bg-white dark:bg-gray-900 cursor-crosshair"
+          onClick={() => setSelectedIds([])}
+        >
+          {gridEnabled && (
+            <defs>
+              <pattern
+                id="grid"
+                width={20 * viewport.zoom}
+                height={20 * viewport.zoom}
+                patternUnits="userSpaceOnUse"
+                x={viewport.offset.x % (20 * viewport.zoom)}
+                y={viewport.offset.y % (20 * viewport.zoom)}
+              >
+                <path
+                  d={`M ${20 * viewport.zoom} 0 L 0 0 0 ${20 * viewport.zoom}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="0.5"
+                  className="text-gray-200 dark:text-gray-700"
+                />
+              </pattern>
+            </defs>
+          )}
+          {gridEnabled && <rect width="100%" height="100%" fill="url(#grid)" />}
+
+          <g transform={`translate(${viewport.offset.x}, ${viewport.offset.y}) scale(${viewport.zoom})`}>
+            {connections.map(conn => (
+              <Connection
+                key={conn.id}
+                connection={conn}
+                shapes={shapes}
+                isSelected={selectedIds.includes(conn.id)}
+                onClick={(id) => setSelectedIds([id])}
+              />
+            ))}
+
+            {shapes.filter(s => !s.hidden).map(shape => (
+              <Shape
+                key={shape.id}
+                shape={shape}
+                isSelected={selectedIds.includes(shape.id)}
+                onClick={handleShapeClick}
+                onDragStart={handleShapeDragStart}
+                onResize={handleResize}
+                scale={viewport.zoom}
+              />
+            ))}
+          </g>
+        </svg>
+
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow text-sm text-gray-600 dark:text-gray-400 z-20">
+          {status} | Shapes: {shapes.length} | Selected: {selectedIds.length}
         </div>
 
-        {/* Canvas area */}
-        <div className="flex-1 relative">
-          <svg
-            ref={canvasRef}
-            className="w-full h-full bg-white dark:bg-gray-900 cursor-crosshair"
-            onClick={() => setSelectedIds([])}
+        <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg shadow p-1 z-20">
+          <button
+            onClick={() => setViewport(prev => ({ ...prev, zoom: Math.max(0.25, prev.zoom - 0.25) }))}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            {/* Grid */}
-            {gridEnabled && (
-              <defs>
-                <pattern
-                  id="grid"
-                  width={20 * viewport.zoom}
-                  height={20 * viewport.zoom}
-                  patternUnits="userSpaceOnUse"
-                  x={viewport.offset.x % (20 * viewport.zoom)}
-                  y={viewport.offset.y % (20 * viewport.zoom)}
-                >
-                  <path
-                    d={`M ${20 * viewport.zoom} 0 L 0 0 0 ${20 * viewport.zoom}`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="0.5"
-                    className="text-gray-200 dark:text-gray-700"
-                  />
-                </pattern>
-              </defs>
-            )}
-            {gridEnabled && <rect width="100%" height="100%" fill="url(#grid)" />}
-            
-            {/* Transform group */}
-            <g transform={`translate(${viewport.offset.x}, ${viewport.offset.y}) scale(${viewport.zoom})`}>
-              {/* Connections */}
-              {connections.map(conn => (
-                <Connection
-                  key={conn.id}
-                  connection={conn}
-                  shapes={shapes}
-                  isSelected={selectedIds.includes(conn.id)}
-                  onClick={(id) => setSelectedIds([id])}
-                />
-              ))}
-              
-              {/* Shapes */}
-              {shapes.filter(s => !s.hidden).map(shape => (
-                <Shape
-                  key={shape.id}
-                  shape={shape}
-                  isSelected={selectedIds.includes(shape.id)}
-                  onClick={handleShapeClick}
-                  onDragStart={handleShapeDragStart}
-                  onResize={handleResize}
-                  scale={viewport.zoom}
-                />
-              ))}
-            </g>
-          </svg>
-          
-          {/* Status bar */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg shadow text-sm text-gray-600 dark:text-gray-400">
-            {status} | Shapes: {shapes.length} | Selected: {selectedIds.length}
-          </div>
-          
-          {/* Zoom controls */}
-          <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg shadow p-1">
-            <button
-              onClick={() => setViewport(prev => ({ ...prev, zoom: Math.max(0.25, prev.zoom - 0.25) }))}
-              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <ZoomOut className="w-4 h-4" />
-            </button>
-            <span className="px-2 text-sm">{Math.round(viewport.zoom * 100)}%</span>
-            <button
-              onClick={() => setViewport(prev => ({ ...prev, zoom: Math.min(3, prev.zoom + 0.25) }))}
-              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewport({ zoom: 1, offset: { x: 0, y: 0 } })}
-              className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <Maximize className="w-4 h-4" />
-            </button>
-          </div>
+            <ZoomOut className="w-4 h-4" />
+          </button>
+          <span className="px-2 text-sm">{Math.round(viewport.zoom * 100)}%</span>
+          <button
+            onClick={() => setViewport(prev => ({ ...prev, zoom: Math.min(3, prev.zoom + 0.25) }))}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <ZoomIn className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewport({ zoom: 1, offset: { x: 0, y: 0 } })}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <Maximize className="w-4 h-4" />
+          </button>
         </div>
 
-        {/* Right sidebar */}
-        <div className="w-72 p-4 space-y-4 overflow-y-auto">
-          <PropertiesPanel
-            selectedShape={selectedShape}
-            onUpdateShape={handleUpdateShape}
-            onDeleteShape={handleDeleteShape}
-          />
-          
-          {/* Saved diagrams */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-            <h3 className="text-sm font-semibold text-gray-500 mb-3">Saved Diagrams</h3>
-            {loadingDiagrams ? (
-              <Loader size="sm" />
-            ) : (
-              <div className="space-y-1 max-h-48 overflow-y-auto">
-                {diagrams?.map(d => (
-                  <button
-                    key={d.id}
-                    onClick={() => handleLoad(d)}
-                    className={cn(
-                      "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
-                      currentDiagram?.id === d.id
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
+        <button
+          onClick={() => setShowLeftPanel(!showLeftPanel)}
+          className="absolute top-20 left-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 z-30 transition-colors"
+          title="Toggle Tools & Layers"
+        >
+          <Layers className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        </button>
+
+        <button
+          onClick={() => setShowRightPanel(!showRightPanel)}
+          className="absolute top-20 right-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 z-30 transition-colors"
+          title="Toggle Properties"
+        >
+          <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        </button>
+
+        {showLeftPanel && (
+          <div
+            className="absolute bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-40 flex flex-col"
+            style={{ left: leftPanelState.x, top: leftPanelState.y, width: leftPanelState.w, height: leftPanelState.h }}
+          >
+            <div
+              className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700 cursor-move"
+              onMouseDown={(e) => startPanelDrag('left', e)}
+            >
+              <h3 className="text-xs font-semibold">Tools & Layers</h3>
+              <button onClick={() => setShowLeftPanel(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">x</button>
+            </div>
+            <div className="p-2 space-y-2 overflow-y-auto flex-1">
+              <ToolPalette
+                activeTool={activeTool}
+                onToolChange={setActiveTool}
+                onAddShape={handleAddShape}
+              />
+              <TemplatesPanel onLoadTemplate={handleLoadTemplate} />
+              <LayersPanel
+                shapes={shapes}
+                selectedId={selectedIds[0]}
+                onSelect={(id) => setSelectedIds([id])}
+                onToggleVisibility={(id) => handleUpdateShape(id, { hidden: !shapes.find(s => s.id === id)?.hidden })}
+                onLock={(id) => handleUpdateShape(id, { locked: !shapes.find(s => s.id === id)?.locked })}
+              />
+            </div>
+            <button
+              onMouseDown={(e) => startPanelResize('left', e)}
+              className="absolute right-1 bottom-1 w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-sm cursor-se-resize"
+              title="Resize"
+            />
+          </div>
+        )}
+
+        {showRightPanel && (
+          <div
+            className="absolute bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-40 flex flex-col"
+            style={{ left: rightPanelState.x, top: rightPanelState.y, width: rightPanelState.w, height: rightPanelState.h }}
+          >
+            <div
+              className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700 cursor-move"
+              onMouseDown={(e) => startPanelDrag('right', e)}
+            >
+              <h3 className="text-xs font-semibold">Properties</h3>
+              <button onClick={() => setShowRightPanel(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">x</button>
+            </div>
+            <div className="p-3 space-y-3 overflow-y-auto flex-1">
+              <PropertiesPanel
+                selectedShape={selectedShape}
+                onUpdateShape={handleUpdateShape}
+                onDeleteShape={handleDeleteShape}
+              />
+              <div className="bg-white dark:bg-gray-800 rounded shadow-sm p-2 border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Saved Diagrams</h3>
+                {loadingDiagrams ? (
+                  <Loader size="sm" />
+                ) : (
+                  <div className="space-y-1 max-h-40 overflow-y-auto">
+                    {diagrams?.map(d => (
+                      <button
+                        key={d.id}
+                        onClick={() => handleLoad(d)}
+                        className={cn(
+                          "w-full px-2 py-1 text-left text-xs rounded transition-colors",
+                          currentDiagram?.id === d.id
+                            ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                        )}
+                      >
+                        {d.name}
+                      </button>
+                    ))}
+                    {(!diagrams || diagrams.length === 0) && (
+                      <p className="text-sm text-gray-400">No saved diagrams</p>
                     )}
-                  >
-                    {d.name}
-                  </button>
-                ))}
-                {(!diagrams || diagrams.length === 0) && (
-                  <p className="text-sm text-gray-400">No saved diagrams</p>
+                  </div>
                 )}
               </div>
-            )}
+            </div>
+            <button
+              onMouseDown={(e) => startPanelResize('right', e)}
+              className="absolute right-1 bottom-1 w-3 h-3 bg-gray-300 dark:bg-gray-600 rounded-sm cursor-se-resize"
+              title="Resize"
+            />
           </div>
-        </div>
+        )}
       </div>
+
     </div>
   );
 }

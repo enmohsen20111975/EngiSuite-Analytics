@@ -14,11 +14,11 @@ module.exports = {
       max_memory_restart: '500M',
       env_production: {
         NODE_ENV: 'production',
-        PORT: 8000,
+        PORT: process.env.PORT || 8000,
       },
       env_development: {
         NODE_ENV: 'development',
-        PORT: 8000,
+        PORT: process.env.PORT || 8000,
       },
       // Logging
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',

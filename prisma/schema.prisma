@@ -1,5 +1,5 @@
 // Prisma Schema for EngiSuite Analytics
-// Converted from Python SQLAlchemy models
+// Legacy schema converted to Prisma models
 
 generator client {
   provider      = "prisma-client-js"
@@ -268,7 +268,7 @@ model WorkflowStep {
   inputs      String? // JSON array of input slugs
   outputs     String? // JSON array of output slugs
   formula     String? // Calculation formula
-  code        String? // JavaScript/Python code for complex calculations
+  code        String? // JavaScript code for complex calculations
 
   workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 

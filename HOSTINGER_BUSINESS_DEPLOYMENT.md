@@ -109,7 +109,7 @@ npx pm2 start ecosystem.config.cjs --env production --update-env
 Set startup command to:
 
 ```bash
-npx pm2 restart ecosystem.config.cjs --env production --update-env
+npx pm2 startOrRestart ecosystem.config.cjs --env production --update-env
 ```
 
 ## 6. Validate deployment
@@ -151,7 +151,7 @@ npm run db:deploy
 6. Restart app:
 
 ```bash
-npx pm2 restart ecosystem.config.cjs --env production --update-env
+npx pm2 startOrRestart ecosystem.config.cjs --env production --update-env
 ```
 
 ## Troubleshooting build error: `tsc: command not found`

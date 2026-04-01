@@ -1,6 +1,5 @@
 /**
  * EngiSuite Analytics - Node.js Backend Server
- * Converted from Python FastAPI to Express.js
  */
 import 'dotenv/config';
 import express from 'express';

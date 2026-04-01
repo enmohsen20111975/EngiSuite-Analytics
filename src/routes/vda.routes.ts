@@ -1,6 +1,6 @@
 /**
  * Visual Data Analysis (VDA) Routes
- * Converted from Python FastAPI VDA router
+ * VDA router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

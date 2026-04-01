@@ -65,6 +65,105 @@ interface EquationOutputRow {
   format_string: string | null;
 }
 
+const RESERVED_TOKENS = new Set([
+  'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'log', 'ln', 'exp',
+  'pow', 'abs', 'round', 'ceil', 'floor', 'max', 'min',
+  'select_cable', 'select_standard_size', 'next_standard_size',
+  'apply_demand_factor', 'lookup_cu_table', 'voltage_drop',
+  'pf_correction_capacitor', 'three_phase_power', 'short_circuit_current',
+  'beam_deflection', 'bending_stress', 'shear_stress', 'reynolds_number',
+  'darcy_friction_factor', 'pressure_drop', 'heat_transfer_coefficient',
+  'PI'
+]);
+
+function normalizeEquationExpression(equation: string): string {
+  const raw = String(equation || '').trim();
+  const equalIndex = raw.indexOf('=');
+  if (equalIndex >= 0) {
+    return raw.slice(equalIndex + 1).trim();
+  }
+  return raw;
+}
+
+function inferOutputNameFromEquation(equation: string): string {
+  const raw = String(equation || '').trim();
+  const equalIndex = raw.indexOf('=');
+  if (equalIndex > 0) {
+    const lhs = raw.slice(0, equalIndex).trim();
+    const lhsToken = lhs.match(/[A-Za-z_][A-Za-z0-9_]*/);
+    if (lhsToken) {
+      return lhsToken[0];
+    }
+  }
+  return 'result';
+}
+
+function inferInputsFromEquation(equation: string): EquationInputRow[] {
+  const raw = String(equation || '').trim();
+  const equalIndex = raw.indexOf('=');
+  const lhs = equalIndex >= 0 ? raw.slice(0, equalIndex) : '';
+  const rhs = equalIndex >= 0 ? raw.slice(equalIndex + 1) : raw;
+
+  const lhsTokens = new Set((lhs.match(/[A-Za-z_][A-Za-z0-9_]*/g) || []).map(t => t.trim()));
+  const rhsTokens = rhs.match(/[A-Za-z_][A-Za-z0-9_]*/g) || [];
+
+  const uniqueInputs: string[] = [];
+  const seen = new Set<string>();
+
+  for (const token of rhsTokens) {
+    const normalized = token.trim();
+    if (!normalized) continue;
+    if (RESERVED_TOKENS.has(normalized)) continue;
+    if (lhsTokens.has(normalized)) continue;
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+    uniqueInputs.push(normalized);
+  }
+
+  return uniqueInputs.map((name, index) => ({
+    id: -(index + 1),
+    equation_id: 0,
+    name,
+    symbol: name,
+    description: `Auto-generated input for ${name}`,
+    data_type: 'number',
+    unit: null,
+    unit_category: null,
+    required: 1,
+    default_value: 1,
+    min_value: null,
+    max_value: null,
+    validation_regex: null,
+    input_order: index,
+    placeholder: null,
+    help_text: 'Enter a numeric value',
+  }));
+}
+
+function withFallbackInputs(equation: EquationRow, inputs: EquationInputRow[]): EquationInputRow[] {
+  if (inputs.length > 0) return inputs;
+  return inferInputsFromEquation(equation.equation);
+}
+
+function withFallbackOutputs(equation: EquationRow, outputs: EquationOutputRow[]): EquationOutputRow[] {
+  if (outputs.length > 0) return outputs;
+
+  const outputName = inferOutputNameFromEquation(equation.equation);
+  return [{
+    id: -1,
+    equation_id: equation.id,
+    name: outputName,
+    symbol: outputName,
+    description: `Auto-generated output for ${outputName}`,
+    data_type: 'number',
+    unit: null,
+    unit_category: null,
+    output_order: 0,
+    precision: 4,
+    format_string: null,
+  }];
+}
+
 // ============================================
 // Equations Catalog from workflows database
 // ============================================
@@ -161,17 +260,20 @@ router.get('/equations/catalog', async (req: Request, res: Response, next: NextF
 
     // Get inputs and outputs for each equation
     const equationsWithDetails = equations.map(eq => {
-      const inputs = prepareWorkflows(`
+      const rawInputs = prepareWorkflows(`
         SELECT * FROM equation_inputs
         WHERE equation_id = ?
         ORDER BY input_order ASC
       `).all(eq.id) as unknown as EquationInputRow[];
 
-      const outputs = prepareWorkflows(`
+      const rawOutputs = prepareWorkflows(`
         SELECT * FROM equation_outputs
         WHERE equation_id = ?
         ORDER BY output_order ASC
       `).all(eq.id) as unknown as EquationOutputRow[];
+
+      const inputs = withFallbackInputs(eq, rawInputs);
+      const outputs = withFallbackOutputs(eq, rawOutputs);
 
       return {
         ...eq,
@@ -240,17 +342,20 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
       throw new NotFoundError('Equation not found');
     }
 
-    const inputs = prepareWorkflows(`
+    const rawInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
     `).all(equation.id) as unknown as EquationInputRow[];
 
-    const outputs = prepareWorkflows(`
+    const rawOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
     `).all(equation.id) as unknown as EquationOutputRow[];
+
+    const inputs = withFallbackInputs(equation, rawInputs);
+    const outputs = withFallbackOutputs(equation, rawOutputs);
 
     // Return data directly for frontend compatibility
     res.json({ ...equation, inputs, outputs });
@@ -295,17 +400,20 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
       throw new NotFoundError('Equation not found');
     }
 
-    const equationInputs = prepareWorkflows(`
+    const rawInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
     `).all(equation.id) as unknown as EquationInputRow[];
 
-    const equationOutputs = prepareWorkflows(`
+    const rawOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
     `).all(equation.id) as unknown as EquationOutputRow[];
+
+    const equationInputs = withFallbackInputs(equation, rawInputs);
+    const equationOutputs = withFallbackOutputs(equation, rawOutputs);
 
     // Build context with input values
     const context: Record<string, number | string> = {};
@@ -330,7 +438,7 @@ router.post('/:id/calculate', calculationRateLimiter, async (req: Request, res: 
     }
 
     // Evaluate the equation using enhanced evaluator
-    const result = evaluateFormula(equation.equation, context);
+    const result = evaluateFormula(normalizeEquationExpression(equation.equation), context);
 
     // Build output
     const outputs: Record<string, { value: number; unit: string }> = {};
@@ -411,17 +519,20 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
       throw new NotFoundError('Equation not found');
     }
 
-    const equationInputs = prepareWorkflows(`
+    const rawInputs = prepareWorkflows(`
       SELECT * FROM equation_inputs
       WHERE equation_id = ?
       ORDER BY input_order ASC
     `).all(equation.id) as unknown as EquationInputRow[];
 
-    const equationOutputs = prepareWorkflows(`
+    const rawOutputs = prepareWorkflows(`
       SELECT * FROM equation_outputs
       WHERE equation_id = ?
       ORDER BY output_order ASC
     `).all(equation.id) as unknown as EquationOutputRow[];
+
+    const equationInputs = withFallbackInputs(equation, rawInputs);
+    const equationOutputs = withFallbackOutputs(equation, rawOutputs);
 
     // Build context with input values
     const context: Record<string, number | string> = {};
@@ -446,7 +557,7 @@ router.post('/demo/:id/calculate', calculationRateLimiter, async (req: Request, 
     }
 
     // Evaluate the equation using enhanced evaluator
-    const result = evaluateFormula(equation.equation, context);
+    const result = evaluateFormula(normalizeEquationExpression(equation.equation), context);
 
     // Build output
     const outputs: Record<string, { value: number; unit: string }> = {};

@@ -1,7 +1,7 @@
 /**
  * Calculation Pipeline Engine
  * DAG-based execution engine for deterministic engineering calculation pipelines.
- * Ported from Python backend calculation_pipeline/engine.py
+ * Ported from legacy backend calculation pipeline engine
  */
 
 import { getWorkflowsDb, queryWorkflows, execute, queryOne } from './database.service.js';
@@ -100,7 +100,7 @@ interface PipelineResult {
 
 /**
  * Engineering calculation functions
- * Collection of engineering calculation functions matching Python backend
+ * Collection of engineering calculation functions matching legacy backend behavior
  */
 export class EngineeringCalculations {
   static sqrt(value: number): number | null {

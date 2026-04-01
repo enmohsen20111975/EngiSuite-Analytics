@@ -1,6 +1,6 @@
 /**
  * Hostinger Integration Routes
- * Converted from Python FastAPI hostinger router
+ * hostinger router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

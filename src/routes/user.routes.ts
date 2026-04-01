@@ -1,6 +1,6 @@
 /**
  * User Routes
- * Converted from Python FastAPI user router
+ * user router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

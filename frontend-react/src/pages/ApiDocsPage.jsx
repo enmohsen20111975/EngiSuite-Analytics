@@ -85,26 +85,24 @@ const response = await fetch('https://api.engisuite.com/v1/calculators/1/calcula
 
 const result = await response.json();
 console.log(result);`,
-  python: `# Python Example
-import requests
-
-response = requests.post(
-    'https://api.engisuite.com/v1/calculators/1/calculate',
-    headers={
-        'Authorization': 'Bearer YOUR_API_KEY',
-        'Content-Type': 'application/json',
-    },
-    json={
-        'inputs': {
-            'voltage': 220,
-            'current': 10,
-            'power_factor': 0.85
-        }
+  typescript: `// TypeScript Example
+const response = await fetch('https://api.engisuite.com/v1/calculators/1/calculate', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    inputs: {
+      voltage: 220,
+      current: 10,
+      power_factor: 0.85
     }
-)
+  })
+});
 
-result = response.json()
-print(result)`,
+const result = await response.json();
+console.log(result);`,
   curl: `# cURL Example
 curl -X POST 'https://api.engisuite.com/v1/calculators/1/calculate' \\
   -H 'Authorization: Bearer YOUR_API_KEY' \\

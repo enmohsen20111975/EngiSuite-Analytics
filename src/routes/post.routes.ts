@@ -1,6 +1,6 @@
 /**
  * Post Routes (Blog/Social)
- * Converted from Python FastAPI posts router
+ * posts router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

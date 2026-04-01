@@ -1,6 +1,6 @@
 /**
  * Authentication Routes
- * Converted from Python FastAPI auth router
+ * auth router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';

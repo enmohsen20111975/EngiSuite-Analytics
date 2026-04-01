@@ -1,6 +1,6 @@
 /**
  * Equation Routes
- * Converted from Python FastAPI equations router
+ * equations router
  */
 
 import { Router, Request, Response, NextFunction } from 'express';
