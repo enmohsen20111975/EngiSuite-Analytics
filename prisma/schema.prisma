@@ -491,6 +491,7 @@ model Lesson {
   id               Int               @id @default(autoincrement())
   chapterId        Int?              @map("chapter_id") // general track (nullable for cert track)
   title            String
+  titleAr          String?           @map("title_ar")
   slug             String
   description      String?
   duration         Int? // in minutes
@@ -625,6 +626,7 @@ model PracticeProblem {
   knowledgeObjectId  Int?    @map("knowledge_object_id")
   status             String  @default("DRAFT")
   verificationStatus String  @default("PENDING") @map("verification_status")
+  reviewStatus       String  @default("PENDING") @map("review_status")
   version            String  @default("0.1.0")
   // cert track links
   certificationId    Int?    @map("certification_id")
