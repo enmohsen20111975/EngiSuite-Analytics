@@ -42,17 +42,17 @@ model User {
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
   // Relations
-  calculationHistory   CalculationHistory[]
-  workflowHistory      WorkflowHistory[]
-  generatedReports     GeneratedReport[]
-  signatures           Signature[]
-  subscriptionHistory  SubscriptionHistory[]
-  savedData            UserSavedData[]
-  analyticsDatasets    AnalyticsDataset[]
-  projects             ProjectMember[]
-  posts                Post[]
-  comments             Comment[]
-  passwordResetTokens  PasswordResetToken[]
+  calculationHistory  CalculationHistory[]
+  workflowHistory     WorkflowHistory[]
+  generatedReports    GeneratedReport[]
+  signatures          Signature[]
+  subscriptionHistory SubscriptionHistory[]
+  savedData           UserSavedData[]
+  analyticsDatasets   AnalyticsDataset[]
+  projects            ProjectMember[]
+  posts               Post[]
+  comments            Comment[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -84,16 +84,16 @@ model Signature {
 }
 
 model SubscriptionHistory {
-  id              Int      @id @default(autoincrement())
-  userId          Int      @map("user_id")
-  tier            String
-  action          String   // "subscribed", "upgraded", "downgraded", "cancelled", "renewed"
-  previousTier    String?  @map("previous_tier")
-  amount          Float?
-  currency        String?
-  paymentMethod   String?  @map("payment_method")
-  transactionId   String?  @map("transaction_id")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  tier          String
+  action        String // "subscribed", "upgraded", "downgraded", "cancelled", "renewed"
+  previousTier  String?  @map("previous_tier")
+  amount        Float?
+  currency      String?
+  paymentMethod String?  @map("payment_method")
+  transactionId String?  @map("transaction_id")
+  createdAt     DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -104,8 +104,8 @@ model CalculationHistory {
   id           Int      @id @default(autoincrement())
   userId       Int      @map("user_id")
   calculatorId String   @map("calculator_id")
-  inputs       String   // JSON string
-  outputs      String   // JSON string
+  inputs       String // JSON string
+  outputs      String // JSON string
   notes        String?
   createdAt    DateTime @default(now()) @map("created_at")
 
@@ -118,8 +118,8 @@ model WorkflowHistory {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   workflowId Int?     @map("workflow_id")
-  inputs     String   // JSON string
-  outputs    String   // JSON string
+  inputs     String // JSON string
+  outputs    String // JSON string
   notes      String?
   createdAt  DateTime @default(now()) @map("created_at")
 
@@ -129,14 +129,14 @@ model WorkflowHistory {
 }
 
 model GeneratedReport {
-  id           Int      @id @default(autoincrement())
-  userId       Int      @map("user_id")
-  title        String
-  reportType   String   @map("report_type")
-  content      String   // JSON or HTML content
-  fileUrl      String?  @map("file_url")
-  projectId    Int?     @map("project_id")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  title      String
+  reportType String   @map("report_type")
+  content    String // JSON or HTML content
+  fileUrl    String?  @map("file_url")
+  projectId  Int?     @map("project_id")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
@@ -151,7 +151,7 @@ model ReportTemplate {
   description   String?
   category      String?
   reportType    String   @map("report_type")
-  sections      String?  // JSON array of section definitions
+  sections      String? // JSON array of section definitions
   stylingConfig String?  @map("styling_config") // JSON styling configuration
   isPublic      Boolean  @default(true) @map("is_public")
   createdAt     DateTime @default(now()) @map("created_at")
@@ -176,16 +176,16 @@ model UserSavedData {
 }
 
 model CompanyProfile {
-  id          Int      @id @default(autoincrement())
-  name        String
-  logo        String?
-  address     String?
-  phone       String?
-  email       String?
-  website     String?
-  taxId       String?  @map("tax_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  name      String
+  logo      String?
+  address   String?
+  phone     String?
+  email     String?
+  website   String?
+  taxId     String?  @map("tax_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("company_profiles")
 }
@@ -208,19 +208,19 @@ model WorkflowCategory {
 }
 
 model Workflow {
-  id          Int      @id @default(autoincrement())
-  categoryId  Int?     @map("category_id")
+  id          Int              @id @default(autoincrement())
+  categoryId  Int?             @map("category_id")
   name        String
-  slug        String   @unique
+  slug        String           @unique
   description String?
   icon        String?
-  tags        String?  // JSON array
+  tags        String? // JSON array
   inputs      WorkflowInput[]
   outputs     WorkflowOutput[]
   steps       WorkflowStep[]
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  isActive    Boolean          @default(true) @map("is_active")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   category WorkflowCategory? @relation(fields: [categoryId], references: [id])
 
@@ -228,16 +228,16 @@ model Workflow {
 }
 
 model WorkflowInput {
-  id         Int     @id @default(autoincrement())
-  workflowId Int     @map("workflow_id")
-  name       String
-  slug       String
-  type       String  // "number", "string", "select", "boolean"
-  unit       String?
+  id           Int     @id @default(autoincrement())
+  workflowId   Int     @map("workflow_id")
+  name         String
+  slug         String
+  type         String // "number", "string", "select", "boolean"
+  unit         String?
   defaultValue String? @map("default_value")
-  required   Boolean @default(true)
-  validation String? // JSON validation rules
-  sortOrder  Int     @default(0) @map("sort_order")
+  required     Boolean @default(true)
+  validation   String? // JSON validation rules
+  sortOrder    Int     @default(0) @map("sort_order")
 
   workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
@@ -276,14 +276,14 @@ model WorkflowStep {
 }
 
 model EquationCategory {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
-  slug        String    @unique
+  slug        String     @unique
   description String?
   icon        String?
   color       String?
-  parentId    Int?      @map("parent_id")
-  sortOrder   Int       @default(0) @map("sort_order")
+  parentId    Int?       @map("parent_id")
+  sortOrder   Int        @default(0) @map("sort_order")
   equations   Equation[]
 
   parent   EquationCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
@@ -293,22 +293,22 @@ model EquationCategory {
 }
 
 model Equation {
-  id           Int      @id @default(autoincrement())
-  categoryId   Int?     @map("category_id")
-  name         String
-  slug         String   @unique
-  description  String?
-  formula      String
-  variables    String?  // JSON array
-  tags         String?  // JSON array
-  source       String?
-  difficulty   String?  @default("intermediate")
-  inputs       EquationInput[]
-  outputs      EquationOutput[]
-  examples     EquationExample[]
-  isActive     Boolean  @default(true) @map("is_active")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id          Int               @id @default(autoincrement())
+  categoryId  Int?              @map("category_id")
+  name        String
+  slug        String            @unique
+  description String?
+  formula     String
+  variables   String? // JSON array
+  tags        String? // JSON array
+  source      String?
+  difficulty  String?           @default("intermediate")
+  inputs      EquationInput[]
+  outputs     EquationOutput[]
+  examples    EquationExample[]
+  isActive    Boolean           @default(true) @map("is_active")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   category EquationCategory? @relation(fields: [categoryId], references: [id])
 
@@ -316,18 +316,18 @@ model Equation {
 }
 
 model EquationInput {
-  id          Int     @id @default(autoincrement())
-  equationId  Int     @map("equation_id")
-  name        String
-  slug        String
-  type        String
-  unit        String?
+  id           Int     @id @default(autoincrement())
+  equationId   Int     @map("equation_id")
+  name         String
+  slug         String
+  type         String
+  unit         String?
   defaultValue String? @map("default_value")
-  min         Float?
-  max         Float?
-  required    Boolean @default(true)
-  description String?
-  sortOrder   Int     @default(0) @map("sort_order")
+  min          Float?
+  max          Float?
+  required     Boolean @default(true)
+  description  String?
+  sortOrder    Int     @default(0) @map("sort_order")
 
   equation Equation @relation(fields: [equationId], references: [id], onDelete: Cascade)
 
@@ -356,8 +356,8 @@ model EquationExample {
   equationId  Int     @map("equation_id")
   title       String
   description String?
-  inputs      String  // JSON object
-  outputs     String  // JSON object
+  inputs      String // JSON object
+  outputs     String // JSON object
   sortOrder   Int     @default(0) @map("sort_order")
 
   equation Equation @relation(fields: [equationId], references: [id], onDelete: Cascade)
@@ -366,13 +366,13 @@ model EquationExample {
 }
 
 model EquationUnit {
-  id             Int     @id @default(autoincrement())
-  name           String
-  symbol         String
-  category       String  // "length", "mass", "time", etc.
-  baseUnit       String  @map("base_unit")
-  conversionFactor Float @map("conversion_factor")
-  isActive       Boolean @default(true) @map("is_active")
+  id               Int     @id @default(autoincrement())
+  name             String
+  symbol           String
+  category         String // "length", "mass", "time", etc.
+  baseUnit         String  @map("base_unit")
+  conversionFactor Float   @map("conversion_factor")
+  isActive         Boolean @default(true) @map("is_active")
 
   @@map("equation_units")
 }
@@ -382,17 +382,17 @@ model EquationUnit {
 // ============================================
 
 model CalculationPipeline {
-  id          Int       @id @default(autoincrement())
+  id          Int                       @id @default(autoincrement())
   name        String
-  slug        String    @unique
+  slug        String                    @unique
   description String?
-  category     String?
-  discipline   String?
-  difficulty   String?   @default("intermediate")
+  category    String?
+  discipline  String?
+  difficulty  String?                   @default("intermediate")
   steps       CalculationPipelineStep[]
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  isActive    Boolean                   @default(true) @map("is_active")
+  createdAt   DateTime                  @default(now()) @map("created_at")
+  updatedAt   DateTime                  @updatedAt @map("updated_at")
 
   @@map("calculation_pipelines")
 }
@@ -420,17 +420,17 @@ model CalculationPipelineStep {
 // ============================================
 
 model AnalyticsDataset {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
+  id          Int              @id @default(autoincrement())
+  userId      Int              @map("user_id")
   name        String
   description String?
-  dataType    String   @map("data_type") // "csv", "excel", "json"
-  data        String   // JSON data
-  columns     String   // JSON column definitions
-  rowCount    Int      @map("row_count")
+  dataType    String           @map("data_type") // "csv", "excel", "json"
+  data        String // JSON data
+  columns     String // JSON column definitions
+  rowCount    Int              @map("row_count")
   sheets      AnalyticsSheet[]
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -438,13 +438,13 @@ model AnalyticsDataset {
 }
 
 model AnalyticsSheet {
-  id         Int     @id @default(autoincrement())
-  datasetId  Int     @map("dataset_id")
-  name       String
-  data       String  // JSON data
-  columns    String  // JSON column definitions
-  rowCount   Int     @map("row_count")
-  sortOrder  Int     @default(0) @map("sort_order")
+  id        Int    @id @default(autoincrement())
+  datasetId Int    @map("dataset_id")
+  name      String
+  data      String // JSON data
+  columns   String // JSON column definitions
+  rowCount  Int    @map("row_count")
+  sortOrder Int    @default(0) @map("sort_order")
 
   dataset AnalyticsDataset @relation(fields: [datasetId], references: [id], onDelete: Cascade)
 
@@ -456,26 +456,29 @@ model AnalyticsSheet {
 // ============================================
 
 model Discipline {
-  id          Int       @id @default(autoincrement())
-  name        String
-  slug        String    @unique
-  description String?
-  icon        String?
-  color       String?
-  sortOrder   Int       @default(0) @map("sort_order")
-  chapters    Chapter[]
+  id           Int                    @id @default(autoincrement())
+  name         String
+  slug         String                 @unique
+  description  String?
+  icon         String?
+  color        String?
+  subjectGroup String?                @map("subject_group") // scientific group (Eng. Fundamentals | Mechanical | ...)
+  sortOrder    Int                    @default(0) @map("sort_order")
+  chapters     Chapter[]
+  references   Reference[]
+  matrixCells  GenerationMatrixCell[]
 
   @@map("disciplines")
 }
 
 model Chapter {
-  id           Int       @id @default(autoincrement())
-  disciplineId Int       @map("discipline_id")
+  id           Int      @id @default(autoincrement())
+  disciplineId Int      @map("discipline_id")
   name         String
   slug         String
   description  String?
   icon         String?
-  sortOrder    Int       @default(0) @map("sort_order")
+  sortOrder    Int      @default(0) @map("sort_order")
   lessons      Lesson[]
 
   discipline Discipline @relation(fields: [disciplineId], references: [id])
@@ -485,32 +488,61 @@ model Chapter {
 }
 
 model Lesson {
-  id             Int       @id @default(autoincrement())
-  chapterId      Int       @map("chapter_id")
-  title          String
-  slug           String
-  description    String?
-  duration       Int?      // in minutes
-  difficulty     String?   @default("intermediate")
-  objectives     LessonObjective[]
-  article        Article?
-  simulations    Simulation[]
+  id               Int               @id @default(autoincrement())
+  chapterId        Int?              @map("chapter_id") // general track (nullable for cert track)
+  title            String
+  slug             String
+  description      String?
+  duration         Int? // in minutes
+  difficulty       String?           @default("intermediate")
+  objectives       LessonObjective[]
+  article          Article?
+  simulations      Simulation[]
   practiceProblems PracticeProblem[]
-  sortOrder      Int       @default(0) @map("sort_order")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  sortOrder        Int               @default(0) @map("sort_order")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
 
-  chapter Chapter @relation(fields: [chapterId], references: [id])
+  // ---- Knowledge Engine (Engineer's Educations) — cert track links ----
+  certificationId Int? @map("certification_id")
+  domainId        Int? @map("domain_id")
+  competencyId    Int? @map("competency_id")
+  moduleId        Int? @map("module_id")
+
+  // ---- Full 24-section data-collector template (JSON) ----
+  sections          String? // JSON: {learning_objectives, ..., references} or "NOT_APPLICABLE"
+  referenceIds      String? @map("reference_ids") // JSON string[] of Reference ids
+  sharedAcrossCerts Boolean @default(false) @map("shared_across_certs")
+
+  // ---- Lifecycle metadata ----
+  status             String    @default("DRAFT") // DRAFT|REQUIRES_RESEARCH|NOT_READY|READY|HUMAN_REVIEW_REQUIRED
+  version            String    @default("0.1.0")
+  confidence         String    @default("LOW") // LOW|MEDIUM|HIGH
+  verificationStatus String    @default("PENDING") @map("verification_status") // PENDING|VERIFIED|FAILED|HUMAN_REVIEW_REQUIRED
+  lastReviewedAt     DateTime? @map("last_reviewed_at")
+  qualityScore       Float     @default(0) @map("quality_score") // 0..100
+
+  // Relations
+  chapter          Chapter?          @relation(fields: [chapterId], references: [id])
+  certification    Certification?    @relation(fields: [certificationId], references: [id])
+  domain           Domain?           @relation(fields: [domainId], references: [id])
+  competency       Competency?       @relation(fields: [competencyId], references: [id])
+  module           Module?           @relation(fields: [moduleId], references: [id])
+  knowledgeObjects KnowledgeObject[]
+  VisualSpec       VisualSpec[]
 
   @@unique([chapterId, slug])
+  @@index([certificationId])
+  @@index([competencyId])
+  @@index([status])
   @@map("lessons")
 }
 
 model LessonObjective {
-  id          Int     @id @default(autoincrement())
-  lessonId    Int     @map("lesson_id")
-  objective   String
-  sortOrder   Int     @default(0) @map("sort_order")
+  id        Int    @id @default(autoincrement())
+  lessonId  Int    @map("lesson_id")
+  objective String
+  sortOrder Int    @default(0) @map("sort_order")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
@@ -518,13 +550,13 @@ model LessonObjective {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
-  lessonId    Int      @unique @map("lesson_id")
-  title       String
-  content     String   // Markdown or HTML
-  summary     String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  lessonId  Int      @unique @map("lesson_id")
+  title     String
+  content   String // Markdown or HTML
+  summary   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
@@ -532,15 +564,15 @@ model Article {
 }
 
 model Simulation {
-  id           Int     @id @default(autoincrement())
-  lessonId     Int     @map("lesson_id")
-  name         String
-  slug         String
-  description  String?
-  type         String  // "interactive", "3d", "2d", "animation"
-  config       String  // JSON configuration
-  controls     SimulationControl[]
-  sortOrder    Int     @default(0) @map("sort_order")
+  id          Int                 @id @default(autoincrement())
+  lessonId    Int                 @map("lesson_id")
+  name        String
+  slug        String
+  description String?
+  type        String // "interactive", "3d", "2d", "animation"
+  config      String // JSON configuration
+  controls    SimulationControl[]
+  sortOrder   Int                 @default(0) @map("sort_order")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
@@ -553,7 +585,7 @@ model SimulationControl {
   simulationId Int     @map("simulation_id")
   name         String
   slug         String
-  type         String  // "slider", "input", "select", "button", "toggle"
+  type         String // "slider", "input", "select", "button", "toggle"
   defaultValue String  @map("default_value")
   min          Float?
   max          Float?
@@ -568,29 +600,57 @@ model SimulationControl {
 }
 
 model PracticeProblem {
-  id          Int     @id @default(autoincrement())
-  lessonId    Int     @map("lesson_id")
+  id          Int             @id @default(autoincrement())
+  lessonId    Int?            @map("lesson_id") // nullable for cert-track standalone Qs
   question    String
   explanation String?
   hint        String?
-  difficulty  String? @default("intermediate")
-  type        String  @default("multiple_choice")
-  points      Int     @default(10)
+  difficulty  String?         @default("intermediate")
+  type        String          @default("multiple_choice")
+  points      Int             @default(10)
   choices     ProblemChoice[]
-  sortOrder   Int     @default(0) @map("sort_order")
+  sortOrder   Int             @default(0) @map("sort_order")
 
-  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  // ---- Knowledge Engine enrichment (Question Engine spec) ----
+  bloomLevel         String? @map("bloom_level") // Remember|Understand|Apply|Analyze
+  cognitiveLevel     String? @map("cognitive_level") // Recall|Understanding|Application|Analysis|Evaluation|Calculation|Scenario|DecisionMaking
+  skillType          String? @map("skill_type")
+  scenario           String? // industry scenario
+  industry           String?
+  language           String  @default("en")
+  tags               String? // JSON string[]
+  whyCorrect         String? @map("why_correct")
+  whyOthersWrong     String? @map("why_others_wrong") // JSON string[]
+  referenceIds       String? @map("reference_ids") // JSON string[]
+  knowledgeObjectId  Int?    @map("knowledge_object_id")
+  status             String  @default("DRAFT")
+  verificationStatus String  @default("PENDING") @map("verification_status")
+  version            String  @default("0.1.0")
+  // cert track links
+  certificationId    Int?    @map("certification_id")
+  domainId           Int?    @map("domain_id")
+  competencyId       Int?    @map("competency_id")
 
+  lesson          Lesson?          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  certification   Certification?   @relation(fields: [certificationId], references: [id])
+  domain          Domain?          @relation(fields: [domainId], references: [id])
+  competency      Competency?      @relation(fields: [competencyId], references: [id])
+  knowledgeObject KnowledgeObject? @relation(fields: [knowledgeObjectId], references: [id], onDelete: SetNull)
+
+  @@index([lessonId])
+  @@index([certificationId])
+  @@index([competencyId])
+  @@index([status])
   @@map("practice_problems")
 }
 
 model ProblemChoice {
-  id           Int     @id @default(autoincrement())
-  problemId    Int     @map("problem_id")
-  text         String
-  isCorrect    Boolean @default(false) @map("is_correct")
-  explanation  String?
-  sortOrder    Int     @default(0) @map("sort_order")
+  id          Int     @id @default(autoincrement())
+  problemId   Int     @map("problem_id")
+  text        String
+  isCorrect   Boolean @default(false) @map("is_correct")
+  explanation String?
+  sortOrder   Int     @default(0) @map("sort_order")
 
   problem PracticeProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
@@ -602,29 +662,29 @@ model ProblemChoice {
 // ============================================
 
 model Project {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
-  slug        String   @unique
+  slug        String            @unique
   description String?
-  status      String   @default("active")
-  startDate   DateTime? @map("start_date")
-  endDate     DateTime? @map("end_date")
+  status      String            @default("active")
+  startDate   DateTime?         @map("start_date")
+  endDate     DateTime?         @map("end_date")
   budget      Float?
-  clientId    Int?     @map("client_id")
+  clientId    Int?              @map("client_id")
   members     ProjectMember[]
   templates   ProjectTemplate[]
   reports     GeneratedReport[]
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   @@map("projects")
 }
 
 model ProjectMember {
-  id        Int     @id @default(autoincrement())
-  projectId Int     @map("project_id")
-  userId    Int     @map("user_id")
-  role      String  @default("member")
+  id        Int    @id @default(autoincrement())
+  projectId Int    @map("project_id")
+  userId    Int    @map("user_id")
+  role      String @default("member")
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -642,7 +702,7 @@ model ProjectTemplate {
   category    String?
   icon        String?  @default("fa-folder")
   color       String?  @default("#6B7280")
-  config      String?  // JSON configuration (optional)
+  config      String? // JSON configuration (optional)
   isPublic    Boolean  @default(false) @map("is_public")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -657,22 +717,22 @@ model ProjectTemplate {
 // ============================================
 
 model Post {
-  id          Int       @id @default(autoincrement())
-  authorId    Int       @map("author_id")
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  content     String
-  featuredImage String? @map("featured_image")
-  category    String?
-  tags        String?   // JSON array
-  status      String    @default("draft") // "draft", "published", "archived"
-  viewCount   Int       @default(0) @map("view_count")
-  likeCount   Int       @default(0) @map("like_count")
-  comments    Comment[]
-  publishedAt DateTime? @map("published_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id            Int       @id @default(autoincrement())
+  authorId      Int       @map("author_id")
+  title         String
+  slug          String    @unique
+  excerpt       String?
+  content       String
+  featuredImage String?   @map("featured_image")
+  category      String?
+  tags          String? // JSON array
+  status        String    @default("draft") // "draft", "published", "archived"
+  viewCount     Int       @default(0) @map("view_count")
+  likeCount     Int       @default(0) @map("like_count")
+  comments      Comment[]
+  publishedAt   DateTime? @map("published_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   author User @relation(fields: [authorId], references: [id])
 
@@ -680,17 +740,17 @@ model Post {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  postId    Int      @map("post_id")
-  userId    Int      @map("user_id")
-  parentId  Int?     @map("parent_id")
-  content   String
-  isApproved Boolean @default(false) @map("is_approved")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id         Int      @id @default(autoincrement())
+  postId     Int      @map("post_id")
+  userId     Int      @map("user_id")
+  parentId   Int?     @map("parent_id")
+  content    String
+  isApproved Boolean  @default(false) @map("is_approved")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  post    Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user    User  @relation(fields: [userId], references: [id])
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id])
   parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies Comment[] @relation("CommentReplies")
 
@@ -702,16 +762,16 @@ model Comment {
 // ============================================
 
 model PriceConfig {
-  id          Int      @id @default(autoincrement())
-  service     String
-  tier        String
-  price       Float
-  currency    String   @default("USD")
-  billingCycle String? @map("billing_cycle") // "monthly", "yearly", "lifetime"
-  features    String?  // JSON array
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           Int      @id @default(autoincrement())
+  service      String
+  tier         String
+  price        Float
+  currency     String   @default("USD")
+  billingCycle String?  @map("billing_cycle") // "monthly", "yearly", "lifetime"
+  features     String? // JSON array
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@unique([service, tier, billingCycle])
   @@map("price_configs")
@@ -725,12 +785,446 @@ model CanvasState {
   id        Int      @id @default(autoincrement())
   userId    Int      @map("user_id")
   name      String
-  type      String   // "diagram", "workflow", "circuit"
-  data      String   // JSON canvas data
+  type      String // "diagram", "workflow", "circuit"
+  data      String // JSON canvas data
   thumbnail String?
   isPublic  Boolean  @default(false) @map("is_public")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("canvas_states")
+}
+
+// ============================================================================
+// KNOWLEDGE ENGINE — Certification Knowledge Graph (Engineer's Educations)
+// Layered onto EngiSuite. Portable types (no @db.*), works on SQLite & MySQL.
+// ============================================================================
+
+model Certification {
+  id             Int       @id @default(autoincrement())
+  slug           String    @unique
+  name           String
+  fullName       String    @map("full_name")
+  body           String // SMRP | ASQ | PMI | ISO | ...
+  currentVersion String    @default("1.0.0") @map("current_version")
+  bokReference   String?   @map("bok_reference")
+  examBlueprint  String?   @map("exam_blueprint") // JSON
+  effectiveDate  DateTime? @map("effective_date")
+  description    String
+  color          String    @default("emerald")
+  icon           String    @default("Award")
+  subjectGroup   String?   @map("subject_group")
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  domains          Domain[]
+  versions         CertificationVersion[]
+  exams            Exam[]
+  learningPaths    LearningPath[]
+  matrixCells      CertificationMatrixCell[]
+  standards        CertificationStandard[]
+  lessons          Lesson[]
+  practiceProblems PracticeProblem[]
+  knowledgeObjects KnowledgeObject[]
+
+  @@map("ke_certifications")
+}
+
+model CertificationVersion {
+  id              Int           @id @default(autoincrement())
+  certificationId Int           @map("certification_id")
+  version         String
+  effectiveDate   DateTime      @map("effective_date")
+  bokSnapshot     String        @map("bok_snapshot") // JSON
+  changeLog       String?       @map("change_log")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@unique([certificationId, version])
+  @@index([certificationId])
+  @@map("ke_cert_versions")
+}
+
+model Standard {
+  id             Int                     @id @default(autoincrement())
+  slug           String                  @unique
+  name           String
+  organization   String
+  number         String
+  version        String?
+  description    String
+  createdAt      DateTime                @default(now()) @map("created_at")
+  certifications CertificationStandard[]
+
+  @@map("ke_standards")
+}
+
+model CertificationStandard {
+  certificationId Int
+  standardId      Int
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  standard        Standard      @relation(fields: [standardId], references: [id], onDelete: Cascade)
+
+  @@id([certificationId, standardId])
+  @@map("ke_cert_standards")
+}
+
+model Domain {
+  id               Int               @id @default(autoincrement())
+  certificationId  Int               @map("certification_id")
+  name             String
+  code             String?
+  weight           Float             @default(0)
+  order            Int               @default(0)
+  description      String?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  certification    Certification     @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  competencies     Competency[]
+  practiceProblems PracticeProblem[]
+  knowledgeObjects KnowledgeObject[]
+  Lesson           Lesson[]
+
+  @@unique([certificationId, code])
+  @@index([certificationId])
+  @@map("ke_domains")
+}
+
+model Competency {
+  id               Int               @id @default(autoincrement())
+  domainId         Int               @map("domain_id")
+  name             String
+  code             String?
+  description      String?
+  order            Int               @default(0)
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  domain           Domain            @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  modules          Module[]
+  lessons          Lesson[]
+  practiceProblems PracticeProblem[]
+  knowledgeObjects KnowledgeObject[]
+
+  @@index([domainId])
+  @@map("ke_competencies")
+}
+
+model Module {
+  id           Int        @id @default(autoincrement())
+  competencyId Int        @map("competency_id")
+  name         String
+  order        Int        @default(0)
+  description  String?
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  lessons      Lesson[]
+
+  @@index([competencyId])
+  @@map("ke_modules")
+}
+
+/// Structured, source-backed concept unit (spec §7). `body` JSON holds the full
+/// KO structure. One KO reusable across certifications via referenceIds JSON.
+model KnowledgeObject {
+  id                 Int               @id @default(autoincrement())
+  certificationId    Int?              @map("certification_id")
+  domainId           Int?              @map("domain_id")
+  competencyId       Int?              @map("competency_id")
+  lessonId           Int?              @map("lesson_id")
+  title              String
+  domain             String?
+  competency         String?
+  topic              String?
+  concept            String?
+  body               String // JSON: definitions/principles/components/...
+  version            String            @default("0.1.0")
+  confidence         String            @default("LOW")
+  verificationStatus String            @default("PENDING") @map("verification_status")
+  status             String            @default("DRAFT")
+  referenceIds       String?           @map("reference_ids") // JSON string[]
+  certificationIds   String?           @map("certification_ids") // JSON string[] cross-cert reuse
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  certification      Certification?    @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  domainRef          Domain?           @relation(fields: [domainId], references: [id], onDelete: SetNull)
+  competencyRef      Competency?       @relation(fields: [competencyId], references: [id], onDelete: SetNull)
+  lesson             Lesson?           @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  practiceProblems   PracticeProblem[]
+  formulas           Formula[]
+  visualSpecs        VisualSpec[]
+
+  @@index([certificationId])
+  @@index([lessonId])
+  @@index([status])
+  @@map("ke_knowledge_objects")
+}
+
+/// Global technical dictionary (spec §24).
+model Term {
+  id           Int      @id @default(autoincrement())
+  term         String   @unique
+  definition   String
+  formula      String?
+  units        String?
+  relatedTerms String?  @map("related_terms") // JSON string[]
+  referenceIds String?  @map("reference_ids") // JSON string[]
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("ke_terms")
+}
+
+model Formula {
+  id                Int              @id @default(autoincrement())
+  knowledgeObjectId Int?             @map("knowledge_object_id")
+  name              String
+  expression        String
+  variables         String // JSON [{name,symbol,units,description}]
+  units             String?
+  assumptions       String?
+  interpretation    String?
+  referenceIds      String?          @map("reference_ids")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  knowledgeObject   KnowledgeObject? @relation(fields: [knowledgeObjectId], references: [id], onDelete: SetNull)
+
+  @@index([knowledgeObjectId])
+  @@map("ke_formulas")
+}
+
+model Metric {
+  id           Int      @id @default(autoincrement())
+  name         String
+  symbol       String?
+  formula      String?
+  units        String?
+  target       String?
+  category     String // KPI | Reliability | Maintenance | Asset | Quality
+  description  String?
+  referenceIds String?  @map("reference_ids")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("ke_metrics")
+}
+
+model Equipment {
+  id           Int           @id @default(autoincrement())
+  name         String
+  category     String
+  description  String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  failureModes FailureMode[]
+
+  @@map("ke_equipment")
+}
+
+model FailureMode {
+  id          Int        @id @default(autoincrement())
+  equipmentId Int?       @map("equipment_id")
+  name        String
+  description String?
+  causes      String? // JSON string[]
+  symptoms    String? // JSON string[]
+  mitigation  String?
+  rpnDefault  Int?       @map("rpn_default")
+  equipment   Equipment? @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@index([equipmentId])
+  @@map("ke_failure_modes")
+}
+
+model Method {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique
+  name         String
+  category     String
+  description  String?
+  steps        String? // JSON string[]
+  referenceIds String?  @map("reference_ids")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("ke_methods")
+}
+
+model Tool {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("ke_tools")
+}
+
+/// Visual specification bound to a lesson/KO (spec §13).
+model VisualSpec {
+  id                Int              @id @default(autoincrement())
+  lessonId          Int?             @map("lesson_id")
+  knowledgeObjectId Int?             @map("knowledge_object_id")
+  type              String // Process Flow | Fishbone | Pareto | Control Chart | RBD | FMEA Matrix | ...
+  title             String
+  spec              String // JSON diagram spec
+  status            String           @default("DRAFT")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  lesson            Lesson?          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  knowledgeObject   KnowledgeObject? @relation(fields: [knowledgeObjectId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId])
+  @@map("ke_visual_specs")
+}
+
+model CaseStudy {
+  id             Int      @id @default(autoincrement())
+  slug           String   @unique
+  title          String
+  industry       String
+  level          String // Beginner | Intermediate | Advanced | Expert
+  context        String
+  problem        String
+  data           String? // JSON
+  constraints    String? // JSON string[]
+  analysis       String?
+  decision       String?
+  alternatives   String? // JSON string[]
+  consequences   String?
+  lessonsLearned String?  @map("lessons_learned")
+  caseType       String   @default("SYNTHETIC") @map("case_type")
+  referenceIds   String?  @map("reference_ids")
+  status         String   @default("DRAFT")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("ke_case_studies")
+}
+
+/// Certification generation matrix (spec §8).
+model CertificationMatrixCell {
+  id              Int           @id @default(autoincrement())
+  certificationId Int           @map("certification_id")
+  domainId        Int?          @map("domain_id")
+  difficulty      String
+  cognitiveLevel  String        @map("cognitive_level")
+  scenario        String?
+  industry        String?
+  questionType    String        @map("question_type")
+  targetCount     Int           @default(20) @map("target_count")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@unique([certificationId, domainId, difficulty, cognitiveLevel, scenario, industry, questionType])
+  @@index([certificationId])
+  @@map("ke_cert_matrix_cells")
+}
+
+model Exam {
+  id              Int            @id @default(autoincrement())
+  name            String
+  certificationId Int?           @map("certification_id")
+  type            String // Random | Timed | Domain | WeakArea | Adaptive | Mock | Practice
+  config          String? // JSON
+  durationMin     Int            @default(60) @map("duration_min")
+  questionCount   Int            @default(50) @map("question_count")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  certification   Certification? @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+
+  @@map("ke_exams")
+}
+
+model LearningPath {
+  id              Int                @id @default(autoincrement())
+  slug            String             @unique
+  name            String
+  type            String // Certification | Role
+  certificationId Int?               @map("certification_id")
+  description     String?
+  order           Int                @default(0)
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  certification   Certification?     @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  steps           LearningPathStep[]
+
+  @@map("ke_learning_paths")
+}
+
+model LearningPathStep {
+  id        Int          @id @default(autoincrement())
+  pathId    Int          @map("path_id")
+  lessonId  Int?         @map("lesson_id")
+  conceptId Int?         @map("concept_id") // KnowledgeObject id
+  order     Int          @default(0)
+  level     String // Foundation | Practitioner | Professional | Advanced | Expert | Certification
+  path      LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@index([pathId])
+  @@map("ke_learning_path_steps")
+}
+
+/// Source / reference following the source hierarchy (spec §5, §11).
+model Reference {
+  id                Int         @id @default(autoincrement())
+  certificationId   Int?        @map("certification_id")
+  disciplineId      Int?        @map("discipline_id")
+  title             String
+  level             String // "1".."9"
+  levelLabel        String      @map("level_label")
+  type              String // BOOK | STANDARD | HANDBOOK | PAPER | WEBSITE | BOK | EXAM_OUTLINE
+  sourceType        String?     @map("source_type")
+  publication       String?
+  docVersion        String?     @map("doc_version")
+  docDate           DateTime?   @map("doc_date")
+  referenceLocation String?     @map("reference_location")
+  url               String?
+  citation          String
+  createdAt         DateTime    @default(now()) @map("created_at")
+  discipline        Discipline? @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+
+  @@index([disciplineId])
+  @@index([certificationId])
+  @@map("ke_references")
+}
+
+/// Per-concept mastery for adaptive learning (spec §27) + analytics (§28).
+model StudentConceptProgress {
+  id                Int       @id @default(autoincrement())
+  userId            Int?      @map("user_id")
+  studentKey        String    @map("student_key")
+  knowledgeObjectId Int?      @map("knowledge_object_id")
+  conceptName       String    @map("concept_name")
+  attempts          Int       @default(0)
+  correct           Int       @default(0)
+  lastAttemptAt     DateTime? @map("last_attempt_at")
+  mastery           Float     @default(0) // 0..1
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@unique([studentKey, knowledgeObjectId])
+  @@index([studentKey])
+  @@index([userId])
+  @@map("ke_student_concept_progress")
+}
+
+/// General-track generation matrix (discipline-based).
+model GenerationMatrixCell {
+  id           Int        @id @default(autoincrement())
+  disciplineId Int        @map("discipline_id")
+  difficulty   String
+  bloomLevel   String     @map("bloom_level")
+  type         String
+  targetCount  Int        @default(20) @map("target_count")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+
+  @@unique([disciplineId, difficulty, bloomLevel, type])
+  @@index([disciplineId])
+  @@map("ke_matrix_cells")
 }

@@ -42,3 +42,8 @@ temp/
 # sandbox dev
 db/*.db
 *.log
+
+# SQLite WAL sidecars
+*.db-shm
+*.db-wal
+Databases/*.db*
