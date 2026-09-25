@@ -1,0 +1,616 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "close": "Fermer",
+    "yes": "Oui",
+    "no": "Non",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "manage": "Gérer",
+    "view": "Voir",
+    "export": "Exporter",
+    "configure": "Configurer",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "clear": "Effacer",
+    "reset": "Réinitialiser",
+    "refresh": "Actualiser",
+    "download": "Télécharger",
+    "upload": "Téléverser",
+    "import": "Importer",
+    "run": "Exécuter",
+    "stop": "Arrêter",
+    "start": "Démarrer",
+    "pause": "Pause",
+    "continue": "Continuer",
+    "retry": "Réessayer",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "copy": "Copier",
+    "paste": "Coller",
+    "cut": "Couper",
+    "selectAll": "Tout sélectionner",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "ascending": "Croissant",
+    "descending": "Décroissant",
+    "actions": "Actions",
+    "options": "Options",
+    "details": "Détails",
+    "more": "Plus",
+    "less": "Moins",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "expand": "Développer",
+    "collapse": "Réduire",
+    "required": "Requis",
+    "optional": "Facultatif",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "pending": "En attente",
+    "completed": "Terminé",
+    "failed": "Échoué",
+    "cancelled": "Annulé",
+    "noData": "Aucune donnée disponible",
+    "noResults": "Aucun résultat trouvé",
+    "tryAgain": "Réessayer",
+    "learnMore": "En savoir plus",
+    "getStarted": "Commencer",
+    "seeAll": "Voir tout",
+    "viewAll": "Voir tout",
+    "readMore": "Lire plus",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "thisWeek": "Cette semaine",
+    "thisMonth": "Ce mois",
+    "thisYear": "Cette année",
+    "allTime": "Tout le temps"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez vos préférences et paramètres d'application.",
+    "sections": {
+      "appearance": "Apparence",
+      "notifications": "Notifications",
+      "language": "Langue",
+      "privacy": "Confidentialité et Sécurité",
+      "data": "Données et Stockage",
+      "developer": "Développeur",
+      "about": "À propos"
+    },
+    "appearance": {
+      "theme": {
+        "title": "Thème",
+        "light": "Clair",
+        "dark": "Sombre",
+        "system": "Système"
+      },
+      "accentColor": {
+        "title": "Couleur d'accent",
+        "description": "Choisissez votre couleur d'accent préférée pour l'application."
+      }
+    },
+    "notifications": {
+      "title": "Préférences de notification",
+      "email": {
+        "label": "Notifications par e-mail",
+        "description": "Recevoir des mises à jour par e-mail sur vos calculs"
+      },
+      "push": {
+        "label": "Notifications push",
+        "description": "Recevoir des notifications push dans votre navigateur"
+      },
+      "weekly": {
+        "label": "Résumé hebdomadaire",
+        "description": "Recevoir un résumé hebdomadaire de votre activité"
+      },
+      "updates": {
+        "label": "Mises à jour du produit",
+        "description": "Être informé des nouvelles fonctionnalités et améliorations"
+      }
+    },
+    "language": {
+      "title": "Langue et région",
+      "language": "Langue",
+      "timezone": "Fuseau horaire",
+      "languages": {
+        "en": "English (Anglais)",
+        "ar": "العربية (Arabe)",
+        "fr": "Français"
+      },
+      "timezones": {
+        "utc": "UTC",
+        "africa": "Afrique/Le Caire",
+        "europe": "Europe/Londres",
+        "america": "Amérique/New York",
+        "asia": "Asie/Dubaï",
+        "mecca": "Asie/Riyad"
+      }
+    },
+    "privacy": {
+      "title": "Confidentialité et Sécurité",
+      "twoFactor": {
+        "label": "Authentification à deux facteurs",
+        "description": "Ajouter une couche de sécurité supplémentaire"
+      },
+      "sessions": {
+        "label": "Sessions actives",
+        "description": "Gérer vos sessions actives"
+      },
+      "deleteAccount": {
+        "label": "Supprimer le compte",
+        "description": "Supprimer définitivement votre compte et vos données"
+      }
+    },
+    "data": {
+      "title": "Données et Stockage",
+      "storageUsed": "Stockage utilisé",
+      "exportData": {
+        "label": "Exporter les données",
+        "description": "Télécharger toutes vos données"
+      },
+      "clearCache": {
+        "label": "Vider le cache",
+        "description": "Effacer les fichiers temporaires et le cache"
+      }
+    },
+    "developer": {
+      "title": "Paramètres développeur",
+      "apiKeys": {
+        "label": "Clés API",
+        "description": "Gérer vos jetons d'accès API"
+      },
+      "webhooks": {
+        "label": "Webhooks",
+        "description": "Configurer les points de terminaison webhook"
+      },
+      "debugMode": {
+        "label": "Mode débogage",
+        "description": "Activer la journalisation du débogage"
+      }
+    },
+    "about": {
+      "title": "À propos d'EngiSuite Analytics",
+      "version": "Version 2.0.0",
+      "builtWith": "Construit avec React + Vite",
+      "documentation": "Documentation",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité"
+    }
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "projects": "Projets",
+    "calculators": "Calculatrices",
+    "simulators": "Simulateurs",
+    "learning": "Centre d'apprentissage",
+    "analytics": "Analytiques",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "profile": "Profil",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "home": "Accueil",
+    "tools": "Outils",
+    "help": "Aide",
+    "support": "Support",
+    "feedback": "Commentaires"
+  },
+  "auth": {
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous à votre compte",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "submit": "Se connecter",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signUp": "S'inscrire",
+      "orContinueWith": "Ou continuer avec",
+      "googleSignIn": "Se connecter avec Google"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Commencez avec EngiSuite",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "agreeTerms": "J'accepte les conditions d'utilisation et la politique de confidentialité",
+      "submit": "Créer un compte",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter",
+      "passwordStrength": "Force du mot de passe",
+      "weak": "Faible",
+      "medium": "Moyen",
+      "strong": "Fort"
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre e-mail pour réinitialiser votre mot de passe",
+      "email": "Adresse e-mail",
+      "submit": "Envoyer le lien de réinitialisation",
+      "backToLogin": "Retour à la connexion",
+      "checkEmail": "Vérifiez votre e-mail pour le lien de réinitialisation"
+    },
+    "resetPassword": {
+      "title": "Réinitialiser le mot de passe",
+      "subtitle": "Entrez votre nouveau mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "submit": "Réinitialiser le mot de passe"
+    }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bon retour, {{name}} !",
+    "recentProjects": "Projets récents",
+    "quickActions": "Actions rapides",
+    "statistics": "Statistiques",
+    "activity": "Activité récente",
+    "overview": "Aperçu",
+    "totalProjects": "Total des projets",
+    "totalCalculations": "Total des calculs",
+    "creditsUsed": "Crédits utilisés",
+    "creditsRemaining": "Crédits restants",
+    "newProject": "Nouveau projet",
+    "viewAllProjects": "Voir tous les projets",
+    "recentCalculations": "Calculs récents",
+    "noRecentActivity": "Aucune activité récente",
+    "startWorking": "Commencez à travailler pour voir votre activité ici"
+  },
+  "projects": {
+    "title": "Projets",
+    "subtitle": "Gérez vos projets d'ingénierie",
+    "newProject": "Nouveau projet",
+    "searchPlaceholder": "Rechercher des projets...",
+    "noProjects": "Aucun projet trouvé",
+    "createFirst": "Créez votre premier projet pour commencer",
+    "createProject": "Créer un projet",
+    "editProject": "Modifier le projet",
+    "deleteProject": "Supprimer le projet",
+    "projectName": "Nom du projet",
+    "projectDescription": "Description",
+    "projectType": "Type de projet",
+    "createdAt": "Créé le",
+    "updatedAt": "Dernière mise à jour",
+    "status": "Statut",
+    "actions": "Actions",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce projet ?",
+    "deleteWarning": "Cette action est irréversible."
+  },
+  "calculators": {
+    "title": "Calculatrices d'ingénierie",
+    "subtitle": "Effectuez des calculs d'ingénierie complexes avec facilité",
+    "searchPlaceholder": "Rechercher des calculatrices...",
+    "categories": {
+      "all": "Tout",
+      "electrical": "Électrique",
+      "mechanical": "Mécanique",
+      "civil": "Civil",
+      "chemical": "Chimique",
+      "physics": "Physique",
+      "mathematics": "Mathématiques"
+    },
+    "electrical": {
+      "title": "Calculatrices électriques",
+      "ohmsLaw": "Calculateur de loi d'Ohm",
+      "powerCalc": "Calculateur de puissance",
+      "voltageDrop": "Calculateur de chute de tension",
+      "cableSizing": "Calculateur de dimensionnement de câble",
+      "powerFactor": "Calculateur de facteur de puissance",
+      "transformer": "Calculateur de transformateur",
+      "motor": "Calculateur de moteur"
+    },
+    "mechanical": {
+      "title": "Calculatrices mécaniques",
+      "stressStrain": "Calculateur de contrainte et déformation",
+      "beamDeflection": "Calculateur de déflexion de poutre",
+      "gearRatio": "Calculateur de rapport d'engrenage",
+      "torque": "Calculateur de couple",
+      "fluidFlow": "Calculateur de flux de fluide",
+      "heatTransfer": "Calculateur de transfert de chaleur"
+    },
+    "input": "Entrée",
+    "output": "Sortie",
+    "calculate": "Calculer",
+    "result": "Résultat",
+    "history": "Historique",
+    "clearHistory": "Effacer l'historique",
+    "saveCalculation": "Enregistrer le calcul",
+    "exportResult": "Exporter le résultat"
+  },
+  "simulators": {
+    "title": "Simulateurs interactifs",
+    "subtitle": "Visualisez et simulez des concepts d'ingénierie",
+    "electrical": "Simulateur électrique",
+    "hydraulic": "Simulateur hydraulique",
+    "pneumatic": "Simulateur pneumatique",
+    "logic": "Simulateur de portes logiques",
+    "fluid": "Simulateur de dynamique des fluides",
+    "startSimulation": "Démarrer la simulation",
+    "stopSimulation": "Arrêter la simulation",
+    "resetSimulation": "Réinitialiser",
+    "parameters": "Paramètres",
+    "results": "Résultats",
+    "addComponent": "Ajouter un composant",
+    "removeComponent": "Supprimer un composant",
+    "connectComponents": "Connecter des composants",
+    "disconnectComponents": "Déconnecter des composants",
+    "saveCircuit": "Enregistrer le circuit",
+    "loadCircuit": "Charger le circuit",
+    "clearCircuit": "Effacer le circuit",
+    "components": {
+      "title": "Composants",
+      "resistor": "Résistance",
+      "capacitor": "Condensateur",
+      "inductor": "Inductance",
+      "diode": "Diode",
+      "transistor": "Transistor",
+      "led": "LED",
+      "switch": "Interrupteur",
+      "battery": "Batterie",
+      "ground": "Terre",
+      "motor": "Moteur",
+      "pump": "Pompe",
+      "valve": "Vanne",
+      "cylinder": "Cylindre",
+      "tank": "Réservoir"
+    }
+  },
+  "learning": {
+    "title": "Centre d'apprentissage",
+    "subtitle": "Élargissez vos connaissances en ingénierie",
+    "courses": "Cours",
+    "progress": "Votre progression",
+    "continue": "Continuer l'apprentissage",
+    "startCourse": "Commencer le cours",
+    "completeCourse": "Terminer le cours",
+    "courseCompleted": "Cours terminé",
+    "lessons": "Leçons",
+    "exercises": "Exercices",
+    "quizzes": "Quiz",
+    "certificate": "Certificat",
+    "downloadCertificate": "Télécharger le certificat",
+    "categories": {
+      "all": "Tous les cours",
+      "electrical": "Ingénierie électrique",
+      "mechanical": "Ingénierie mécanique",
+      "civil": "Ingénierie civile",
+      "chemical": "Ingénierie chimique",
+      "programming": "Programmation",
+      "automation": "Automatisation industrielle"
+    },
+    "courseDetails": {
+      "duration": "Durée",
+      "level": "Niveau",
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé",
+      "students": "Étudiants inscrits",
+      "rating": "Note",
+      "reviews": "Avis",
+      "lastUpdated": "Dernière mise à jour"
+    }
+  },
+  "analytics": {
+    "title": "Analytiques",
+    "subtitle": "Analysez vos données d'ingénierie",
+    "overview": "Aperçu",
+    "trends": "Tendances",
+    "reports": "Rapports",
+    "exportData": "Exporter les données",
+    "dateRange": "Plage de dates",
+    "customRange": "Plage personnalisée",
+    "compare": "Comparer",
+    "metrics": {
+      "totalCalculations": "Total des calculs",
+      "totalSimulations": "Total des simulations",
+      "creditsUsed": "Crédits utilisés",
+      "timeSpent": "Temps passé",
+      "projectsCreated": "Projets créés",
+      "coursesCompleted": "Cours terminés"
+    },
+    "charts": {
+      "bar": "Graphique à barres",
+      "line": "Graphique linéaire",
+      "pie": "Graphique circulaire",
+      "area": "Graphique en aires"
+    }
+  },
+  "reports": {
+    "title": "Rapports",
+    "subtitle": "Générez et gérez des rapports",
+    "newReport": "Nouveau rapport",
+    "myReports": "Mes rapports",
+    "sharedReports": "Rapports partagés",
+    "templates": "Modèles",
+    "generateReport": "Générer un rapport",
+    "downloadPdf": "Télécharger PDF",
+    "shareReport": "Partager le rapport",
+    "deleteReport": "Supprimer le rapport",
+    "reportName": "Nom du rapport",
+    "reportType": "Type de rapport",
+    "createdAt": "Créé le",
+    "status": "Statut",
+    "draft": "Brouillon",
+    "generating": "Génération",
+    "ready": "Prêt",
+    "error": "Erreur"
+  },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Gérez vos paramètres de compte",
+    "personalInfo": "Informations personnelles",
+    "accountSettings": "Paramètres du compte",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Adresse e-mail",
+    "phone": "Numéro de téléphone",
+    "company": "Entreprise",
+    "jobTitle": "Titre du poste",
+    "country": "Pays",
+    "city": "Ville",
+    "bio": "Bio",
+    "avatar": "Photo de profil",
+    "changeAvatar": "Changer la photo",
+    "updateProfile": "Mettre à jour le profil",
+    "changePassword": "Changer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "emailNotifications": "Notifications par e-mail",
+    "pushNotifications": "Notifications push",
+    "subscription": {
+      "title": "Abonnement",
+      "plan": "Plan actuel",
+      "credits": "Crédits",
+      "usage": "Utilisation",
+      "upgrade": "Mettre à niveau",
+      "manage": "Gérer l'abonnement",
+      "nextBilling": "Prochaine facturation",
+      "cancel": "Annuler l'abonnement"
+    }
+  },
+  "subscription": {
+    "title": "Plans d'abonnement",
+    "subtitle": "Choisissez le plan qui correspond à vos besoins",
+    "currentPlan": "Plan actuel",
+    "upgradePlan": "Mettre à niveau",
+    "downgradePlan": "Rétrograder",
+    "plans": {
+      "free": {
+        "name": "Gratuit",
+        "price": "Gratuit",
+        "description": "Parfait pour commencer",
+        "features": [
+          "10 calculs par mois",
+          "Simulateurs de base",
+          "Support communautaire"
+        ]
+      },
+      "basic": {
+        "name": "Basique",
+        "price": "9,99 $/mois",
+        "description": "Pour les ingénieurs individuels",
+        "features": [
+          "100 calculs par mois",
+          "Tous les simulateurs",
+          "Support par e-mail",
+          "Exporter les résultats"
+        ]
+      },
+      "pro": {
+        "name": "Professionnel",
+        "price": "29,99 $/mois",
+        "description": "Pour les utilisateurs avancés",
+        "features": [
+          "Calculs illimités",
+          "Tous les simulateurs",
+          "Support prioritaire",
+          "Accès API",
+          "Rapports personnalisés"
+        ]
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "price": "Personnalisé",
+        "description": "Pour les équipes et organisations",
+        "features": [
+          "Tout dans Pro",
+          "Collaboration d'équipe",
+          "Authentification SSO",
+          "Support dédié",
+          "Intégrations personnalisées"
+        ]
+      }
+    },
+    "credits": {
+      "title": "Crédits",
+      "balance": "Votre solde",
+      "buyMore": "Acheter plus de crédits",
+      "usageHistory": "Historique d'utilisation",
+      "noCredits": "Vous n'avez plus de crédits",
+      "lowCredits": "Vos crédits sont faibles"
+    }
+  },
+  "errors": {
+    "general": "Une erreur s'est produite",
+    "notFound": "Page non trouvée",
+    "unauthorized": "Accès non autorisé",
+    "forbidden": "Accès interdit",
+    "serverError": "Erreur serveur",
+    "networkError": "Erreur réseau. Vérifiez votre connexion.",
+    "validationError": "Veuillez vérifier vos entrées",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "tryAgain": "Veuillez réessayer",
+    "contactSupport": "Si le problème persiste, contactez le support"
+  },
+  "validation": {
+    "required": "Ce champ est requis",
+    "email": "Veuillez entrer une adresse e-mail valide",
+    "password": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordMatch": "Les mots de passe ne correspondent pas",
+    "minLength": "Doit contenir au moins {{min}} caractères",
+    "maxLength": "Ne doit pas dépasser {{max}} caractères",
+    "min": "Doit être au moins {{min}}",
+    "max": "Ne doit pas dépasser {{max}}",
+    "number": "Veuillez entrer un nombre valide",
+    "url": "Veuillez entrer une URL valide",
+    "phone": "Veuillez entrer un numéro de téléphone valide"
+  },
+  "messages": {
+    "saveSuccess": "Enregistré avec succès",
+    "saveError": "Échec de l'enregistrement",
+    "deleteSuccess": "Supprimé avec succès",
+    "deleteError": "Échec de la suppression",
+    "updateSuccess": "Mis à jour avec succès",
+    "updateError": "Échec de la mise à jour",
+    "createSuccess": "Créé avec succès",
+    "createError": "Échec de la création",
+    "copySuccess": "Copié dans le presse-papiers",
+    "uploadSuccess": "Téléversé avec succès",
+    "uploadError": "Échec du téléversement",
+    "downloadSuccess": "Téléchargement démarré",
+    "downloadError": "Échec du téléchargement"
+  },
+  "footer": {
+    "copyright": "© 2024 EngiSuite. Tous droits réservés.",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "contact": "Contactez-nous",
+    "about": "À propos",
+    "blog": "Blog",
+    "careers": "Carrières",
+    "documentation": "Documentation",
+    "apiDocs": "Documentation API",
+    "status": "Statut",
+    "social": {
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "github": "GitHub",
+      "youtube": "YouTube"
+    }
+  }
+}

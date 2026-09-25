@@ -1,0 +1,5 @@
+{
+  "name": "Fluid Power Circuit Simulator",
+  "description": "A web application to design, simulate, and test hydraulic and pneumatic control circuits. Features a modern drag-and-drop schematic editor, realistic physics simulation, and brand-specific component presets.",
+  "requestFramePermissions": []
+}

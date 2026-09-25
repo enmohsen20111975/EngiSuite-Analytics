@@ -1,0 +1,616 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "close": "إغلاق",
+    "yes": "نعم",
+    "no": "لا",
+    "enable": "تفعيل",
+    "disable": "تعطيل",
+    "manage": "إدارة",
+    "view": "عرض",
+    "export": "تصدير",
+    "configure": "تكوين",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "clear": "مسح",
+    "reset": "إعادة تعيين",
+    "refresh": "تحديث",
+    "download": "تنزيل",
+    "upload": "رفع",
+    "import": "استيراد",
+    "run": "تشغيل",
+    "stop": "إيقاف",
+    "start": "بدء",
+    "pause": "إيقاف مؤقت",
+    "continue": "متابعة",
+    "retry": "إعادة المحاولة",
+    "undo": "تراجع",
+    "redo": "إعادة",
+    "copy": "نسخ",
+    "paste": "لصق",
+    "cut": "قص",
+    "selectAll": "تحديد الكل",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "ascending": "تصاعدي",
+    "descending": "تنازلي",
+    "actions": "إجراءات",
+    "options": "خيارات",
+    "details": "تفاصيل",
+    "more": "المزيد",
+    "less": "أقل",
+    "show": "إظهار",
+    "hide": "إخفاء",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "enabled": "مفعّل",
+    "disabled": "معطّل",
+    "connected": "متصل",
+    "disconnected": "غير متصل",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "failed": "فشل",
+    "cancelled": "ملغي",
+    "noData": "لا توجد بيانات",
+    "noResults": "لا توجد نتائج",
+    "tryAgain": "حاول مرة أخرى",
+    "learnMore": "معرفة المزيد",
+    "getStarted": "ابدأ الآن",
+    "seeAll": "عرض الكل",
+    "viewAll": "عرض الكل",
+    "readMore": "اقرأ المزيد",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "thisYear": "هذه السنة",
+    "allTime": "كل الوقت"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة تفضيلات وإعدادات التطبيق",
+    "sections": {
+      "appearance": "المظهر",
+      "notifications": "الإشعارات",
+      "language": "اللغة",
+      "privacy": "الخصوصية والأمان",
+      "data": "البيانات والتخزين",
+      "developer": "المطور",
+      "about": "حول"
+    },
+    "appearance": {
+      "theme": {
+        "title": "السمة",
+        "light": "فاتح",
+        "dark": "داكن",
+        "system": "النظام"
+      },
+      "accentColor": {
+        "title": "اللون المميز",
+        "description": "اختر لونك المفضل للتطبيق"
+      }
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "email": {
+        "label": "إشعارات البريد الإلكتروني",
+        "description": "تلقي تحديثات عبر البريد الإلكتروني حول حساباتك"
+      },
+      "push": {
+        "label": "الإشعارات الفورية",
+        "description": "تلقي إشعارات فورية في متصفحك"
+      },
+      "weekly": {
+        "label": "الملخص الأسبوعي",
+        "description": "تلقي ملخص أسبوعي لنشاطك"
+      },
+      "updates": {
+        "label": "تحديثات المنتج",
+        "description": "الحصول على إشعارات حول الميزات والتحسينات الجديدة"
+      }
+    },
+    "language": {
+      "title": "اللغة والمنطقة",
+      "language": "اللغة",
+      "timezone": "المنطقة الزمنية",
+      "languages": {
+        "en": "English (الإنجليزية)",
+        "ar": "العربية",
+        "fr": "Français (الفرنسية)"
+      },
+      "timezones": {
+        "utc": "التوقيت العالمي المنسق",
+        "africa": "أفريقيا/القاهرة",
+        "europe": "أوروبا/لندن",
+        "america": "أمريكا/نيويورك",
+        "asia": "آسيا/دبي",
+        "mecca": "آسيا/الرياض"
+      }
+    },
+    "privacy": {
+      "title": "الخصوصية والأمان",
+      "twoFactor": {
+        "label": "المصادقة الثنائية",
+        "description": "إضافة طبقة أمان إضافية"
+      },
+      "sessions": {
+        "label": "الجلسات النشطة",
+        "description": "إدارة جلساتك النشطة"
+      },
+      "deleteAccount": {
+        "label": "حذف الحساب",
+        "description": "حذف حسابك وبياناتك نهائياً"
+      }
+    },
+    "data": {
+      "title": "البيانات والتخزين",
+      "storageUsed": "التخزين المستخدم",
+      "exportData": {
+        "label": "تصدير البيانات",
+        "description": "تنزيل جميع بياناتك"
+      },
+      "clearCache": {
+        "label": "مسح ذاكرة التخزين المؤقت",
+        "description": "مسح الملفات المؤقتة وذاكرة التخزين المؤقت"
+      }
+    },
+    "developer": {
+      "title": "إعدادات المطور",
+      "apiKeys": {
+        "label": "مفاتيح API",
+        "description": "إدارة رموز الوصول إلى API"
+      },
+      "webhooks": {
+        "label": "خطافات الويب",
+        "description": "تكوين نقاط نهاية خطافات الويب"
+      },
+      "debugMode": {
+        "label": "وضع التصحيح",
+        "description": "تفعيل سجل التصحيح"
+      }
+    },
+    "about": {
+      "title": "حول EngiSuite Analytics",
+      "version": "الإصدار 2.0.0",
+      "builtWith": "بُني باستخدام React + Vite",
+      "documentation": "التوثيق",
+      "terms": "شروط الخدمة",
+      "privacy": "سياسة الخصوصية"
+    }
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "projects": "المشاريع",
+    "calculators": "الآلات الحاسبة",
+    "simulators": "المحاكيات",
+    "learning": "مركز التعلم",
+    "analytics": "التحليلات",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "home": "الرئيسية",
+    "tools": "الأدوات",
+    "help": "المساعدة",
+    "support": "الدعم",
+    "feedback": "ملاحظات"
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "سجل الدخول إلى حسابك",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "submit": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب",
+      "orContinueWith": "أو تابع باستخدام",
+      "googleSignIn": "تسجيل الدخول بواسطة Google"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "subtitle": "ابدأ مع EngiSuite",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "agreeTerms": "أوافق على شروط الخدمة وسياسة الخصوصية",
+      "submit": "إنشاء حساب",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "passwordStrength": "قوة كلمة المرور",
+      "weak": "ضعيفة",
+      "medium": "متوسطة",
+      "strong": "قوية"
+    },
+    "forgotPassword": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+      "email": "البريد الإلكتروني",
+      "submit": "إرسال رابط إعادة التعيين",
+      "backToLogin": "العودة لتسجيل الدخول",
+      "checkEmail": "تحقق من بريدك الإلكتروني للحصول على رابط إعادة التعيين"
+    },
+    "resetPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "أدخل كلمة المرور الجديدة",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "submit": "إعادة تعيين كلمة المرور"
+    }
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بعودتك، {{name}}!",
+    "recentProjects": "المشاريع الأخيرة",
+    "quickActions": "إجراءات سريعة",
+    "statistics": "الإحصائيات",
+    "activity": "النشاط الأخير",
+    "overview": "نظرة عامة",
+    "totalProjects": "إجمالي المشاريع",
+    "totalCalculations": "إجمالي الحسابات",
+    "creditsUsed": "الرصيد المستخدم",
+    "creditsRemaining": "الرصيد المتبقي",
+    "newProject": "مشروع جديد",
+    "viewAllProjects": "عرض جميع المشاريع",
+    "recentCalculations": "الحسابات الأخيرة",
+    "noRecentActivity": "لا يوجد نشاط حديث",
+    "startWorking": "ابدأ العمل لرؤية نشاطك هنا"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "subtitle": "إدارة مشاريعك الهندسية",
+    "newProject": "مشروع جديد",
+    "searchPlaceholder": "البحث في المشاريع...",
+    "noProjects": "لا توجد مشاريع",
+    "createFirst": "أنشئ مشروعك الأول للبدء",
+    "createProject": "إنشاء مشروع",
+    "editProject": "تعديل المشروع",
+    "deleteProject": "حذف المشروع",
+    "projectName": "اسم المشروع",
+    "projectDescription": "الوصف",
+    "projectType": "نوع المشروع",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "آخر تحديث",
+    "status": "الحالة",
+    "actions": "إجراءات",
+    "confirmDelete": "هل أنت متأكد من حذف هذا المشروع؟",
+    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
+  },
+  "calculators": {
+    "title": "الآلات الحاسبة الهندسية",
+    "subtitle": "قم بإجراء حسابات هندسية معقدة بسهولة",
+    "searchPlaceholder": "البحث في الآلات الحاسبة...",
+    "categories": {
+      "all": "الكل",
+      "electrical": "الكهربائية",
+      "mechanical": "الميكانيكية",
+      "civil": "المدنية",
+      "chemical": "الكيميائية",
+      "physics": "الفيزياء",
+      "mathematics": "الرياضيات"
+    },
+    "electrical": {
+      "title": "الآلات الحاسبة الكهربائية",
+      "ohmsLaw": "حاسبة قانون أوم",
+      "powerCalc": "حاسبة القدرة",
+      "voltageDrop": "حاسبة انخفاض الجهد",
+      "cableSizing": "حاسبة حجم الكابل",
+      "powerFactor": "حاسبة معامل القدرة",
+      "transformer": "حاسبة المحول",
+      "motor": "حاسبة المحرك"
+    },
+    "mechanical": {
+      "title": "الآلات الحاسبة الميكانيكية",
+      "stressStrain": "حاسبة الإجهاد والانفعال",
+      "beamDeflection": "حاسبة انحراف الكمر",
+      "gearRatio": "حاسبة نسبة التروس",
+      "torque": "حاسبة عزم الدوران",
+      "fluidFlow": "حاسبة تدفق الموائع",
+      "heatTransfer": "حاسبة نقل الحرارة"
+    },
+    "input": "المدخلات",
+    "output": "المخرجات",
+    "calculate": "حساب",
+    "result": "النتيجة",
+    "history": "السجل",
+    "clearHistory": "مسح السجل",
+    "saveCalculation": "حفظ الحساب",
+    "exportResult": "تصدير النتيجة"
+  },
+  "simulators": {
+    "title": "المحاكيات التفاعلية",
+    "subtitle": "تصور ومحاكاة المفاهيم الهندسية",
+    "electrical": "محاكي الكهرباء",
+    "hydraulic": "محاكي الهيدروليك",
+    "pneumatic": "محاكي الهواء المضغوط",
+    "logic": "محاكي البوابات المنطقية",
+    "fluid": "محاكي ديناميكا الموائع",
+    "startSimulation": "بدء المحاكاة",
+    "stopSimulation": "إيقاف المحاكاة",
+    "resetSimulation": "إعادة تعيين",
+    "parameters": "المعاملات",
+    "results": "النتائج",
+    "addComponent": "إضافة مكون",
+    "removeComponent": "إزالة مكون",
+    "connectComponents": "ربط المكونات",
+    "disconnectComponents": "فصل المكونات",
+    "saveCircuit": "حفظ الدائرة",
+    "loadCircuit": "تحميل الدائرة",
+    "clearCircuit": "مسح الدائرة",
+    "components": {
+      "title": "المكونات",
+      "resistor": "مقاومة",
+      "capacitor": "مكثف",
+      "inductor": "ملف",
+      "diode": "صمام ثنائي",
+      "transistor": "ترانزستور",
+      "led": "ليد",
+      "switch": "مفتاح",
+      "battery": "بطارية",
+      "ground": "أرضي",
+      "motor": "محرك",
+      "pump": "مضخة",
+      "valve": "صمام",
+      "cylinder": "أسطوانة",
+      "tank": "خزان"
+    }
+  },
+  "learning": {
+    "title": "مركز التعلم",
+    "subtitle": "وسع معرفتك الهندسية",
+    "courses": "الدورات",
+    "progress": "تقدمك",
+    "continue": "متابعة التعلم",
+    "startCourse": "بدء الدورة",
+    "completeCourse": "إكمال الدورة",
+    "courseCompleted": "الدورة مكتملة",
+    "lessons": "الدروس",
+    "exercises": "التمارين",
+    "quizzes": "الاختبارات",
+    "certificate": "الشهادة",
+    "downloadCertificate": "تنزيل الشهادة",
+    "categories": {
+      "all": "جميع الدورات",
+      "electrical": "الهندسة الكهربائية",
+      "mechanical": "الهندسة الميكانيكية",
+      "civil": "الهندسة المدنية",
+      "chemical": "الهندسة الكيميائية",
+      "programming": "البرمجة",
+      "automation": "الأتمتة الصناعية"
+    },
+    "courseDetails": {
+      "duration": "المدة",
+      "level": "المستوى",
+      "beginner": "مبتدئ",
+      "intermediate": "متوسط",
+      "advanced": "متقدم",
+      "students": "الطلاب المسجلين",
+      "rating": "التقييم",
+      "reviews": "المراجعات",
+      "lastUpdated": "آخر تحديث"
+    }
+  },
+  "analytics": {
+    "title": "التحليلات",
+    "subtitle": "حلل بياناتك الهندسية",
+    "overview": "نظرة عامة",
+    "trends": "الاتجاهات",
+    "reports": "التقارير",
+    "exportData": "تصدير البيانات",
+    "dateRange": "نطاق التاريخ",
+    "customRange": "نطاق مخصص",
+    "compare": "مقارنة",
+    "metrics": {
+      "totalCalculations": "إجمالي الحسابات",
+      "totalSimulations": "إجمالي المحاكيات",
+      "creditsUsed": "الرصيد المستخدم",
+      "timeSpent": "الوقت المستغرق",
+      "projectsCreated": "المشاريع المنشأة",
+      "coursesCompleted": "الدورات المكتملة"
+    },
+    "charts": {
+      "bar": "مخطط عمودي",
+      "line": "مخطط خطي",
+      "pie": "مخطط دائري",
+      "area": "مخطط مساحي"
+    }
+  },
+  "reports": {
+    "title": "التقارير",
+    "subtitle": "إنشاء وإدارة التقارير",
+    "newReport": "تقرير جديد",
+    "myReports": "تقاريري",
+    "sharedReports": "التقارير المشتركة",
+    "templates": "القوالب",
+    "generateReport": "إنشاء تقرير",
+    "downloadPdf": "تنزيل PDF",
+    "shareReport": "مشاركة التقرير",
+    "deleteReport": "حذف التقرير",
+    "reportName": "اسم التقرير",
+    "reportType": "نوع التقرير",
+    "createdAt": "تاريخ الإنشاء",
+    "status": "الحالة",
+    "draft": "مسودة",
+    "generating": "جاري الإنشاء",
+    "ready": "جاهز",
+    "error": "خطأ"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "subtitle": "إدارة إعدادات حسابك",
+    "personalInfo": "المعلومات الشخصية",
+    "accountSettings": "إعدادات الحساب",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "company": "الشركة",
+    "jobTitle": "المسمى الوظيفي",
+    "country": "الدولة",
+    "city": "المدينة",
+    "bio": "نبذة",
+    "avatar": "الصورة الشخصية",
+    "changeAvatar": "تغيير الصورة",
+    "updateProfile": "تحديث الملف الشخصي",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "emailNotifications": "إشعارات البريد الإلكتروني",
+    "pushNotifications": "الإشعارات الفورية",
+    "subscription": {
+      "title": "الاشتراك",
+      "plan": "الخطة الحالية",
+      "credits": "الرصيد",
+      "usage": "الاستخدام",
+      "upgrade": "ترقية الخطة",
+      "manage": "إدارة الاشتراك",
+      "nextBilling": "تاريخ الفوترة القادم",
+      "cancel": "إلغاء الاشتراك"
+    }
+  },
+  "subscription": {
+    "title": "خطط الاشتراك",
+    "subtitle": "اختر الخطة التي تناسب احتياجاتك",
+    "currentPlan": "الخطة الحالية",
+    "upgradePlan": "ترقية الخطة",
+    "downgradePlan": "خفض الخطة",
+    "plans": {
+      "free": {
+        "name": "مجاني",
+        "price": "مجاني",
+        "description": "مثالي للبدء",
+        "features": [
+          "10 حسابات شهرياً",
+          "المحاكيات الأساسية",
+          "دعم المجتمع"
+        ]
+      },
+      "basic": {
+        "name": "أساسي",
+        "price": "$9.99/شهر",
+        "description": "للمهندسين الأفراد",
+        "features": [
+          "100 حساب شهرياً",
+          "جميع المحاكيات",
+          "دعم عبر البريد الإلكتروني",
+          "تصدير النتائج"
+        ]
+      },
+      "pro": {
+        "name": "احترافي",
+        "price": "$29.99/شهر",
+        "description": "للمستخدمين المتقدمين",
+        "features": [
+          "حسابات غير محدودة",
+          "جميع المحاكيات",
+          "دعم ذو أولوية",
+          "الوصول إلى API",
+          "تقارير مخصصة"
+        ]
+      },
+      "enterprise": {
+        "name": "المؤسسات",
+        "price": "مخصص",
+        "description": "للفرق والمؤسسات",
+        "features": [
+          "كل ما في الاحترافي",
+          "التعاون الجماعي",
+          "مصادقة SSO",
+          "دعم مخصص",
+          "تكاملات مخصصة"
+        ]
+      }
+    },
+    "credits": {
+      "title": "الرصيد",
+      "balance": "رصيدك",
+      "buyMore": "شراء المزيد",
+      "usageHistory": "سجل الاستخدام",
+      "noCredits": "لم يتبق لديك رصيد",
+      "lowCredits": "رصيدك منخفض"
+    }
+  },
+  "errors": {
+    "general": "حدث خطأ ما",
+    "notFound": "الصفحة غير موجودة",
+    "unauthorized": "وصول غير مصرح",
+    "forbidden": "الوصول محظور",
+    "serverError": "خطأ في الخادم",
+    "networkError": "خطأ في الشبكة. تحقق من اتصالك.",
+    "validationError": "تحقق من المدخلات",
+    "sessionExpired": "انتهت جلستك. سجل الدخول مرة أخرى.",
+    "tryAgain": "يرجى المحاولة مرة أخرى",
+    "contactSupport": "إذا استمرت المشكلة، تواصل مع الدعم"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "أدخل بريداً إلكترونياً صحيحاً",
+    "password": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+    "passwordMatch": "كلمات المرور غير متطابقة",
+    "minLength": "يجب أن يكون على الأقل {{min}} حرف",
+    "maxLength": "يجب ألا يتجاوز {{max}} حرف",
+    "min": "يجب أن يكون على الأقل {{min}}",
+    "max": "يجب ألا يتجاوز {{max}}",
+    "number": "أدخل رقماً صحيحاً",
+    "url": "أدخل رابطاً صحيحاً",
+    "phone": "أدخل رقم هاتف صحيح"
+  },
+  "messages": {
+    "saveSuccess": "تم الحفظ بنجاح",
+    "saveError": "فشل الحفظ",
+    "deleteSuccess": "تم الحذف بنجاح",
+    "deleteError": "فشل الحذف",
+    "updateSuccess": "تم التحديث بنجاح",
+    "updateError": "فشل التحديث",
+    "createSuccess": "تم الإنشاء بنجاح",
+    "createError": "فشل الإنشاء",
+    "copySuccess": "تم النسخ إلى الحافظة",
+    "uploadSuccess": "تم الرفع بنجاح",
+    "uploadError": "فشل الرفع",
+    "downloadSuccess": "بدأ التنزيل",
+    "downloadError": "فشل التنزيل"
+  },
+  "footer": {
+    "copyright": "© 2024 EngiSuite. جميع الحقوق محفوظة.",
+    "terms": "شروط الخدمة",
+    "privacy": "سياسة الخصوصية",
+    "contact": "اتصل بنا",
+    "about": "حول",
+    "blog": "المدونة",
+    "careers": "الوظائف",
+    "documentation": "التوثيق",
+    "apiDocs": "توثيق API",
+    "status": "الحالة",
+    "social": {
+      "twitter": "تويتر",
+      "linkedin": "لينكد إن",
+      "github": "GitHub",
+      "youtube": "يوتيوب"
+    }
+  }
+}
