@@ -16,7 +16,7 @@
     "build:prod": "cp prisma/schema.prisma.production prisma/schema.prisma && npm run build && git checkout prisma/schema.prisma",
     "postinstall": "prisma generate",
     "prestart": "node scripts/prepare-db.mjs",
-    "start": "node server.js",
+    "start": "NODE_ENV=production node server.js",
     "start:prod": "NODE_ENV=production node server.js",
     "db:push": "prisma db push",
     "db:deploy": "prisma migrate deploy",
