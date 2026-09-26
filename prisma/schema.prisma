@@ -303,6 +303,7 @@ model Equation {
   tags        String? // JSON array
   source      String?
   difficulty  String?           @default("intermediate")
+  domain     String?           @default("general")
   inputs      EquationInput[]
   outputs     EquationOutput[]
   examples    EquationExample[]
