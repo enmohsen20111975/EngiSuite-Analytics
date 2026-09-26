@@ -152,7 +152,8 @@ export default function DashboardPage() {
   });
   
   // Use byDomain from equations/stats (already fetched, reliable)
-  const byDomain = equationsStats?.data?.byDomain || {};
+  const byDomainArr = equationsStats?.data?.byDomain || [];
+  const byDomain = Object.fromEntries(byDomainArr.map(d => [d.domain, d.count]));
   const stats = {
     electrical: byDomain.electrical || 0,
     mechanical: byDomain.mechanical || 0,
