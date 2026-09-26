@@ -35,6 +35,7 @@ import hostingerRoutes from './routes/hostinger.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import localPipelinesRoutes from './routes/localPipelines.routes.js';
+import knowledgeRoutes from './routes/knowledge.routes.js';
 
 // Import middleware
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
@@ -178,6 +179,9 @@ if (!FILE_DATA_MODE) {
 
 // Local engineering pipeline routes (no DB dependency, real calculations)
 app.use(`${API_PREFIX}/local-pipelines`, localPipelinesRoutes);
+
+// Knowledge Engine routes (Engineer's Educations certification knowledge graph)
+app.use(`${API_PREFIX}/knowledge`, knowledgeRoutes);
 
 // ============================================
 // Static File Serving (Development)

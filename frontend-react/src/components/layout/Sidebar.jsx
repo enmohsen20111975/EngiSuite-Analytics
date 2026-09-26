@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Calculator, GitBranch, FolderKanban,
   Workflow, FileText, User, Settings, BookOpen, DollarSign,
   ChevronLeft, ChevronRight, ChevronDown, Ruler, FunctionSquare,
-  PenTool, CircuitBoard, FileEdit, BarChart3, Zap, Droplets, Cog, Coins,
+  PenTool, CircuitBoard, FileEdit, BarChart3, Zap, Droplets, Cog, Coins, GraduationCap,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useCredits } from '../../hooks/useCredits';
@@ -20,6 +20,7 @@ const getNavItems = (t) => [
   { path: '/reports', label: t('navigation.reports'), icon: FileText },
   { path: '/projects', label: t('navigation.projects'), icon: FolderKanban },
   { path: '/learning', label: t('learning.title'), icon: BookOpen },
+  { path: '/knowledge', label: 'Knowledge', icon: GraduationCap },
   { path: '/pricing', label: 'Pricing', icon: DollarSign },
 ];
 

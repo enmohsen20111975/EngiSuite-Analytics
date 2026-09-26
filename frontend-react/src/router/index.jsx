@@ -4,6 +4,7 @@ import {
   DashboardPage, LoginPage, RegisterPage, PlaceholderPage,
   CalculatorsPage, PipelinesPage, ReportsPage,
   ProfilePage, SettingsPage, LearningPage,
+  KnowledgeLibraryPage,
   AnalyticsPage, AIAssistantPage, PricingPage, BlogPage,
   VisualWorkflowPage, UnitConverterPage, SubscriptionPage,
   VerifyEmailPage, PrivacyPage, TermsPage, ApiDocsPage, CableSizingPage,
@@ -191,6 +192,16 @@ export const router = createBrowserRouter([
       {
         path: '/learning',
         element: <LearningPage />,
+      },
+
+      // Knowledge Library (Engineer's Educations certification knowledge graph)
+      {
+        path: '/knowledge',
+        element: <KnowledgeLibraryPage />,
+      },
+      {
+        path: '/knowledge/:slug',
+        element: <KnowledgeLibraryPage />,
       },
 
       // Pricing

@@ -9,6 +9,7 @@ export { default as ReportsPage } from './ReportsPage';
 export { default as ProfilePage } from './ProfilePage';
 export { default as SettingsPage } from './SettingsPage';
 export { default as LearningPage } from './LearningPage';
+export { default as KnowledgeLibraryPage } from './KnowledgeLibraryPage';
 export { default as AnalyticsPage } from './AnalyticsPage';
 export { default as AIAssistantPage } from './AIAssistantPage';
 export { default as PricingPage } from './PricingPage';
