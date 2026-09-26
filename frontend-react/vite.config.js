@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     // Bind all interfaces so both localhost and 127.0.0.1 work on Windows.
     host: true,
-    port: 3000,
+    port: 4000,
     strictPort: true,
     proxy: {
       // Proxy auth requests to FastAPI backend
