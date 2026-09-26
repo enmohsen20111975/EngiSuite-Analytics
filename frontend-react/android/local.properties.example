@@ -1,0 +1,5 @@
+# Copy this file to `frontend-react/android/local.properties`
+# and set it to your actual Android SDK location.
+# Example Linux path:
+# sdk.dir=/home/your-user/Android/Sdk
+sdk.dir=/absolute/path/to/Android/Sdk

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EngiSuite</string>
+    <string name="title_activity_main">EngiSuite</string>
+    <string name="package_name">com.engisuite.analytics</string>
+    <string name="custom_url_scheme">com.engisuite.analytics</string>
+    <string name="admob_app_id">ca-app-pub-7305205048390136~2636682520</string>
+    <string name="admob_banner_id">ca-app-pub-7305205048390136/5344839989</string>
+    <string name="admob_interstitial_id">ca-app-pub-7305205048390136/2664602684</string>
+    <string name="default_notification_channel_id">engisuite-updates</string>
+    <string name="default_notification_channel_name">EngiSuite Updates</string>
+</resources>
