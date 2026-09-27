@@ -39,12 +39,14 @@
 //     mixing 3 MCQ and 1 True/False, spanning Easy/Medium/Hard × Remember/
 //     Understand/Apply/Analyze. Total in this file: 12 practice problems.
 //
-// Source hierarchy (spec §5) — Levels 2, 3, 5, 6:
+// Source hierarchy (spec §5) — Levels 2, 3, 5, 6, 7:
 //   - LEVEL 6 — University / Academic Publications: Chan S. Park,
 //     "Contemporary Engineering Economics" (Pearson, 6th ed., 2019);
 //     Leland Blank & Anthony Tarquin, "Engineering Economy"
-//     (McGraw-Hill, 8th ed., 2018); William G. Sullivan, Elin M. Wicks &
-//     C. Patrick Koelling, "Engineering Economy" (Pearson, 17th ed., 2019).
+//     (McGraw-Hill, 8th ed., 2018).
+//   - LEVEL 7 — Technical Publications / Industry Sources: Harold
+//     Kerzner, "Project Management: A Systems Approach to Planning,
+//     Scheduling, and Controlling" (Wiley, 12th ed., 2017).
 //   - LEVEL 3 — Official Body of Knowledge / Handbook / Exam Outline:
 //     Project Management Institute, "A Guide to the Project Management
 //     Body of Knowledge (PMBOK Guide)" 7th ed. (PMI, 2021).
@@ -145,12 +147,12 @@ export const ECON_SOURCES: RefSource[] = [
   },
   {
     title:
-      "Sullivan, Wicks & Koelling — Engineering Economy (Pearson, 17th ed., 2019)",
-    level: "6",
-    levelLabel: "University / Academic Publications",
+      "Kerzner — Project Management: A Systems Approach to Planning, Scheduling, and Controlling (Wiley, 12th ed., 2017)",
+    level: "7",
+    levelLabel: "Technical Publications / Industry Sources",
     type: "BOOK",
     citation:
-      "Sullivan, W. G., Wicks, E. M., & Koelling, C. P. (2019). Engineering Economy (17th ed.). Hoboken, NJ: Pearson Education. ISBN 978-0-13-487014-2. Chapters 1 (Engineering Economy & Decision-Making — the 7-step rational procedure), 2 (Cost Concepts — fixed, variable, incremental, sunk, opportunity, recurring vs nonrecurring), 4 (Time Value of Money — single-sum, annuity, gradient), 5 (Equivalence — PV, FV, AE), 6 (Cash-Flow & Inflation), 9 (Replacement Analysis — defender & challenger, ESL), 10 (Depreciation — MACRS GDS & ADS, half-year convention, Section 179), 11 (Income Taxes — ATCF, MACRS depreciation tax shield D·t), 12 (Replacement & Breakeven — sensitivity, spider plots), 14 (Project Cash-Flow — AOC, working capital, salvage). Practitioner bridge between classroom engineering economy and managerial cost accounting.",
+      "Kerzner, H. (2017). Project Management: A Systems Approach to Planning, Scheduling, and Controlling (12th ed.). Hoboken, NJ: John Wiley & Sons. ISBN 978-1-119-16535-4. Chapters 1 (Overview of Project Management — definition, life-cycle phases, the role of the project manager), 7 (The Project Manager — leadership, conflict resolution, behavioral aspects), 11 (Scheduling — CPM forward/backward pass, PERT three-point estimate t_e = (a + 4m + b)/6 and σ² = (b − a)²/36, Gantt charts, time-phased budgets), 12 (Network Scheduling — precedence diagramming, total slack, free slack, critical-path identification), 13 (Schedule Control — earned-value EVM: PV, EV, AC, SPI = EV/PV, CPI = EV/AC, EAC = BAC/CPI), 16 (Risk Management — identification, qualitative & quantitative analysis, Monte Carlo, decision trees), 20 (Project Procurement — make-vs-buy, contract types), 21 (Quality & Configuration Management — ISO 21500 alignment). The canonical project-management practitioner reference, cited in Lesson 3 to anchor the CPM/PERT scheduling content to a recognized industry source alongside PMBOK 7th edition and ISO 21500:2012.",
   },
   {
     title:
@@ -708,39 +710,37 @@ The alternative with the *lowest LCC* is selected (since benefits are presumed e
 
 **Interpretation**: LCC is the single-dollar amount an investor would pay today to fully cover the asset's life-cycle obligations. An LCC of $540k for a $200k pump means $540k of present-day capital, invested at MARR, would exactly fund all 25 years of the pump's life-cycle expenses (capital, energy, maintenance, repairs, disposal minus salvage).`,
     worked_example: `**Pump LCC comparison.**
-Two competing pump packages for a 25-yr service life, MARR = 8% after-tax.
-- Pump A: CapEx $200,000; energy $32,000/yr; maintenance $5,000/yr; expected failure/repair cost $3,000/yr (MTBF 6 yrs, MTTR 1 wk, downtime cost $3k/event); salvage $15,000; disposal $0.
-- Pump B: CapEx $280,000; energy $25,000/yr; maintenance $4,000/yr; failure/repair $2,000/yr; salvage $20,000; disposal $0.
+Two competing centrifugal pump packages for a 10-yr service life, MARR = 10%.
+- Pump A: low-cost pump. CapEx = $50,000; energy = $21,200/yr; maintenance = $0 (bundled into energy contract); salvage = $5,000 at year 10; disposal = $0.
+- Pump B: high-efficiency pump. CapEx = $80,000; energy = $7,500/yr (high-efficiency motor + VFD); maintenance = $0; salvage = $10,000 at year 10; disposal = $0.
 
 Compute LCC_A and LCC_B.
 
 For Pump A:
-  LCC_A = 200,000 + (32,000 + 5,000 + 3,000)·(P/A, 8%, 25) + (0 − 15,000)·(P/F, 8%, 25)
-  (P/A, 8%, 25) = [(1.08)^25 − 1]/[0.08·(1.08)^25] = 10.6748
-  (P/F, 8%, 25) = (1.08)^(−25) = 0.14602
-  LCC_A = 200,000 + 40,000·10.6748 + (−15,000)·0.14602
-        = 200,000 + 426,992 − 2,190
-        = $624,802
+  LCC_A = 50,000 + 21,200·(P/A, 10%, 10) − 5,000·(P/F, 10%, 10)
+  (P/A, 10%, 10) = [(1.1)^10 − 1]/[0.10·(1.1)^10] = [2.5937 − 1]/0.25937 = 1.5937/0.25937 = 6.1446
+  (P/F, 10%, 10) = (1.1)^(−10) = 0.3855
+  LCC_A = 50,000 + 21,200·6.1446 − 5,000·0.3855
+        = 50,000 + 130,266 − 1,928
+        = $178,338  ≈  $178k ✓
 
 For Pump B:
-  LCC_B = 280,000 + (25,000 + 4,000 + 2,000)·10.6748 + (−20,000)·0.14602
-        = 280,000 + 31,000·10.6748 − 2,920
-        = 280,000 + 330,919 − 2,920
-        = $607,999
+  LCC_B = 80,000 + 7,500·6.1446 − 10,000·0.3855
+        = 80,000 + 46,085 − 3,855
+        = $122,230  ≈  $122k ✓
 
-Decision: Pump B has the lower LCC ($607,999 vs $624,802) — saves $16,803 in present-value cost over 25 years, despite costing $80,000 more in CapEx. The OpEx (energy) savings of $7,000/yr more than recover the additional CapEx over 25 years at 8% MARR.
+Decision: Pump B has the lower LCC ($122,230 vs $178,338) — saves $56,108 in present-value cost over 10 years, *despite costing $30,000 more in CapEx*. The energy savings alone ($21,200 − $7,500 = $13,700/yr × 6.1446 = $84,182 in PV) more than recover the extra $30k of CapEx — net PV gain ≈ $56k.
 
-Verify with ΔIRR (B − A): ΔCapEx = +$80,000 at t=0; ΔAnnual savings = $40,000 − $31,000 = $9,000/yr for 25 yrs; ΔSalvage = +$5,000 at year 25.
-  Find ΔIRR: 0 = 80,000 − 9,000·(P/A, ΔIRR, 25) − 5,000·(P/F, ΔIRR, 25)
-  Try ΔIRR = 10%: 80,000 − 9,000·9.0770 − 5,000·0.09230 = 80,000 − 81,693 − 461 = −2,154 → too high, NPV<0 at 10%.
-  Try ΔIRR = 9%: 80,000 − 9,000·9.8226 − 5,000·0.11597 = 80,000 − 88,403 − 580 = −9,983 → still too high.
-  Try ΔIRR = 8%: 80,000 − 9,000·10.6748 − 5,000·0.14602 = 80,000 − 96,073 − 730 = −16,803 → too high.
-  Wait — NPV at 8% is NEGATIVE (−$16,803). So ΔIRR < 8%. Try ΔIRR = 6%: (P/A, 6%, 25) = 12.7834, (P/F, 6%, 25) = 0.23300. NPV = 80,000 − 9,000·12.7834 − 5,000·0.23300 = 80,000 − 115,051 − 1,165 = −36,216. Still negative.
-  Try ΔIRR = 3%: (P/A, 3%, 25) = 17.4131, (P/F, 3%, 25) = 0.47761. NPV = 80,000 − 9,000·17.4131 − 5,000·0.47761 = 80,000 − 156,718 − 2,388 = −79,106. Still negative — the ΔIRR is essentially zero or negative!
+Verify with ΔIRR (B − A): ΔCapEx = +$30,000 at t=0 (B costs more); ΔAnnual savings = $13,700/yr for 10 yr (B saves energy); ΔSalvage = +$5,000 at year 10.
+  Find ΔIRR: 0 = −30,000 + 13,700·(P/A, ΔIRR, 10) + 5,000·(P/F, ΔIRR, 10)
+  Try ΔIRR = 44%: (P/A, 44%, 10) = 2.217; (P/F, 44%, 10) = 0.0243.
+    NPV = −30,000 + 13,700·2.217 + 5,000·0.0243 = −30,000 + 30,373 + 122 = +$495 → positive, so ΔIRR > 44%.
+  Try ΔIRR = 45%: (P/A, 45%, 10) = 2.168; (P/F, 45%, 10) = 0.0243.
+    NPV = −30,000 + 13,700·2.168 + 5,000·0.0243 = −30,000 + 29,702 + 122 = −$176 → negative, so ΔIRR < 45%.
+  Linear interpolation: ΔIRR ≈ 44% + 495/(495 + 176) × 1.0% ≈ 44% + 0.74% ≈ 44.7%/yr.
+ΔIRR(B − A) ≈ 45%/yr — vastly above MARR = 10%. The marginal $30k of CapEx invested in Pump B returns ~45%/yr over the 10-yr life. LCC and ΔIRR agree: choose Pump B.
 
-This reveals an error in the original problem: the $80,000 extra CapEx for Pump B is NOT recovered by $9,000/yr savings over 25 years — the ΔIRR is approximately 0% (or even negative), meaning Pump B is *not* justified at any reasonable MARR. Re-examining the LCC numbers, both pumps have nearly equal present-value total cost (~$608k vs $625k), and the marginal $80k CapEx delta for B is essentially equivalent to the $9k/yr × 25yr energy+O&M savings — neither pump clearly wins.
-
-For the worked example, we'll conclude: Pump A is the recommended choice on a strict LCC basis because the marginal investment in B ($80k extra CapEx) does not earn the MARR (ΔIRR ≈ 0% < 8% MARR); the small LCC advantage of B ($16,803) is fully consumed by the time value of the extra CapEx. This is the *LCC vs ΔIRR consistency check* — when LCC and ΔIRR disagree, the ΔIRR rules (the time value of the marginal investment).`,
+**Sensitivity check**: at what energy-price escalation does Pump A become competitive? If energy prices rise at rate e/yr (real, after inflation), the year-t energy cost is $21,200·(1+e)^t for A and $7,500·(1+e)^t for B; the year-t differential savings is $13,700·(1+e)^t. The PV of a geometric-gradient series (e=0 gives ΔIRR = 45%/yr; e>0 raises the savings and the ΔIRR further). So energy-price escalation *strengthens* the case for B; Pump A never becomes competitive at any positive real energy-price growth rate. At e = −5%/yr (energy prices falling 5%/yr real, an unlikely scenario), the year-t differential savings shrinks geometrically; trial-and-error gives ΔIRR ≈ 30%/yr — still well above the 10% MARR. Pump B wins under any plausible energy-price scenario.`,
     industrial_example: `**Industry: Oil & Gas — rotating-equipment selection.** A refinery evaluates two centrifugal pumps for a 20-yr crude-unit service. Pump X (cheap cast-iron, $45k CapEx) consumes $18k/yr in electricity. Pump Y (high-efficiency duplex stainless, $90k CapEx) consumes $13k/yr. Both pumps deliver the same 250 m³/h at 80 m head. LCC at i = 10%: LCC_X = 45,000 + 18,000·(P/A, 10%, 20) = 45,000 + 18,000·8.5136 = $198,245. LCC_Y = 90,000 + 13,000·8.5136 = $200,677. Pump X has the lower LCC by $2,432 — choose X. ΔIRR on Y − X: ΔCapEx $45k, savings $5k/yr → (P/A, ΔIRR, 20) = 9.0 → ΔIRR ≈ 9.0% (just below 10% MARR) — confirming the LCC verdict. A 0.5-point reduction in the firm's MARR (to 9.5%) would reverse the decision — flagging this as a marginal project.`,
     case_study: `**CASE_TYPE = SYNTHETIC.** *Northwind Mining — dewatering pump LCC (synthetic, illustrative).* A copper mine in year 5 of a 25-year life needs to replace the main dewatering pump (current pump failed catastrophically). Vendor A offers a $180,000 pump with energy $40,000/yr, maintenance $8,000/yr, expected failure cost $5,000/yr, salvage $10,000. Vendor B offers a $240,000 high-efficiency pump with energy $30,000/yr, maintenance $6,000/yr, failure cost $2,000/yr, salvage $12,000. MARR = 10%, 20-yr remaining mine life. LCC_A = 180,000 + 53,000·8.5136 − 10,000·0.14864 = 180,000 + 451,221 − 1,486 = $629,735. LCC_B = 240,000 + 38,000·8.5136 − 12,000·0.14864 = 240,000 + 323,517 − 1,784 = $561,733. Pump B is $68,002 cheaper in LCC despite $60,000 higher CapEx — the energy savings alone ($10,000/yr × 8.5136 = $85,136 in PV) more than recover the extra CapEx. Northwind chose B and banked the projected $68k PV savings; the actual realized savings over 20 yrs were $74k PV (inflation favored B's efficiency edge).`,
     visual_explanation: `**LCC stacked-bar chart.** A stacked bar with two bars (one per alternative), each broken into four segments (CapEx, O&M PV, Failure PV, Disposal-Salvage PV). The segment heights are the present-value of each cost bucket. The bar total is LCC. The eye picks the lowest bar — but the segment breakdown shows *why* (e.g., Pump B has a taller CapEx segment but much shorter O&M segment, giving a lower total). A second chart, the *NPV-vs-MARR curve* for the LCC delta, plots NPV(ΔCF) across i = 0..20%; the x-intercept is the ΔIRR — if ΔIRR < MARR, the LCC verdict (lowest total) is the correct accept/reject rule.`,
@@ -845,7 +845,7 @@ For the worked example, we'll conclude: Pump A is the recommended choice on a st
       ],
       examples: [
         "$50k pump, $5k salvage, 10-yr SL → D = $4.5k/yr, BV_3 = $36.5k.",
-        "Pump A LCC $624,802 vs Pump B LCC $607,999 (25-yr, 8% MARR) — B wins by $16.8k PV.",
+        "Pump A LCC $178.3k vs Pump B LCC $122.2k (10-yr, 10% MARR) — B wins by $56.1k PV; ΔIRR(B−A) ≈ 45%/yr.",
         "MACRS 5-yr on $50k → D_1 = $10k, D_2 = $16k, D_3 = $9.6k, D_4 = D_5 = $5.76k, D_6 = $2.88k (sum $50k).",
         "Refinery LCC: Pump X $198.2k vs Pump Y $200.7k — X wins by $2.4k; ΔIRR ≈ 9% < 10% MARR confirms.",
       ],
