@@ -114,6 +114,33 @@ router.get('/categories', async (_req: Request, res: Response, next: NextFunctio
 });
 
 /**
+ * GET /api/workflows/equation-categories
+ * Equation categories with equation counts, used by the workflow palette.
+ */
+router.get('/equation-categories', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const rows = await prisma.equationCategory.findMany({
+      include: { _count: { select: { equations: true } } },
+      orderBy: [{ parentId: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+    });
+    res.json(
+      rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        domain: row.slug.split('-')[0],
+        parent_id: row.parentId,
+        icon: row.icon,
+        color: row.color,
+        count: (row as any)._count?.equations ?? 0,
+      }))
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/workflows/equations
  * List all equations
  */

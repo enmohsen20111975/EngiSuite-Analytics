@@ -19,7 +19,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import calculatorRoutes from './routes/calculator.routes.js';
 import workflowRoutes from './routes/workflow.routes.js';
-import equationRoutes from './routes/equation.routes.js';
+import equationRoutes, { listEquationCategories } from './routes/equation.routes.js';
 import pipelineRoutes from './routes/pipeline.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import vdaRoutes from './routes/vda.routes.js';
@@ -52,7 +52,10 @@ const app = express();
 const server = createServer(app);
 
 // Environment configuration
-const PORT = parseInt(process.env.PORT || '8000', 10);
+const PORT = parseInt(process.env.PORT || '4000', 10);
+if (PORT === 3000) {
+  throw new Error('Port 3000 is reserved. Use PORT=4000 (frontend) or PORT=4001 (API).');
+}
 const HOST = '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const isProduction = NODE_ENV === 'production';
@@ -117,7 +120,7 @@ const API_PREFIX = '/api';
 
 // Calculator routes
 app.use(`${API_PREFIX}/calculators`, calculatorRoutes);
-app.use(`${API_PREFIX}/calculators`, calculatorRoutes); // Also available at /calculators for backward compatibility
+app.use('/calculators', calculatorRoutes); // Also available at /calculators for backward compatibility
 
 if (!FILE_DATA_MODE) {
   // Authentication routes
@@ -128,9 +131,12 @@ if (!FILE_DATA_MODE) {
 
   // Workflow routes
   app.use(`${API_PREFIX}/workflows`, workflowRoutes);
+  app.use('/workflows', workflowRoutes); // Frontend services call /workflows/* without the /api prefix
 
   // Equation routes
   app.use(`${API_PREFIX}/equations`, equationRoutes);
+  app.get(`${API_PREFIX}/equation-categories`, listEquationCategories);
+  app.get('/equation-categories', listEquationCategories);
 
   // Pipeline routes
   app.use(`${API_PREFIX}/pipelines`, pipelineRoutes);

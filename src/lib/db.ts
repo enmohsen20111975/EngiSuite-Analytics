@@ -112,7 +112,7 @@ const questionObj = {
   findMany: (a: any) => real.practiceProblem.findMany(a),
   deleteMany: (a: any) => real.practiceProblem.deleteMany(a),
   count: (a?: any) => real.practiceProblem.count(a),
-  groupBy: (a: any) => real.practiceProblem.groupBy(a),
+  groupBy: (a: any) => (real.practiceProblem as any).groupBy(a),
 };
 
 const MAPPED: Record<string, any> = {

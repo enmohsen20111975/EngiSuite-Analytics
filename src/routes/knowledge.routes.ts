@@ -83,7 +83,7 @@ router.get('/certifications', async (_req: Request, res: Response) => {
 router.get('/certifications/:slug', async (req: Request, res: Response) => {
   try {
     const c = await prisma.certification.findUnique({
-      where: { slug: req.params.slug },
+      where: { slug: String(req.params.slug) },
       include: {
         domains: {
           orderBy: { order: 'asc' },

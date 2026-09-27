@@ -10,6 +10,14 @@ import { optionalAuth } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
+function parseCanvasId(raw: string | string[]): number {
+  const id = parseInt(String(raw), 10);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new ValidationError('Invalid canvas id');
+  }
+  return id;
+}
+
 /**
  * GET /api/canvas
  * List user's canvas states
@@ -72,7 +80,7 @@ router.post('/', optionalAuth, async (req: Request, res: Response, next: NextFun
  */
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
+    const id = parseCanvasId(req.params.id);
 
     const canvas = await prisma.canvasState.findFirst({
       where: { id },
@@ -97,7 +105,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
  */
 const updateCanvas = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id as string, 10);
+    const id = parseCanvasId(req.params.id);
     const { name, data: dataField, state, thumbnail, isPublic } = req.body;
     const data = dataField ?? state;
 
@@ -128,7 +136,7 @@ router.route('/:id').put(optionalAuth, updateCanvas).patch(optionalAuth, updateC
  */
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>{
   try{
-    const id = parseInt(req.params.id as string, 10);
+    const id = parseCanvasId(req.params.id);
 
     await prisma.canvasState.delete({
       where: { id },

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { ENGINEERING_PIPELINES, getPipelineById, EngineeringPipeline, PipelineStep } from '../data/engineeringPipelines';
+import { ENGINEERING_PIPELINES, getPipelineById, EngineeringPipeline, PipelineStep } from '../data/engineeringPipelines.js';
 
 const router = Router();
 

@@ -10,18 +10,22 @@ analytics + reports).
 ## Sandbox dev config (this environment)
 - DB: SQLite (dev) — `schema.prisma` provider set to `sqlite` for local dev.
   Production keeps `schema.prisma.production` (MySQL) untouched.
-- Ports: Vite frontend on **4000** (exposed by the sandbox gateway), Express
-  API on **4001**. `frontend-react/vite.config.js` proxies `/api`,`/learning`,
-  `/calculate`, etc. → `127.0.0.1:4001`.
-- `.env` (gitignored) — set: `PORT=4001`,
+- Ports: **4000 is mandatory — port 3000 is never used.** Vite frontend on
+  **4000** (exposed by the sandbox gateway), Express API on **4001** in dev.
+  `frontend-react/vite.config.js` proxies `/api`,`/learning`, `/calculate`,
+  etc. → `127.0.0.1:4001`. In production the built React app is served by
+  Express itself on **4000**.
+- `.env` (gitignored) — set: `PORT=4000`,
   `DATABASE_URL="file:/abs/path/engisuite.db"`, `JWT_SECRET=...`,
-  `CORS_ALLOW_ORIGINS=http://localhost:4000`.
+  `CORS_ALLOW_ORIGINS=http://localhost:4000`. The server rejects
+  `PORT=3000` at startup.
 
 ## Run
 ```
 bun install && cd frontend-react && bun install && cd ..
-bunx tsx src/server.ts        # Express :4001
-cd frontend-react && bunx vite  # Vite :4000 (preview)
+PORT=4001 bunx tsx src/server.ts   # Express :4001 (dev)
+cd frontend-react && bunx vite      # Vite :4000 (dev)
+npm run build && node server.js     # production, everything on :4000
 ```
 
 ## Merge plan (phases)

@@ -50,11 +50,37 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   } catch (e: any) { next(e); }
 });
 
+/** Shared handler — equation categories with counts, served at /api/equation-categories */
+export async function listEquationCategories(
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const rows = await prisma.equationCategory.findMany({
+      include: { _count: { select: { equations: true } } },
+      orderBy: [{ parentId: 'asc' }, { sortOrder: 'asc' }, { name: 'asc' }],
+    });
+    res.json(
+      rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        domain: row.slug.split('-')[0],
+        parent_id: row.parentId,
+        icon: row.icon,
+        color: row.color,
+        count: (row as any)._count?.equations ?? 0,
+      }))
+    );
+  } catch (e: any) { next(e); }
+}
+
 /** GET /api/equations/:id — get one equation by slug */
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const eq = await prisma.equation.findUnique({
-      where: { slug: req.params.id },
+      where: { slug: String(req.params.id) },
       include: { category: true },
     });
     if (!eq) return next(new NotFoundError('Equation not found'));
@@ -64,7 +90,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
       data: {
         id: eq.slug, name: eq.name, description: eq.description,
         formula: eq.formula, domain: eq.domain || 'general',
-        category: eq.category?.name || null, difficulty: eq.difficulty,
+        category: (eq as any).category?.name || null, difficulty: eq.difficulty,
         tags: eq.tags ? JSON.parse(eq.tags) : [],
         inputs: vars.inputs || [],
         outputs: vars.outputs || [],
@@ -76,7 +102,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 /** POST /api/equations/:id/solve — evaluate the equation with user inputs */
 router.post('/:id/solve', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const eq = await prisma.equation.findUnique({ where: { slug: req.params.id } });
+    const eq = await prisma.equation.findUnique({ where: { slug: String(req.params.id) } });
     if (!eq) return next(new NotFoundError('Equation not found'));
     const inputs = req.body?.inputs || {};
     const formula = eq.formula;
