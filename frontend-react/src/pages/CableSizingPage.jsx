@@ -165,7 +165,7 @@ export default function CableSizingPage() {
               <div className={cn(
                 'flex items-center justify-center w-10 h-10 rounded-full font-medium',
                 step >= s.number
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-accent text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
               )}>
                 {step > s.number ? <CircleCheck className="w-5 h-5" /> : s.number}
@@ -182,7 +182,7 @@ export default function CableSizingPage() {
               {idx < steps.length - 1 && (
                 <div className={cn(
                   'w-12 md:w-24 h-0.5 mx-2',
-                  step > s.number ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'
+                  step > s.number ? 'bg-accent' : 'bg-gray-200 dark:bg-gray-700'
                 )} />
               )}
             </div>
@@ -287,7 +287,7 @@ export default function CableSizingPage() {
                     className={cn(
                       'p-4 rounded-lg border-2 text-center transition-colors',
                       formData.cableType === type.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        ? 'border-accent bg-accent/10 dark:bg-accent/20'
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                     )}
                   >
@@ -310,7 +310,7 @@ export default function CableSizingPage() {
                     className={cn(
                       'p-4 rounded-lg border-2 text-left transition-colors',
                       formData.installationMethod === method.id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        ? 'border-accent bg-accent/10 dark:bg-accent/20'
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                     )}
                   >
@@ -371,10 +371,10 @@ export default function CableSizingPage() {
           </h2>
           
           <div className="space-y-6">
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-start gap-3">
-              <Info className="w-5 h-5 text-blue-500 mt-0.5" />
+            <div className="p-4 bg-accent/10 dark:bg-accent/20 rounded-lg flex items-start gap-3">
+              <Info className="w-5 h-5 text-accent mt-0.5" />
               <div>
-                <p className="text-sm text-blue-700 dark:text-blue-400">
+                <p className="text-sm text-accent-hover dark:text-accent/60">
                   These constraints help determine the minimum cable size required for safe operation.
                 </p>
               </div>

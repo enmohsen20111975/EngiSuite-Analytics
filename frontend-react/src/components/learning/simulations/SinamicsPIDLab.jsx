@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Settings, Play, Square, Activity, Info, RotateCcw, Gauge } from 'lucide-react';
+import { getThemeColor } from '../../../lib/utils';
 
 const SinamicsPIDLab = () => {
   const [kp, setKp] = useState(1.5);
@@ -100,7 +101,7 @@ const SinamicsPIDLab = () => {
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Settings className="text-purple-600" /> SINAMICS Speed Controller Lab
+                <Settings className="text-accent" /> SINAMICS Speed Controller Lab
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm">Fine-tune the PI loop (p1460/p1462) and observe response to load changes.</p>
           </div>
@@ -135,7 +136,7 @@ const SinamicsPIDLab = () => {
                 <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="flex justify-between items-center">
                         <label className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">p1460 (Kp)</label>
-                        <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">{kp.toFixed(2)}</span>
+                        <span className="font-mono text-accent dark:text-accent font-bold">{kp.toFixed(2)}</span>
                     </div>
                     <input type="range" min="0.1" max="15.0" step="0.1" value={kp} onChange={e => setKp(Number(e.target.value))} className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 italic">Proportional Gain: Higher values increase stiffness but can cause "ringing".</p>
@@ -144,7 +145,7 @@ const SinamicsPIDLab = () => {
                 <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="flex justify-between items-center">
                         <label className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider">p1462 (Tn)</label>
-                        <span className="font-mono text-purple-600 dark:text-purple-400 font-bold">{tn} ms</span>
+                        <span className="font-mono text-accent dark:text-accent font-bold">{tn} ms</span>
                     </div>
                     <input type="range" min="10" max="2000" step="10" value={tn} onChange={e => setTn(Number(e.target.value))} className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                     <p className="text-[10px] text-slate-400 dark:text-slate-500 italic">Integral Time: Lower values eliminate error faster but can lead to instability.</p>
@@ -190,18 +191,18 @@ const SinamicsPIDLab = () => {
                     </div>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#1e293b')} vertical={false} />
                             <XAxis dataKey="time" hide />
                             <YAxis 
                                 domain={[0, 2200]} 
-                                stroke="#475569" 
+                                stroke={getThemeColor('--color-text-secondary', '#475569')} 
                                 fontSize={10} 
                                 tickFormatter={(val) => `${val}`}
                                 axisLine={false}
                                 tickLine={false}
                             />
                             <Tooltip 
-                                contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '8px', color: '#f8fafc' }}
+                                contentStyle={{ backgroundColor: getThemeColor('--color-bg-secondary', '#0f172a'), border: `1px solid ${getThemeColor('--color-border', '#1e293b')}`, borderRadius: '8px', color: getThemeColor('--color-text-primary', '#f8fafc') }}
                                 itemStyle={{ fontSize: '12px' }}
                             />
                             <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '20px' }} />
@@ -209,7 +210,7 @@ const SinamicsPIDLab = () => {
                                 name="Setpoint (RPM)"
                                 type="stepAfter" 
                                 dataKey="setpoint" 
-                                stroke="#0ea5e9" 
+                                stroke={getThemeColor('--color-info', '#0ea5e9')} 
                                 strokeWidth={2} 
                                 dot={false} 
                                 isAnimationActive={false} 
@@ -218,7 +219,7 @@ const SinamicsPIDLab = () => {
                                 name="Actual Speed"
                                 type="monotone" 
                                 dataKey="actual" 
-                                stroke="#a855f7" 
+                                stroke={getThemeColor('--color-accent', '#a855f7')} 
                                 strokeWidth={3} 
                                 dot={false} 
                                 isAnimationActive={false} 

@@ -423,7 +423,7 @@ const ComponentPalette = ({ onDragStart }) => {
           placeholder="Search components..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-1.5 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          className="w-full px-3 py-1.5 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 placeholder-gray-500 focus:outline-none focus:border-accent"
         />
       </div>
       
@@ -455,7 +455,7 @@ const ComponentPalette = ({ onDragStart }) => {
                       onDragStart={(e) => onDragStart(e, comp)}
                       className="px-4 py-1.5 text-xs text-gray-400 hover:bg-gray-700 hover:text-gray-200 cursor-grab transition-colors flex items-center gap-2"
                     >
-                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+                      <span className="w-1.5 h-1.5 bg-accent rounded-full" />
                       {comp.name}
                     </div>
                   ))}
@@ -512,7 +512,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
             type="text"
             value={component.label || ''}
             onChange={(e) => onUpdate({ label: e.target.value })}
-            className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
           />
         </div>
         
@@ -524,7 +524,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.voltage}
               onChange={(e) => onUpdate({ properties: { ...component.properties, voltage: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -536,7 +536,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.power}
               onChange={(e) => onUpdate({ properties: { ...component.properties, power: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -548,7 +548,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.ratedCurrent}
               onChange={(e) => onUpdate({ properties: { ...component.properties, ratedCurrent: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -560,7 +560,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="text"
               value={component.properties.linkId}
               onChange={(e) => onUpdate({ properties: { ...component.properties, linkId: e.target.value } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -572,7 +572,7 @@ const PropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="text"
               value={component.properties.address}
               onChange={(e) => onUpdate({ properties: { ...component.properties, address: e.target.value } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -634,11 +634,11 @@ const AnalysisPanel = ({ components, wires, isSimulating }) => {
         {/* Statistics */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-gray-800 p-2 rounded">
-            <div className="text-lg font-bold text-blue-400">{components.length}</div>
+            <div className="text-lg font-bold text-accent/60">{components.length}</div>
             <div className="text-xs text-gray-400">Components</div>
           </div>
           <div className="bg-gray-800 p-2 rounded">
-            <div className="text-lg font-bold text-purple-400">{wires.length}</div>
+            <div className="text-lg font-bold text-accent/60">{wires.length}</div>
             <div className="text-xs text-gray-400">Wires</div>
           </div>
           <div className="bg-gray-800 p-2 rounded">
@@ -1126,7 +1126,7 @@ const ElectricalSimulator2 = () => {
           <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded text-xs">
             <span className={`w-2 h-2 rounded-full ${isSimulating ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
             {isSimulating ? 'Simulation Running' : 'Ready'}
-            {wiringStart && <span className="text-blue-400 ml-2">• Wiring Mode</span>}
+            {wiringStart && <span className="text-accent/60 ml-2">• Wiring Mode</span>}
           </div>
         </div>
         
@@ -1151,7 +1151,7 @@ const ElectricalSimulator2 = () => {
         <button
           onClick={() => setActivePanel('properties')}
           className={`px-4 py-2 text-xs font-medium ${
-            activePanel === 'properties' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400'
+            activePanel === 'properties' ? 'text-accent/60 border-b-2 border-blue-400' : 'text-gray-400'
           }`}
         >
           Properties
@@ -1159,7 +1159,7 @@ const ElectricalSimulator2 = () => {
         <button
           onClick={() => setActivePanel('analysis')}
           className={`px-4 py-2 text-xs font-medium ${
-            activePanel === 'analysis' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400'
+            activePanel === 'analysis' ? 'text-accent/60 border-b-2 border-blue-400' : 'text-gray-400'
           }`}
         >
           Analysis

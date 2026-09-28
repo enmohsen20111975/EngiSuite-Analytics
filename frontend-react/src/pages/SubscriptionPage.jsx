@@ -259,8 +259,8 @@ export default function SubscriptionPage() {
             </div>
             <div className={cn(
               'p-3 rounded-full',
-              subscription?.plan_id === 'pro' ? 'bg-purple-100 text-purple-600' :
-              subscription?.plan_id === 'enterprise' ? 'bg-blue-100 text-blue-600' :
+              subscription?.plan_id === 'pro' ? 'bg-accent/20 text-accent' :
+              subscription?.plan_id === 'enterprise' ? 'bg-accent/20 text-accent' :
               subscription?.plan_id === 'starter' ? 'bg-green-100 text-green-600' :
               'bg-gray-100 text-gray-600'
             )}>
@@ -331,7 +331,7 @@ export default function SubscriptionPage() {
             className={cn(
               'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
               billingPeriod === 'monthly'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                ? 'bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60'
                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
             )}
           >
@@ -342,7 +342,7 @@ export default function SubscriptionPage() {
             className={cn(
               'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
               billingPeriod === 'yearly'
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                ? 'bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60'
                 : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
             )}
           >
@@ -368,7 +368,7 @@ export default function SubscriptionPage() {
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    <span className="bg-accent text-white text-xs font-medium px-3 py-1 rounded-full">
                       Most Popular
                     </span>
                   </div>
@@ -377,7 +377,7 @@ export default function SubscriptionPage() {
                 <div className="text-center mb-4">
                   <div className={cn(
                     'inline-flex p-3 rounded-full mb-3',
-                    plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                    plan.popular ? 'bg-accent/20 text-accent' : 'bg-gray-100 text-gray-600'
                   )}>
                     <Icon className="w-5 h-5" />
                   </div>
@@ -470,7 +470,7 @@ export default function SubscriptionPage() {
               <History className="w-5 h-5" />
               Credit History
             </h3>
-            <Link to="/credits/history" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link to="/credits/history" className="text-sm text-accent hover:text-accent-hover">
               View All
             </Link>
           </div>
@@ -512,7 +512,7 @@ export default function SubscriptionPage() {
               <CreditCard className="w-5 h-5" />
               Payment History
             </h3>
-            <Link to="/payments/history" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link to="/payments/history" className="text-sm text-accent hover:text-accent-hover">
               View All
             </Link>
           </div>
@@ -625,14 +625,14 @@ export default function SubscriptionPage() {
             </h3>
 
             {/* Plan Summary */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4">
+            <div className="bg-accent/10 dark:bg-accent/20 rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedPlan.name} Plan</p>
                   <p className="text-sm text-gray-500">{billingPeriod === 'yearly' ? 'Yearly' : 'Monthly'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-600">
+                  <p className="text-2xl font-bold text-accent">
                     ${billingPeriod === 'yearly'
                       ? (selectedPlan.price * 12 * 0.8).toFixed(0)
                       : selectedPlan.price}

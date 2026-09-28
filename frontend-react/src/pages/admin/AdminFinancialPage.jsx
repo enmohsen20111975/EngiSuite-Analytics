@@ -58,8 +58,8 @@ export default function AdminFinancialPage() {
                 <ArrowUpRight className="w-3 h-3" />+8 this month
               </p>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-              <Users className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-accent/20 dark:bg-accent/20 rounded-full">
+              <Users className="w-6 h-6 text-accent" />
             </div>
           </div>
         </Card>
@@ -84,8 +84,8 @@ export default function AdminFinancialPage() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">${overview?.arpu || 0}</p>
               <p className="text-xs text-gray-500 mt-1">Average revenue per user</p>
             </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-              <CreditCard className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-accent/20 dark:bg-accent/20 rounded-full">
+              <CreditCard className="w-6 h-6 text-accent" />
             </div>
           </div>
         </Card>

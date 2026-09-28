@@ -1,0 +1,58 @@
+- generic [ref=e407] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e411]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e421]
+        - listitem [level=1]
+          - link "Calculators" [ref=e422]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e423]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e424]
+        - listitem [level=1]
+          - link "Projects" [ref=e425]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e426]
+        - listitem [level=1]
+          - link "Reports" [ref=e427]
+        - listitem [level=1]
+          - link "Projects" [ref=e428]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e429]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e430]
+        - listitem [level=1]
+          - link "Pricing" [ref=e431]
+      - button "TOOLS" [ref=e417]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e432]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e433]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e434]
+        - listitem [level=1]
+          - link "Analytics" [ref=e435]
+      - button "INTERACTIVE SIMULATORS" [ref=e418]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e419]
+      - listitem [level=1]
+        - link "Settings" [ref=e420]
+    - button [ref=e412]
+  - banner
+    - textbox "Search..." [ref=e408]
+    - button "100 pts" [ref=e409]
+    - button "Language" [ref=e413]
+    - button [ref=e414]
+    - button [ref=e410]
+    - button "T" [ref=e415]
+  - main
+    - heading "Knowledge Library" [level=1, ref=e416]

@@ -1,0 +1,95 @@
+URL: http://localhost:4000/settings
+
+=== LIGHT MODE ===
+{
+  "checked": 5,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 5,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "266x359",
+      "tag": "div",
+      "text": "AppearanceNotificationsLanguagePrivacy &"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "846x359",
+      "tag": "div",
+      "text": "ThemeLightDarkSystemAccent ColorChoose y"
+    }
+  ],
+  "theme": "light",
+  "url": "/settings"
+}
+
+=== DARK MODE ===
+{
+  "checked": 5,
+  "darkBgBoxes": 5,
+  "lightBgBoxes": 0,
+  "sampleDark": [
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "266x359",
+      "tag": "div",
+      "text": "AppearanceNotificationsLanguagePrivacy &"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "846x359",
+      "tag": "div",
+      "text": "ThemeLightDarkSystemAccent ColorChoose y"
+    }
+  ],
+  "sampleLight": [],
+  "theme": "dark",
+  "url": "/settings"
+}

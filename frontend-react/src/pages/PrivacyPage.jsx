@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 dark:bg-accent/20 text-accent mb-4">
           <Shield className="w-8 h-8" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         {/* Information Collection */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Database className="w-6 h-6 text-blue-500" />
+            <Database className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Information We Collect
             </h2>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
         {/* How We Use Information */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Eye className="w-6 h-6 text-blue-500" />
+            <Eye className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               How We Use Your Information
             </h2>
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
         {/* Data Security */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Lock className="w-6 h-6 text-blue-500" />
+            <Lock className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Data Security
             </h2>
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
         {/* Cookies */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Cookie className="w-6 h-6 text-blue-500" />
+            <Cookie className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Cookies and Tracking
             </h2>
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
         {/* Third-Party Sharing */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Users className="w-6 h-6 text-blue-500" />
+            <Users className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Third-Party Sharing
             </h2>
@@ -166,7 +166,7 @@ export default function PrivacyPage() {
         {/* Contact */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Mail className="w-6 h-6 text-blue-500" />
+            <Mail className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Contact Us
             </h2>
@@ -182,11 +182,11 @@ export default function PrivacyPage() {
 
         {/* Footer Links */}
         <div className="flex justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-          <Link to="/terms" className="hover:text-blue-600">Terms of Service</Link>
+          <Link to="/terms" className="hover:text-accent">Terms of Service</Link>
           <span>•</span>
-          <Link to="/privacy" className="hover:text-blue-600">Privacy Policy</Link>
+          <Link to="/privacy" className="hover:text-accent">Privacy Policy</Link>
           <span>•</span>
-          <Link to="/dashboard" className="hover:text-blue-600">Dashboard</Link>
+          <Link to="/dashboard" className="hover:text-accent">Dashboard</Link>
         </div>
       </div>
     </div>

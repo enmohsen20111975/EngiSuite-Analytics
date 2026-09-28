@@ -145,25 +145,27 @@ export const reportsService = {
 };
 
 // Report template categories
+// No blue / indigo / purple per project rules. Aligned with the shared
+// service-palette (cyan/teal/emerald/amber/red/orange/gray).
 export const TEMPLATE_CATEGORIES = {
   electrical: {
     name: 'Electrical',
-    color: '#1976d2',
+    color: '#0891b2',   // cyan-600 (was #1976d2 — forbidden blue)
     icon: 'Zap',
   },
   mechanical: {
     name: 'Mechanical',
-    color: '#f57c00',
+    color: '#d97706',   // amber-600
     icon: 'Cog',
   },
   civil: {
     name: 'Civil',
-    color: '#388e3c',
+    color: '#059669',   // emerald-600
     icon: 'Building2',
   },
   general: {
     name: 'General',
-    color: '#616161',
+    color: '#6b7280',   // gray-500
     icon: 'FileText',
   },
 };

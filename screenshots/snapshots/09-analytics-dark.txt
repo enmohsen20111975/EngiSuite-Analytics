@@ -1,0 +1,83 @@
+- generic [ref=e328] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e332]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e359]
+        - listitem [level=1]
+          - link "Calculators" [ref=e360]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e361]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e362]
+        - listitem [level=1]
+          - link "Projects" [ref=e363]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e364]
+        - listitem [level=1]
+          - link "Reports" [ref=e365]
+        - listitem [level=1]
+          - link "Projects" [ref=e366]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e367]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e368]
+        - listitem [level=1]
+          - link "Pricing" [ref=e369]
+      - button "TOOLS" [ref=e351]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e370]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e371]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e372]
+        - listitem [level=1]
+          - link "Analytics" [ref=e373]
+      - button "INTERACTIVE SIMULATORS" [ref=e352]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e353]
+      - listitem [level=1]
+        - link "Settings" [ref=e354]
+    - button [ref=e333]
+  - banner
+    - textbox "Search..." [ref=e329]
+    - button "100 pts" [ref=e330]
+      - StaticText "100"
+      - StaticText " pts"
+    - button "Language" [ref=e334]
+    - button [ref=e335]
+    - button [ref=e331]
+    - button "T" [ref=e336]
+      - StaticText "T"
+  - main
+    - heading "Analytics" [level=1, ref=e337]
+    - paragraph
+      - StaticText "Comprehensive data analysis and visualization tools"
+    - button "Query Builder" [ref=e338]
+    - button "Data Upload" [ref=e339]
+    - button "Data Analysis" [ref=e340]
+    - button "Pivot Table" [ref=e341]
+    - button "Dashboard" [ref=e342]
+    - heading "Database Connection" [level=3, ref=e343]
+    - LabelText
+      - StaticText "Database Type"
+    - combobox [expanded=false, ref=e344]: MySQL
+      - MenuListPopup
+        - option "MySQL" [selected, ref=e355]
+        - option "PostgreSQL" [ref=e356]
+        - option "SQLite" [ref=e357]
+        - option "MongoDB" [ref=e358]
+    - textbox "localhost" [ref=e345]
+    - textbox "3306" [ref=e346]
+    - textbox "engineering_db" [ref=e347]
+    - textbox "root" [ref=e348]
+    - textbox "••••••••" [ref=e349]
+    - button "Connect" [ref=e350]

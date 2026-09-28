@@ -1,0 +1,159 @@
+URL: http://localhost:4000/pipelines
+
+=== LIGHT MODE ===
+{
+  "checked": 42,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 42,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x3977",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "size": "1136x3865",
+      "tag": "div",
+      "text": "Engineering Calculation PipelinesStep-by"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "1136x123",
+      "tag": "div",
+      "text": "🔍🗂️ All (37)⚡ Electrical (12)⚙️ Mechan"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "🌬️Air Handling Unit (AHU) SelectionSele"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "🚰Building Water Supply Pipe SizingSize "
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "⚡Busbar SizingSize copper or aluminium b"
+    }
+  ],
+  "theme": "light",
+  "url": "/pipelines"
+}
+
+=== DARK MODE ===
+{
+  "checked": 42,
+  "darkBgBoxes": 3,
+  "lightBgBoxes": 39,
+  "sampleDark": [
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x3977",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    }
+  ],
+  "sampleLight": [
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "size": "1136x3865",
+      "tag": "div",
+      "text": "Engineering Calculation PipelinesStep-by"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "1136x123",
+      "tag": "div",
+      "text": "🔍🗂️ All (37)⚡ Electrical (12)⚙️ Mechan"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "🌬️Air Handling Unit (AHU) SelectionSele"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "🚰Building Water Supply Pipe SizingSize "
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x264",
+      "tag": "div",
+      "text": "⚡Busbar SizingSize copper or aluminium b"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x245",
+      "tag": "div",
+      "text": "💧Centrifugal Pump SizingSize a centrifu"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x245",
+      "tag": "div",
+      "text": "❄️Chilled Water Pipe SizingSize chilled "
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "size": "351x245",
+      "tag": "div",
+      "text": "💨Compressed Air System SizingSize a com"
+    }
+  ],
+  "theme": "dark",
+  "url": "/pipelines"
+}

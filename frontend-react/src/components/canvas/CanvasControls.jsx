@@ -168,7 +168,7 @@ export function CanvasControls({
               className={cn(
                 "p-2 rounded-md transition-colors",
                 gridEnabled 
-                  ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400" 
+                  ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60" 
                   : "hover:bg-gray-100 dark:hover:bg-gray-700"
               )}
               title="Toggle grid"
@@ -194,7 +194,7 @@ export function CanvasControls({
             <select
               value={Math.round(viewport?.zoom * 100) || 100}
               onChange={(e) => handleZoomTo(parseInt(e.target.value))}
-              className="px-2 py-1 text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 py-1 text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
             >
               {ZOOM_LEVELS.map(level => (
                 <option key={level} value={level}>{level}%</option>

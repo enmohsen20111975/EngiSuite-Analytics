@@ -397,8 +397,8 @@ export default function ScientificCalculatorPage() {
   const CalcButton = ({ onClick, children, variant = 'default', className, span = 1 }) => {
     const variants = {
       default: 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white',
-      operator: 'bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300',
-      function: 'bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-300',
+      operator: 'bg-accent/20 dark:bg-accent/20 hover:bg-accent/20 dark:hover:bg-accent/20 text-accent-hover dark:text-accent/40',
+      function: 'bg-accent/20 dark:bg-accent/20 hover:bg-accent/20 dark:hover:bg-accent/20/50 text-accent-hover dark:text-accent/80',
       equals: 'bg-green-500 hover:bg-green-600 text-white',
       clear: 'bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300',
     };
@@ -424,7 +424,7 @@ export default function ScientificCalculatorPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <SquareFunction className="w-7 h-7 text-blue-500" />
+            <SquareFunction className="w-7 h-7 text-accent" />
             Scientific Calculator
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -437,7 +437,7 @@ export default function ScientificCalculatorPage() {
             className={cn(
               'px-4 py-2 rounded-lg font-medium text-sm transition-colors',
               isShifted
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                ? 'bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/80'
                 : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
             )}
           >
@@ -448,7 +448,7 @@ export default function ScientificCalculatorPage() {
             className={cn(
               'px-4 py-2 rounded-lg font-medium text-sm transition-colors',
               angleMode === 'deg'
-                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                ? 'bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/40'
                 : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
             )}
           >

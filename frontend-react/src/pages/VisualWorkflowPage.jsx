@@ -365,7 +365,7 @@ function WorkflowNode({
       className={cn(
         "absolute bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 cursor-move select-none",
         "transition-shadow duration-200",
-        isSelected ? "border-blue-500 shadow-xl ring-2 ring-blue-500/30" : "border-gray-200 dark:border-gray-700",
+        isSelected ? "border-accent shadow-xl ring-2 ring-blue-500/30" : "border-gray-200 dark:border-gray-700",
         isInGroup && "ring-2 ring-purple-400/50"
       )}
       style={{
@@ -381,7 +381,7 @@ function WorkflowNode({
     >
       {/* Group indicator */}
       {isInGroup && (
-        <div className="absolute -top-6 left-0 text-xs bg-purple-500 text-white px-2 py-0.5 rounded-t">
+        <div className="absolute -top-6 left-0 text-xs bg-accent text-white px-2 py-0.5 rounded-t">
           {groupName}
         </div>
       )}
@@ -403,7 +403,7 @@ function WorkflowNode({
                 if (e.key === 'Enter') handleRename();
                 if (e.key === 'Escape') setIsEditing(false);
               }}
-              className="w-full text-sm font-semibold bg-transparent border-b border-blue-500 outline-none"
+              className="w-full text-sm font-semibold bg-transparent border-b border-accent outline-none"
               style={{ color }}
               autoFocus
               onClick={(e) => e.stopPropagation()}
@@ -450,7 +450,7 @@ function WorkflowNode({
                   placeholder={input.unit || ''}
                   value={input.value ?? ''}
                   onChange={(e) => onValueChange(node.id, 'input', index, e.target.value)}
-                  className="flex-1 text-xs px-1.5 py-0.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 outline-none focus:border-blue-500"
+                  className="flex-1 text-xs px-1.5 py-0.5 border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 outline-none focus:border-accent"
                   onClick={(e) => e.stopPropagation()}
                 />
                 {input.unit && (
@@ -472,7 +472,7 @@ function WorkflowNode({
               className={cn(
                 "w-4 h-4 rounded-full border-2 cursor-pointer transition-all",
                 "hover:scale-125",
-                input.connected ? "bg-blue-500 border-blue-500" : "bg-white dark:bg-gray-700 border-gray-400",
+                input.connected ? "bg-accent border-accent" : "bg-white dark:bg-gray-700 border-gray-400",
                 connectingPort?.portType === 'output' && "hover:border-green-500"
               )}
               style={{ borderColor: input.connected ? color : undefined }}
@@ -510,7 +510,7 @@ function WorkflowNode({
                 "w-4 h-4 rounded-full border-2 cursor-pointer transition-all",
                 "hover:scale-125",
                 output.connected ? "bg-green-500 border-green-500" : "bg-white dark:bg-gray-700 border-gray-400",
-                connectingPort?.portType === 'input' && "hover:border-blue-500"
+                connectingPort?.portType === 'input' && "hover:border-accent"
               )}
               style={{ borderColor: output.connected ? '#22c55e' : undefined }}
               onMouseDown={(e) => {
@@ -529,7 +529,7 @@ function WorkflowNode({
             e.stopPropagation();
             onGroup(node.id);
           }}
-          className="text-xs text-purple-500 hover:text-purple-600 flex items-center gap-1"
+          className="text-xs text-accent hover:text-accent flex items-center gap-1"
         >
           <Group className="w-3 h-3" />
           {isInGroup ? 'Remove from Group' : 'Add to Group'}
@@ -582,7 +582,7 @@ function CategoryItem({ category, isSelected, isExpanded, onClick, onToggle }) {
         className={cn(
           "w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-left",
           isSelected 
-            ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" 
+            ? "bg-accent/10 dark:bg-accent/20 text-accent dark:text-accent/60" 
             : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
         )}
       >
@@ -608,7 +608,7 @@ function SubcategoryItem({ subcategory, isSelected, onClick, count }) {
       className={cn(
         "w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-left",
         isSelected 
-          ? "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300" 
+          ? "bg-accent/20 dark:bg-accent/20/50 text-accent-hover dark:text-accent/40" 
           : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
       )}
     >
@@ -1430,7 +1430,7 @@ export default function VisualWorkflowPage() {
         {/* Sidebar Header */}
         <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-blue-500" />
+            <Layers className="w-5 h-5 text-accent" />
             <h3 className="font-semibold text-gray-900 dark:text-white">
               Workflow Builder
             </h3>
@@ -1452,7 +1452,7 @@ export default function VisualWorkflowPage() {
             className={cn(
               "flex-1 py-2 text-sm font-medium transition-colors",
               activeTab === 'categories'
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-500"
+                ? "text-accent dark:text-accent/60 border-b-2 border-accent"
                 : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             )}
           >
@@ -1464,7 +1464,7 @@ export default function VisualWorkflowPage() {
             className={cn(
               "flex-1 py-2 text-sm font-medium transition-colors",
               activeTab === 'examples'
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-500"
+                ? "text-accent dark:text-accent/60 border-b-2 border-accent"
                 : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             )}
           >
@@ -1538,7 +1538,7 @@ export default function VisualWorkflowPage() {
               ))}
               {loadingEquations && (
                 <div className="flex justify-center py-8">
-                  <Loader className="w-6 h-6 animate-spin text-blue-500" />
+                  <Loader className="w-6 h-6 animate-spin text-accent" />
                 </div>
               )}
               {!loadingEquations && categorySections.every((section) => section.total === 0) && (
@@ -1650,7 +1650,7 @@ export default function VisualWorkflowPage() {
             {status}
           </span>
           {connectingPort && (
-            <span className="ml-4 text-xs text-blue-500 whitespace-nowrap">
+            <span className="ml-4 text-xs text-accent whitespace-nowrap">
               Connecting... (ESC to cancel)
             </span>
           )}
@@ -1672,15 +1672,15 @@ export default function VisualWorkflowPage() {
                     const currentValue = commonInputValues[entry.symbol] ?? sampleInput?.value ?? '';
 
                     return (
-                      <label key={entry.symbol} className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded px-2 py-1">
-                        <span className="font-medium text-blue-700 dark:text-blue-300">{entry.symbol}</span>
+                      <label key={entry.symbol} className="flex items-center gap-1 text-xs bg-accent/10 dark:bg-accent/20 border border-accent/20 dark:border-accent/30 rounded px-2 py-1">
+                        <span className="font-medium text-accent-hover dark:text-accent/40">{entry.symbol}</span>
                         <span className="text-gray-500">({entry.ports.length} nodes)</span>
                         <input
                           type="number"
                           step="any"
                           value={currentValue}
                           onChange={(e) => applyCommonInputValue(entry.symbol, e.target.value)}
-                          className="w-20 px-1 py-0.5 border border-blue-200 dark:border-blue-700 rounded bg-white dark:bg-gray-900"
+                          className="w-20 px-1 py-0.5 border border-accent/20 dark:border-accent/30 rounded bg-white dark:bg-gray-900"
                         />
                         {entry.unit && <span className="text-gray-400">{entry.unit}</span>}
                       </label>
@@ -1806,7 +1806,7 @@ export default function VisualWorkflowPage() {
                 </p>
                 <button
                   onClick={() => setMobileSidebarOpen(true)}
-                  className="mt-4 lg:hidden text-sm text-blue-500 hover:text-blue-600"
+                  className="mt-4 lg:hidden text-sm text-accent hover:text-accent"
                 >
                   Open equation palette
                 </button>
@@ -1865,8 +1865,8 @@ export default function VisualWorkflowPage() {
                     <div>
                       <label className="text-xs text-gray-500 dark:text-gray-400">Group</label>
                       <div className="flex items-center gap-2 mt-1">
-                        <Group className="w-3 h-3 text-purple-500" />
-                        <span className="text-sm text-purple-600 dark:text-purple-400">
+                        <Group className="w-3 h-3 text-accent" />
+                        <span className="text-sm text-accent dark:text-accent">
                           {group.name}
                         </span>
                       </div>
@@ -1886,7 +1886,7 @@ export default function VisualWorkflowPage() {
                           </span>
                           <span className={cn(
                             "font-medium",
-                            inp.connected ? "text-blue-500" : "text-gray-400"
+                            inp.connected ? "text-accent" : "text-gray-400"
                           )}>
                             {inp.connected ? 'Connected' : inp.value !== undefined ? inp.value : '—'}
                           </span>

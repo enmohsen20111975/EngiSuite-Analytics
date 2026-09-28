@@ -29,9 +29,9 @@ const SQL_OPERATORS = {
 
 // Aggregate Functions
 const AGGREGATE_FUNCTIONS = {
-  'SUM': { label: 'SUM', icon: Hash, color: 'text-blue-500' },
+  'SUM': { label: 'SUM', icon: Hash, color: 'text-accent' },
   'AVG': { label: 'AVG', icon: ChartColumn, color: 'text-green-500' },
-  'COUNT': { label: 'COUNT', icon: Hash, color: 'text-purple-500' },
+  'COUNT': { label: 'COUNT', icon: Hash, color: 'text-accent' },
   'MAX': { label: 'MAX', icon: TrendingUp, color: 'text-orange-500' },
   'MIN': { label: 'MIN', icon: TrendingDown, color: 'text-red-500' }
 };
@@ -464,7 +464,7 @@ const VisualQueryBuilderPage = () => {
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white px-4 py-3 shadow-lg z-50">
+      <header className="bg-gradient-to-r from-accent to-accent-hover text-white px-4 py-3 shadow-lg z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -478,7 +478,7 @@ const VisualQueryBuilderPage = () => {
                 <Database className="w-6 h-6" />
                 Visual Query Builder
               </h1>
-              <p className="text-xs text-indigo-200">
+              <p className="text-xs text-accent/30">
                 {selectedCount > 0
                   ? `${selectedCount} source(s) selected for analysis`
                   : 'Build SQL queries visually'
@@ -549,7 +549,7 @@ const VisualQueryBuilderPage = () => {
         </a>
         <a
           href="/visual-query-builder"
-          className="px-3 py-1.5 text-sm rounded-md bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-medium"
+          className="px-3 py-1.5 text-sm rounded-md bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/80 font-medium"
         >
           Query Builder
         </a>
@@ -593,9 +593,9 @@ const VisualQueryBuilderPage = () => {
                   addTableToCanvas(table);
                 }}
               >
-                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-t-lg flex items-center gap-2">
-                  <Table2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span className="font-medium text-indigo-800 dark:text-indigo-200 text-sm">{table.name}</span>
+                <div className="p-2 bg-accent/20 dark:bg-accent/20 rounded-t-lg flex items-center gap-2">
+                  <Table2 className="w-4 h-4 text-accent dark:text-accent" />
+                  <span className="font-medium text-accent-hover dark:text-accent/30 text-sm">{table.name}</span>
                   <span className="ml-auto text-xs text-gray-500 dark:text-gray-400">{table.rowCount} rows</span>
                 </div>
                 <div className="p-1">
@@ -605,7 +605,7 @@ const VisualQueryBuilderPage = () => {
                       className="flex items-center gap-2 px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
                     >
                       <span className={`w-2 h-2 rounded-full ${
-                        field.type === 'number' ? 'bg-blue-500' :
+                        field.type === 'number' ? 'bg-accent' :
                         field.type === 'text' ? 'bg-green-500' :
                         field.type === 'date' ? 'bg-orange-500' :
                         'bg-gray-500'
@@ -652,7 +652,7 @@ const VisualQueryBuilderPage = () => {
                         return (
                           <div
                             key={key}
-                            className="flex items-center gap-2 p-2 text-sm bg-gray-50 dark:bg-gray-700/50 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer"
+                            className="flex items-center gap-2 p-2 text-sm bg-gray-50 dark:bg-gray-700/50 rounded hover:bg-accent/10 dark:hover:bg-accent/20 cursor-pointer"
                             draggable
                             onDragStart={(e) => e.dataTransfer.setData('function', key)}
                           >
@@ -745,7 +745,7 @@ const VisualQueryBuilderPage = () => {
             >
               {/* Table Header */}
               <div
-                className="px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg flex items-center gap-2 cursor-move"
+                className="px-3 py-2 bg-gradient-to-r from-accent to-accent-hover text-white rounded-t-lg flex items-center gap-2 cursor-move"
                 onMouseDown={(e) => handleTableDragStart(e, table.id)}
               >
                 <Table2 className="w-4 h-4" />
@@ -771,7 +771,7 @@ const VisualQueryBuilderPage = () => {
                     <div
                       key={field.name}
                       className={`flex items-center gap-2 px-3 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0 cursor-pointer transition-colors ${
-                        isSelected ? 'bg-indigo-50 dark:bg-indigo-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                        isSelected ? 'bg-accent/10 dark:bg-accent/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
                       } ${isConnecting ? 'bg-green-100 dark:bg-green-900/30' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -790,10 +790,10 @@ const VisualQueryBuilderPage = () => {
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
-                        className="w-4 h-4 text-indigo-600 rounded"
+                        className="w-4 h-4 text-accent rounded"
                       />
                       <span className={`w-2 h-2 rounded-full ${
-                        field.type === 'number' ? 'bg-blue-500' :
+                        field.type === 'number' ? 'bg-accent' :
                         field.type === 'text' ? 'bg-green-500' :
                         field.type === 'date' ? 'bg-orange-500' :
                         'bg-gray-500'
@@ -803,7 +803,7 @@ const VisualQueryBuilderPage = () => {
                       
                       {/* Connection point */}
                       <div
-                        className="w-3 h-3 bg-indigo-500 rounded-full cursor-crosshair hover:scale-125 transition"
+                        className="w-3 h-3 bg-accent rounded-full cursor-crosshair hover:scale-125 transition"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (connecting) {
@@ -1008,7 +1008,7 @@ const VisualQueryBuilderPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 flex items-center gap-2 text-sm border-b-2 transition ${
                   activeTab === tab.id
-                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+                    ? 'border-indigo-500 text-accent dark:text-accent bg-accent/10 dark:bg-accent/20'
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
@@ -1025,7 +1025,7 @@ const VisualQueryBuilderPage = () => {
                 <button
                   key={type}
                   onClick={() => setChartType(type)}
-                  className={`p-2 rounded ${chartType === type ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                  className={`p-2 rounded ${chartType === type ? 'bg-accent/20 dark:bg-accent/20 text-accent' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                 >
                   {type === 'bar' && <ChartColumn className="w-4 h-4" />}
                   {type === 'line' && <ChartLine className="w-4 h-4" />}
@@ -1037,7 +1037,7 @@ const VisualQueryBuilderPage = () => {
           )}
           {/* Resize Handle */}
           <div
-            className="h-full w-2 cursor-ns-resize hover:bg-indigo-200 dark:hover:bg-indigo-800"
+            className="h-full w-2 cursor-ns-resize hover:bg-accent/20 dark:hover:bg-accent/20"
             onMouseDown={(e) => {
               const startY = e.clientY;
               const startHeight = bottomPanelHeight;
@@ -1144,17 +1144,17 @@ const VisualQueryBuilderPage = () => {
             <div className="p-4">
               {stats ? (
                 <div className="grid grid-cols-5 gap-4">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border-l-4 border-blue-500">
-                    <p className="text-xs text-blue-600 dark:text-blue-400 uppercase font-semibold">Count</p>
-                    <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{stats.count}</p>
+                  <div className="bg-accent/10 dark:bg-accent/20 p-4 rounded-lg border-l-4 border-accent">
+                    <p className="text-xs text-accent dark:text-accent/60 uppercase font-semibold">Count</p>
+                    <p className="text-2xl font-bold text-accent-hover dark:text-accent/40">{stats.count}</p>
                   </div>
                   <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border-l-4 border-green-500">
                     <p className="text-xs text-green-600 dark:text-green-400 uppercase font-semibold">Sum</p>
                     <p className="text-2xl font-bold text-green-700 dark:text-green-300">{stats.sum.toFixed(2)}</p>
                   </div>
-                  <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border-l-4 border-purple-500">
-                    <p className="text-xs text-purple-600 dark:text-purple-400 uppercase font-semibold">Average</p>
-                    <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{stats.avg.toFixed(2)}</p>
+                  <div className="bg-accent/10 dark:bg-accent/20 p-4 rounded-lg border-l-4 border-purple-500">
+                    <p className="text-xs text-accent dark:text-accent uppercase font-semibold">Average</p>
+                    <p className="text-2xl font-bold text-accent-hover dark:text-accent/80">{stats.avg.toFixed(2)}</p>
                   </div>
                   <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border-l-4 border-orange-500">
                     <p className="text-xs text-orange-600 dark:text-orange-400 uppercase font-semibold">Min</p>

@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
+import { getThemeColor } from '../../../lib/utils';
 
 const StressStrain = () => {
   // Typical stress-strain data for ductile material (steel)
@@ -43,42 +44,43 @@ const StressStrain = () => {
       <div className="h-72 w-full bg-white dark:bg-slate-800 rounded-lg p-4 border border-zinc-200 dark:border-zinc-700 relative">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 30 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#e5e7eb')} />
             <XAxis 
               dataKey="strain" 
-              label={{ value: 'Strain (ε)', position: 'insideBottom', offset: -10 }}
-              stroke="#9ca3af"
+              label={{ value: 'Strain (ε)', position: 'insideBottom', offset: -10, fill: getThemeColor('--color-text-secondary', '#6b7280') }}
+              stroke={getThemeColor('--color-text-muted', '#9ca3af')}
             />
             <YAxis 
-              label={{ value: 'Stress (σ) MPa', angle: -90, position: 'insideLeft' }}
-              stroke="#9ca3af"
+              label={{ value: 'Stress (σ) MPa', angle: -90, position: 'insideLeft', fill: getThemeColor('--color-text-secondary', '#6b7280') }}
+              stroke={getThemeColor('--color-text-muted', '#9ca3af')}
             />
             <Tooltip 
               contentStyle={{ 
-                backgroundColor: 'rgba(255,255,255,0.95)',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px'
+                backgroundColor: getThemeColor('--color-bg-primary', 'rgba(255,255,255,0.95)'),
+                border: `1px solid ${getThemeColor('--color-border', '#e5e7eb')}`,
+                borderRadius: '8px',
+                color: getThemeColor('--color-text-primary', '#111827')
               }}
               formatter={(value, name, props) => [
                 `${value} MPa`, 
                 `Stress (${props.payload.region})`
               ]}
             />
-            <ReferenceLine x={1.5} stroke="#ef4444" strokeDasharray="5 5" />
-            <ReferenceLine x={4} stroke="#f59e0b" strokeDasharray="5 5" />
+            <ReferenceLine x={1.5} stroke={getThemeColor('--color-danger', '#ef4444')} strokeDasharray="5 5" />
+            <ReferenceLine x={4} stroke={getThemeColor('--color-warning', '#f59e0b')} strokeDasharray="5 5" />
             <Line 
               type="monotone" 
               dataKey="stress" 
-              stroke="#52525b" 
+              stroke={getThemeColor('--color-text-primary', '#52525b')} 
               strokeWidth={3} 
-              dot={{ r: 4, fill: '#52525b' }}
-              activeDot={{ r: 6, fill: '#18181b' }}
+              dot={{ r: 4, fill: getThemeColor('--color-text-primary', '#52525b') }}
+              activeDot={{ r: 6, fill: getThemeColor('--color-accent', '#18181b') }}
             />
           </LineChart>
         </ResponsiveContainer>
 
         {/* Region Labels */}
-        <div className="absolute top-8 left-16 text-xs font-bold text-blue-600 dark:text-blue-400 bg-white/80 dark:bg-slate-800/80 px-2 py-1 rounded">
+        <div className="absolute top-8 left-16 text-xs font-bold text-accent dark:text-accent/60 bg-white/80 dark:bg-slate-800/80 px-2 py-1 rounded">
           Elastic Region
         </div>
         <div className="absolute top-16 right-24 text-xs font-bold text-red-600 dark:text-red-400 bg-white/80 dark:bg-slate-800/80 px-2 py-1 rounded">

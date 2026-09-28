@@ -1,0 +1,153 @@
+URL: http://localhost:4000/visual-data-analysis
+
+=== LIGHT MODE ===
+{
+  "checked": 35,
+  "issuesFound": 5,
+  "theme": "light",
+  "url": "/visual-data-analysis",
+  "worstIssues": [
+    {
+      "bg": "rgb(243, 244, 246)",
+      "classes": "text-lg font-medium",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 18,
+      "isLarge": false,
+      "ratio": 2.31,
+      "tag": "p",
+      "text": "No widgets yet",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(243, 244, 246)",
+      "classes": "text-sm",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.31,
+      "tag": "p",
+      "text": "Add charts and metrics from the sidebar",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400 font-medium",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "Charts",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400 font-medium mt-3",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "Other",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "p",
+      "text": "No saved dashboards",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 35,
+  "issuesFound": 7,
+  "theme": "dark",
+  "url": "/visual-data-analysis",
+  "worstIssues": [
+    {
+      "bg": "rgb(249, 250, 251)",
+      "classes": "px-3 py-1.5 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-70",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.43,
+      "tag": "a",
+      "text": "Data Upload",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(249, 250, 251)",
+      "classes": "px-3 py-1.5 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-70",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.43,
+      "tag": "a",
+      "text": "Query Builder",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(249, 250, 251)",
+      "classes": "px-3 py-1.5 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-70",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.43,
+      "tag": "a",
+      "text": "Report Builder",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-sm text-gray-500",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "span",
+      "text": "Untitled",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-xs font-semibold text-gray-500 uppercase mb-2",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "h3",
+      "text": "Add Widget",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-xs font-semibold text-gray-500 uppercase",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "h3",
+      "text": "Data Sources",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-sm font-semibold text-gray-500 mb-3",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "h3",
+      "text": "Saved Dashboards",
+      "threshold": 4.5
+    }
+  ]
+}

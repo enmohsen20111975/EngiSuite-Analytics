@@ -470,7 +470,7 @@ const FluidComponentPalette = ({ onDragStart }) => {
       {/* Header */}
       <div className="p-3 border-b border-gray-700">
         <h3 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
-          <Droplets className="w-4 h-4 text-blue-400" />
+          <Droplets className="w-4 h-4 text-accent/60" />
           Component Palette
         </h3>
       </div>
@@ -482,7 +482,7 @@ const FluidComponentPalette = ({ onDragStart }) => {
           placeholder="Search components..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 py-1.5 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500"
+          className="w-full px-3 py-1.5 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 placeholder-gray-500 focus:outline-none focus:border-accent"
         />
       </div>
       
@@ -571,7 +571,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
             type="text"
             value={component.label || ''}
             onChange={(e) => onUpdate({ label: e.target.value })}
-            className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+            className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
           />
         </div>
         
@@ -583,7 +583,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.flowRate}
               onChange={(e) => onUpdate({ properties: { ...component.properties, flowRate: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -595,7 +595,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.maxPressure}
               onChange={(e) => onUpdate({ properties: { ...component.properties, maxPressure: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -607,7 +607,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.bore}
               onChange={(e) => onUpdate({ properties: { ...component.properties, bore: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -619,7 +619,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.stroke}
               onChange={(e) => onUpdate({ properties: { ...component.properties, stroke: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -631,7 +631,7 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
               type="number"
               value={component.properties.setPressure}
               onChange={(e) => onUpdate({ properties: { ...component.properties, setPressure: parseFloat(e.target.value) } })}
-              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-blue-500"
+              className="w-full px-2 py-1 text-xs bg-gray-800 border border-gray-600 rounded text-gray-200 focus:outline-none focus:border-accent"
             />
           </div>
         )}
@@ -639,11 +639,11 @@ const FluidPropertiesPanel = ({ component, onUpdate, onDelete }) => {
         {/* Live State (when simulating) */}
         {component.state && Object.keys(component.state).length > 0 && (
           <div className="mt-4 p-2 bg-gray-800 rounded">
-            <h4 className="text-xs font-semibold text-blue-400 mb-2">Live State</h4>
+            <h4 className="text-xs font-semibold text-accent/60 mb-2">Live State</h4>
             {Object.entries(component.state).map(([key, value]) => (
               <div key={key} className="flex justify-between text-xs py-0.5">
                 <span className="text-gray-400">{key}:</span>
-                <span className="text-blue-400 font-mono">
+                <span className="text-accent/60 font-mono">
                   {typeof value === 'boolean' ? (value ? 'ON' : 'OFF') : 
                    typeof value === 'number' ? value.toFixed(2) : String(value)}
                 </span>
@@ -694,11 +694,11 @@ const FluidAnalysisPanel = ({ components, pipes, isSimulating }) => {
         {/* Statistics */}
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-gray-800 p-2 rounded">
-            <div className="text-lg font-bold text-blue-400">{components.length}</div>
+            <div className="text-lg font-bold text-accent/60">{components.length}</div>
             <div className="text-xs text-gray-400">Components</div>
           </div>
           <div className="bg-gray-800 p-2 rounded">
-            <div className="text-lg font-bold text-purple-400">{pipes.length}</div>
+            <div className="text-lg font-bold text-accent/60">{pipes.length}</div>
             <div className="text-xs text-gray-400">Pipes</div>
           </div>
           <div className="bg-gray-800 p-2 rounded">
@@ -734,7 +734,7 @@ const FluidAnalysisPanel = ({ components, pipes, isSimulating }) => {
             {isSimulating ? (
               <>
                 <div className="text-green-400">▶ Simulation started</div>
-                <div className="text-blue-400">💧 Pump P1 active</div>
+                <div className="text-accent/60">💧 Pump P1 active</div>
                 <div className="text-cyan-400">📊 Flow: 45.2 L/min</div>
               </>
             ) : (
@@ -1038,7 +1038,7 @@ const FluidSimulator = () => {
       <div className="h-12 bg-gray-900 border-b border-gray-700 flex items-center px-4 gap-4">
         {/* Logo & Title */}
         <div className="flex items-center gap-2">
-          <Droplets className="w-5 h-5 text-blue-400" />
+          <Droplets className="w-5 h-5 text-accent/60" />
           <span className="font-semibold text-sm">Fluid Simulator</span>
         </div>
         
@@ -1181,7 +1181,7 @@ const FluidSimulator = () => {
           <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded text-xs">
             <span className={`w-2 h-2 rounded-full ${isSimulating ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
             {isSimulating ? 'Simulation Running' : 'Ready'}
-            {connectionStart && <span className="text-blue-400 ml-2">• Piping Mode</span>}
+            {connectionStart && <span className="text-accent/60 ml-2">• Piping Mode</span>}
           </div>
         </div>
         
@@ -1206,7 +1206,7 @@ const FluidSimulator = () => {
         <button
           onClick={() => setActivePanel('properties')}
           className={`px-4 py-2 text-xs font-medium ${
-            activePanel === 'properties' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400'
+            activePanel === 'properties' ? 'text-accent/60 border-b-2 border-blue-400' : 'text-gray-400'
           }`}
         >
           Properties
@@ -1214,7 +1214,7 @@ const FluidSimulator = () => {
         <button
           onClick={() => setActivePanel('analysis')}
           className={`px-4 py-2 text-xs font-medium ${
-            activePanel === 'analysis' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-400'
+            activePanel === 'analysis' ? 'text-accent/60 border-b-2 border-blue-400' : 'text-gray-400'
           }`}
         >
           Analysis

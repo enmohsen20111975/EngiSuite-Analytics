@@ -17,26 +17,41 @@
     --color-border: hsl(220, 15%, 88%);
     --color-border-hover: hsl(220, 15%, 80%);
 
-    /* Accent */
+    /* Accent (hsl kept for canvas/getThemeColor; rgb triplets for Tailwind alpha) */
     --color-accent: hsl(188, 94%, 43%);
     --color-accent-hover: hsl(188, 94%, 38%);
     --color-accent-glow: hsl(188, 94%, 50%);
+    --color-accent-rgb: 8 145 178;
+    --color-accent-hover-rgb: 7 116 144;
+    --color-accent-glow-rgb: 34 211 238;
 
     /* Semantic */
     --color-success: hsl(160, 84%, 39%);
+    --color-success-hover: hsl(160, 84%, 34%);
     --color-warning: hsl(38, 92%, 50%);
+    --color-warning-hover: hsl(38, 92%, 45%);
     --color-danger: hsl(0, 84%, 60%);
+    --color-danger-hover: hsl(0, 84%, 55%);
     --color-info: hsl(199, 89%, 48%);
+    --color-info-hover: hsl(199, 89%, 43%);
+    --color-success-rgb: 16 185 129;
+    --color-success-hover-rgb: 5 150 105;
+    --color-warning-rgb: 245 158 11;
+    --color-warning-hover-rgb: 217 119 6;
+    --color-danger-rgb: 239 68 68;
+    --color-danger-hover-rgb: 220 38 38;
+    --color-info-rgb: 14 165 233;
+    --color-info-hover-rgb: 2 132 199;
   }
 
   .dark {
     /* Dark theme colors */
     --color-bg-primary: hsl(220, 30%, 8%);
-    --color-bg-secondary: hsl(220, 28%, 12%);
-    --color-bg-tertiary: hsl(220, 25%, 16%);
-    --color-text-primary: hsl(0, 0%, 95%);
-    --color-text-secondary: hsl(220, 10%, 70%);
-    --color-text-muted: hsl(220, 10%, 50%);
+    --color-bg-secondary: hsl(220, 25%, 11%);
+    --color-bg-tertiary: hsl(220, 20%, 14%);
+    --color-text-primary: hsl(220, 15%, 95%);
+    --color-text-secondary: hsl(220, 10%, 75%);
+    --color-text-muted: hsl(220, 10%, 65%); /* was 50% — too dim on dark backgrounds */
     --color-border: hsl(220, 20%, 20%);
     --color-border-hover: hsl(220, 20%, 28%);
 
@@ -44,6 +59,27 @@
     --color-accent: hsl(188, 94%, 50%);
     --color-accent-hover: hsl(188, 94%, 55%);
     --color-accent-glow: hsl(188, 94%, 60%);
+    --color-accent-rgb: 34 211 238;
+    --color-accent-hover-rgb: 45 212 191;
+    --color-accent-glow-rgb: 103 232 249;
+
+    /* Semantic — brighter for dark backgrounds (were missing, audit fix #3) */
+    --color-success: hsl(142, 65%, 50%);
+    --color-success-hover: hsl(142, 65%, 45%);
+    --color-warning: hsl(38, 90%, 55%);
+    --color-warning-hover: hsl(38, 90%, 50%);
+    --color-danger: hsl(0, 75%, 60%);
+    --color-danger-hover: hsl(0, 75%, 55%);
+    --color-info: hsl(199, 80%, 60%);
+    --color-info-hover: hsl(199, 80%, 55%);
+    --color-success-rgb: 34 197 94;
+    --color-success-hover-rgb: 22 163 74;
+    --color-warning-rgb: 251 191 36;
+    --color-warning-hover-rgb: 245 158 11;
+    --color-danger-rgb: 248 113 113;
+    --color-danger-hover-rgb: 239 68 68;
+    --color-info-rgb: 56 189 248;
+    --color-info-hover-rgb: 14 165 233;
   }
 
   html {
@@ -120,7 +156,7 @@
   }
 
   .bg-orb-2 {
-    @apply bg-gradient-to-br from-violet to-purple-300;
+    @apply bg-gradient-to-br from-rose to-pink-300;
     @apply w-80 h-80 top-1/2 -right-40;
     animation-delay: -5s;
   }

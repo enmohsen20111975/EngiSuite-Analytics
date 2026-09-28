@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Square, Activity, Zap, Settings, Info, Waves } from 'lucide-react';
+import { getThemeColor } from '../../../lib/utils';
 
 const SinamicsInverterFlow = () => {
   const [isRunning, setIsRunning] = useState(false);
@@ -35,13 +36,24 @@ const SinamicsInverterFlow = () => {
       const width = canvas.width;
       const height = canvas.height;
       const scopeHeight = height / 3;
-      
+
+      // Read theme tokens on every frame so the oscilloscope tracks the
+      // active theme + accent colour without needing a manual reload.
+      const bgScope = getThemeColor('--color-bg-primary', '#0f172a');
+      const gridStroke = getThemeColor('--color-border', '#334155');
+      const danger = getThemeColor('--color-danger', '#ef4444');
+      const warning = getThemeColor('--color-warning', '#eab308');
+      const success = getThemeColor('--color-success', '#22c55e');
+      const accent = getThemeColor('--color-accent', '#06b6d4');
+      const textMuted = getThemeColor('--color-text-muted', '#64748b');
+      const textSecondary = getThemeColor('--color-text-secondary', '#94a3b8');
+
       // Clear
-      ctx.fillStyle = '#0f172a';
+      ctx.fillStyle = bgScope;
       ctx.fillRect(0, 0, width, height);
 
       // Grid Lines
-      ctx.strokeStyle = '#334155';
+      ctx.strokeStyle = gridStroke;
       ctx.lineWidth = 1;
       ctx.beginPath();
       for(let x=0; x<width; x+=50) { ctx.moveTo(x, 0); ctx.lineTo(x, height); }
@@ -62,7 +74,7 @@ const SinamicsInverterFlow = () => {
       
       // L1
       ctx.beginPath();
-      ctx.strokeStyle = '#ef4444';
+      ctx.strokeStyle = danger;
       ctx.lineWidth = 2;
       for (let x = 0; x < width; x++) {
         const y = row1Base + Math.sin((x + t) * gridFreq) * phaseAmp;
@@ -72,7 +84,7 @@ const SinamicsInverterFlow = () => {
 
       // L2
       ctx.beginPath();
-      ctx.strokeStyle = '#eab308';
+      ctx.strokeStyle = warning;
       for (let x = 0; x < width; x++) {
         const y = row1Base + Math.sin((x + t) * gridFreq + (2*Math.PI/3)) * phaseAmp;
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
@@ -81,7 +93,7 @@ const SinamicsInverterFlow = () => {
 
       // L3
       ctx.beginPath();
-      ctx.strokeStyle = '#3b82f6';
+      ctx.strokeStyle = accent;
       for (let x = 0; x < width; x++) {
         const y = row1Base + Math.sin((x + t) * gridFreq + (4*Math.PI/3)) * phaseAmp;
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
@@ -92,7 +104,7 @@ const SinamicsInverterFlow = () => {
       const row2Base = scopeHeight + (scopeHeight / 2);
       
       ctx.beginPath();
-      ctx.strokeStyle = '#22c55e';
+      ctx.strokeStyle = success;
       ctx.lineWidth = 3;
       
       let lastDC = 0;
@@ -117,7 +129,7 @@ const SinamicsInverterFlow = () => {
       ctx.stroke();
       
       // Draw 0V Reference for DC
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = textMuted;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
       ctx.moveTo(0, row2Base + phaseAmp);
@@ -134,7 +146,7 @@ const SinamicsInverterFlow = () => {
       
       // Draw Ref Sine (Ghost)
       ctx.beginPath();
-      ctx.strokeStyle = '#94a3b8';
+      ctx.strokeStyle = textSecondary;
       ctx.lineWidth = 1;
       for (let x = 0; x < width; x++) {
         const y = row3Base + Math.sin((x + t*2) * outFreq) * outAmp;
@@ -144,7 +156,7 @@ const SinamicsInverterFlow = () => {
 
       // Draw PWM Pulses
       ctx.beginPath();
-      ctx.strokeStyle = '#06b6d4';
+      ctx.strokeStyle = accent;
       ctx.lineWidth = 2;
       
       for (let x = 0; x < width; x++) {
@@ -269,7 +281,7 @@ const SinamicsInverterFlow = () => {
                 </div>
             </div>
 
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-xs rounded border border-blue-100 dark:border-blue-800 flex gap-2">
+            <div className="p-3 bg-accent/10 dark:bg-accent/20 text-accent-hover dark:text-accent/40 text-xs rounded border border-blue-100 dark:border-accent/30 flex gap-2">
                 <Info size={16} className="flex-shrink-0" />
                 The drive varies the PWM Pulse Width to simulate Analog Voltage. Wide pulses = High Voltage.
             </div>

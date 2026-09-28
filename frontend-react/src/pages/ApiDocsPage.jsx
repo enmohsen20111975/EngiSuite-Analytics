@@ -134,7 +134,7 @@ export default function ApiDocsPage() {
     <div className="max-w-6xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 dark:bg-accent/20 text-accent mb-4">
           <Code className="w-8 h-8" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -153,16 +153,16 @@ export default function ApiDocsPage() {
               Getting Started
             </h3>
             <nav className="space-y-2">
-              <a href="#overview" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">
+              <a href="#overview" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-accent">
                 Overview
               </a>
-              <a href="#authentication" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">
+              <a href="#authentication" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-accent">
                 Authentication
               </a>
-              <a href="#rate-limits" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">
+              <a href="#rate-limits" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-accent">
                 Rate Limits
               </a>
-              <a href="#errors" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">
+              <a href="#errors" className="block text-sm text-gray-600 dark:text-gray-400 hover:text-accent">
                 Errors
               </a>
             </nav>
@@ -177,7 +177,7 @@ export default function ApiDocsPage() {
                   <a
                     key={key}
                     href={`#${key}`}
-                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600"
+                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-accent"
                   >
                     <Icon className="w-4 h-4" />
                     {section.name}
@@ -193,7 +193,7 @@ export default function ApiDocsPage() {
           {/* Overview */}
           <Card className="p-6" id="overview">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-blue-500" />
+              <Globe className="w-5 h-5 text-accent" />
               Overview
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -203,7 +203,7 @@ export default function ApiDocsPage() {
             </p>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
               <p className="text-sm font-mono text-gray-900 dark:text-white">
-                Base URL: <code className="text-blue-600">https://api.engisuite.com/v1</code>
+                Base URL: <code className="text-accent">https://api.engisuite.com/v1</code>
               </p>
             </div>
           </Card>
@@ -211,7 +211,7 @@ export default function ApiDocsPage() {
           {/* Authentication */}
           <Card className="p-6" id="authentication">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Key className="w-5 h-5 text-blue-500" />
+              <Key className="w-5 h-5 text-accent" />
               Authentication
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -231,14 +231,14 @@ export default function ApiDocsPage() {
             </div>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
               Get your API key from the{' '}
-              <a href="/settings" className="text-blue-600 hover:text-blue-700">Settings page</a>.
+              <a href="/settings" className="text-accent hover:text-accent-hover">Settings page</a>.
             </p>
           </Card>
 
           {/* Code Example */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Play className="w-5 h-5 text-blue-500" />
+              <Play className="w-5 h-5 text-accent" />
               Quick Start Example
             </h2>
             
@@ -251,7 +251,7 @@ export default function ApiDocsPage() {
                   className={cn(
                     'px-3 py-1.5 text-sm rounded-lg transition-colors',
                     selectedLanguage === lang
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      ? 'bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60'
                       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                   )}
                 >
@@ -286,7 +286,7 @@ export default function ApiDocsPage() {
                   className="w-full flex items-center justify-between"
                 >
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Icon className="w-5 h-5 text-blue-500" />
+                    <Icon className="w-5 h-5 text-accent" />
                     {section.name}
                   </h2>
                   {isExpanded ? (
@@ -306,7 +306,7 @@ export default function ApiDocsPage() {
                         <span className={cn(
                           'px-2 py-0.5 text-xs font-medium rounded',
                           endpoint.method === 'GET' && 'bg-green-100 text-green-700',
-                          endpoint.method === 'POST' && 'bg-blue-100 text-blue-700',
+                          endpoint.method === 'POST' && 'bg-accent/20 text-accent-hover',
                           endpoint.method === 'PUT' && 'bg-yellow-100 text-yellow-700',
                           endpoint.method === 'DELETE' && 'bg-red-100 text-red-700',
                         )}>

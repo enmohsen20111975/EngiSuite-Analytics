@@ -1,0 +1,170 @@
+- generic [ref=e732] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e736]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e778]
+        - listitem [level=1]
+          - link "Calculators" [ref=e779]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e780]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e781]
+        - listitem [level=1]
+          - link "Projects" [ref=e782]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e783]
+        - listitem [level=1]
+          - link "Reports" [ref=e784]
+        - listitem [level=1]
+          - link "Projects" [ref=e785]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e786]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e787]
+        - listitem [level=1]
+          - link "Pricing" [ref=e788]
+      - button "TOOLS" [ref=e760]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e789]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e790]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e791]
+        - listitem [level=1]
+          - link "Analytics" [ref=e792]
+      - button "INTERACTIVE SIMULATORS" [ref=e761]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e770]
+      - listitem [level=1]
+        - link "Settings" [ref=e771]
+    - button [ref=e737]
+  - banner
+    - textbox "Search..." [ref=e733]
+    - button "100 pts" [ref=e734]
+    - button "Language" [ref=e738]
+    - button [ref=e739]
+    - button [ref=e735]
+    - button "T" [ref=e740]
+  - main
+    - heading "Learning Center" [level=1, ref=e741]
+    - paragraph
+    - textbox "Search..." [ref=e762]
+    - StaticText "0"
+    - StaticText "% Complete"
+    - paragraph
+    - paragraph
+    - paragraph
+    - paragraph
+    - paragraph
+    - paragraph
+    - paragraph
+    - paragraph
+    - heading "Recommended for You" [level=3, ref=e742]
+    - StaticText "3 picks"
+    - paragraph
+    - button "Hide section" [ref=e743]
+    - heading "Electrical Circuits Fundamentals" [level=4, ref=e744]
+    - paragraph
+    - StaticText "beginner"
+    - heading "Structural Analysis Basics" [level=4, ref=e745]
+    - paragraph
+    - StaticText "intermediate"
+    - heading "Thermodynamics Introduction" [level=4, ref=e746]
+    - paragraph
+    - StaticText "beginner"
+    - heading "SINAMICS Masterclass" [level=3, ref=e747]
+    - paragraph
+    - StaticText "intermediate"
+    - StaticText "20 hours"
+    - StaticText "45"
+    - StaticText " lessons"
+    - button "Hide section" [ref=e748]
+    - StaticText "Interactive motor simulations"
+    - StaticText "PID tuning lab"
+    - StaticText "Power electronics visualization"
+    - StaticText "Real-world fault troubleshooting"
+    - heading "COURSE MODULES" [level=4, ref=e749]
+    - StaticText "1. Introduction to SINAMICS"
+    - paragraph
+    - StaticText "2. Fundamentals of Drives"
+    - paragraph
+    - StaticText "Lab: Inverter Power Flow"
+    - paragraph
+    - StaticText "3. Motor Control Modes"
+    - paragraph
+    - StaticText "Lab: Motor Control Modes"
+    - paragraph
+    - StaticText "5. Speed Controller Tuning"
+    - paragraph
+    - button "Start Course" [ref=e750]
+    - button "Try Motor Lab Demo" [ref=e751]
+    - heading "KineticGeometry Lab" [level=3, ref=e752]
+    - paragraph
+    - StaticText "intermediate"
+    - StaticText "15 hours"
+    - StaticText "25"
+    - StaticText " lessons"
+    - button "Hide section" [ref=e753]
+    - StaticText "Parametric curves"
+    - StaticText "Fractal exploration"
+    - StaticText "Interactive coordinate systems"
+    - StaticText "Mathematical proofs"
+    - heading "COURSE MODULES" [level=4, ref=e754]
+    - StaticText "1. Foundations of Geometric Motion"
+    - paragraph
+    - StaticText "2. Parametric Curves"
+    - paragraph
+    - StaticText "3. Fractals & Chaos"
+    - paragraph
+    - button "Start Course" [ref=e755]
+    - button "Explore Lissajous Curves" [ref=e756]
+    - heading "Master Industry-Leading Certifications" [level=3, ref=e757]
+    - StaticText "New"
+    - paragraph
+    - StaticText "7"
+    - StaticText " certification paths"
+    - StaticText "7"
+    - StaticText " available now"
+    - StaticText "265"
+    - StaticText " guided hours"
+    - button "Hide section" [ref=e758]
+    - StaticText "7"
+    - StaticText "Real certification tracks"
+    - StaticText "35"
+    - StaticText "Learning objects"
+    - StaticText "7"
+    - StaticText "Open now"
+    - StaticText "265"
+    - StaticText "Planned learning hours"
+    - button "CMRP Available CMRP (Certified Maintenance & Reliability Professional) professional 40 hours 50 lessons" [ref=e759]
+      - heading "CMRP" [level=4, ref=e763]
+    - paragraph
+    - StaticText "WHAT YOU WILL STUDY"
+    - list
+    - StaticText "5 SMRP pillars"
+    - StaticText "Industry-recognized path"
+    - StaticText "Reliability leadership focus"
+    - StaticText "5"
+    - StaticText " structured modules"
+    - StaticText "Open close enabled"
+    - button "CAMA Available CAMA (Certified Asset Management Assessor) intermediate 30 hours 30 lessons" [ref=e764]
+      - heading "CAMA" [level=4, ref=e772]
+    - button "CRE Available CRE (Certified Reliability Engineer) advanced 35 hours 35 lessons" [ref=e765]
+      - heading "CRE" [level=4, ref=e773]
+    - button "PMP Available PMP (Project Management Professional) intermediate 45 hours 45 lessons" [ref=e766]
+      - heading "PMP" [level=4, ref=e774]
+    - button "Lean Six Sigma Available Lean Six Sigma Green Belt intermediate 50 hours 50 lessons" [ref=e767]
+      - heading "Lean Six Sigma" [level=4, ref=e775]
+    - button "MLT I Available MLT I (Machinery Lubrication Technician) beginner 25 hours 25 lessons" [ref=e768]
+      - heading "MLT I" [level=4, ref=e776]
+    - button "CRL Available CRL (Certified Reliability Leader) advanced 40 hours 40 lessons" [ref=e769]
+      - heading "CRL" [level=4, ref=e777]

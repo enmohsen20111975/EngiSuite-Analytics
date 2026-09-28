@@ -139,7 +139,7 @@ export default function AdminEquationsPage() {
                 <span className={cn(
                   'px-2 py-1 text-xs font-medium rounded-full',
                   eq.category === 'Electrical' ? 'bg-yellow-100 text-yellow-700' :
-                  eq.category === 'Mechanical' ? 'bg-blue-100 text-blue-700' :
+                  eq.category === 'Mechanical' ? 'bg-accent/20 text-accent-hover' :
                   eq.category === 'Civil' ? 'bg-green-100 text-green-700' :
                   'bg-gray-100 text-gray-700'
                 )}>

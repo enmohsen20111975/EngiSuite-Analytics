@@ -1,0 +1,62 @@
+- generic [ref=e295] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e299]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e313]
+        - listitem [level=1]
+          - link "Calculators" [ref=e314]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e315]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e316]
+        - listitem [level=1]
+          - link "Projects" [ref=e317]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e318]
+        - listitem [level=1]
+          - link "Reports" [ref=e319]
+        - listitem [level=1]
+          - link "Projects" [ref=e320]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e321]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e322]
+        - listitem [level=1]
+          - link "Pricing" [ref=e323]
+      - button "TOOLS" [ref=e309]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e324]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e325]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e326]
+        - listitem [level=1]
+          - link "Analytics" [ref=e327]
+      - button "INTERACTIVE SIMULATORS" [ref=e310]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e311]
+      - listitem [level=1]
+        - link "Settings" [ref=e312]
+    - button [ref=e300]
+  - banner
+    - textbox "Search..." [ref=e296]
+    - button "100 pts" [ref=e297]
+    - button "Language" [ref=e301]
+    - button [ref=e302]
+    - button [ref=e298]
+    - button "T" [ref=e303]
+  - main
+    - heading "Projects" [level=1, ref=e304]
+    - button "New Project" [ref=e305]
+    - heading "Your Projects" [level=2, ref=e306]
+    - heading "No projects yet" [level=3, ref=e307]
+    - button "Create Project" [ref=e308]

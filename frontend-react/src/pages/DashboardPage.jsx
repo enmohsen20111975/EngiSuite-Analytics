@@ -50,7 +50,7 @@ function QuickAction({ icon: Icon, label, to, color, bgColor }) {
       <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-2", bgColor)}>
         <Icon className={cn("w-5 h-5", color)} />
       </div>
-      <span className="text-xs font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+      <span className="text-xs font-medium text-gray-700 dark:text-gray-300 group-hover:text-accent">
         {label}
       </span>
     </Link>
@@ -64,7 +64,7 @@ function ToolCard({ icon: Icon, title, subtitle, description, to, color, bgColor
   return (
     <Link
       to={to}
-      className="block p-5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all group"
+      className="block p-5 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:border-accent dark:hover:border-accent hover:shadow-lg transition-all group"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", bgColor)}>
@@ -82,7 +82,7 @@ function ToolCard({ icon: Icon, title, subtitle, description, to, color, bgColor
       <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
         {description}
       </p>
-      <div className="mt-3 flex items-center text-xs text-blue-600 dark:text-blue-400 font-medium">
+      <div className="mt-3 flex items-center text-xs text-accent font-medium">
         Open Tool <ChevronRight className="w-3 h-3 ml-1" />
       </div>
     </Link>
@@ -222,11 +222,11 @@ export default function DashboardPage() {
         />
         <StatCard
           icon={Calculator}
-          iconColor="text-purple-500"
+          iconColor="text-accent"
           label="Equations"
           value={stats.equations}
           sublabel="Available"
-          bgColor="bg-purple-500/10"
+          bgColor="bg-accent/10"
         />
         <StatCard
           icon={Layers}
@@ -251,9 +251,9 @@ export default function DashboardPage() {
                 Latest Calculations
               </h3>
             </div>
-            <Link 
-              to="/calculators" 
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            <Link
+              to="/calculators"
+              className="text-sm text-accent hover:underline"
             >
               View All →
             </Link>
@@ -261,7 +261,7 @@ export default function DashboardPage() {
           
           {isLoading ? (
             <div className="flex justify-center py-8">
-              <Loader className="w-8 h-8 animate-spin text-blue-500" />
+              <Loader className="w-8 h-8 animate-spin text-accent" />
             </div>
           ) : (
             <div className="space-y-1">
@@ -387,13 +387,13 @@ export default function DashboardPage() {
       {/* Simulators Section */}
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-            <CircuitBoard className="w-4 h-4 text-blue-500" />
+          <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+            <CircuitBoard className="w-4 h-4 text-accent" />
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white">
             Circuit Simulators
           </h3>
-          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/20 text-blue-500">
+          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-accent/20 text-accent">
             NEW
           </span>
         </div>
@@ -414,8 +414,8 @@ export default function DashboardPage() {
             subtitle="Hydraulic systems"
             description="Simulate hydraulic and pneumatic circuits with pumps, valves, and actuators."
             to="/simulators/fluid"
-            color="text-blue-500"
-            bgColor="bg-blue-500/10"
+            color="text-accent"
+            bgColor="bg-accent/10"
           />
           <ToolCard
             icon={Zap}
@@ -443,12 +443,12 @@ export default function DashboardPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <FolderKanban className="w-4 h-4 text-blue-500" />
+              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <FolderKanban className="w-4 h-4 text-accent" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white">My Projects</h3>
             </div>
-            <Link to="/projects" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <Link to="/projects" className="text-sm text-accent hover:underline">
               View All →
             </Link>
           </div>
@@ -463,7 +463,7 @@ export default function DashboardPage() {
                     <span className="text-xs text-gray-500">{Math.round(project.progress || 0)}%</span>
                   </div>
                   <div className="mt-2 w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, project.progress || 0)}%` }} />
+                    <div className="h-full bg-accent rounded-full" style={{ width: `${Math.min(100, project.progress || 0)}%` }} />
                   </div>
                 </Link>
               ))
@@ -479,7 +479,7 @@ export default function DashboardPage() {
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white">My Tasks</h3>
             </div>
-            <Link to="/projects" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <Link to="/projects" className="text-sm text-accent hover:underline">
               View All →
             </Link>
           </div>
@@ -504,16 +504,16 @@ export default function DashboardPage() {
         <Card className="lg:col-span-2 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                <GraduationCap className="w-4 h-4 text-indigo-500" />
+              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <GraduationCap className="w-4 h-4 text-accent" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white">
                 Learning Courses
               </h3>
             </div>
-            <Link 
-              to="/learning" 
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            <Link
+              to="/learning"
+              className="text-sm text-accent hover:underline"
             >
               Browse All →
             </Link>
@@ -535,8 +535,8 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-indigo-500 rounded-full"
+                    <div
+                      className="h-full bg-accent rounded-full"
                       style={{ width: `${course.progress}%` }}
                     />
                   </div>
@@ -563,17 +563,17 @@ export default function DashboardPage() {
           <div className="space-y-3">
             <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                💡 Try the new <Link to="/calculators?domain=electrical" className="text-blue-600 dark:text-blue-400 hover:underline">Cable Sizing Calculator</Link> for your next project.
+                💡 Try the new <Link to="/calculators?domain=electrical" className="text-accent hover:underline">Cable Sizing Calculator</Link> for your next project.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                📚 Continue with <Link to="/learning" className="text-blue-600 dark:text-blue-400 hover:underline">Electrical Fundamentals</Link> course.
+                📚 Continue with <Link to="/learning" className="text-accent hover:underline">Electrical Fundamentals</Link> course.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                🚀 New: <Link to="/visual-workflow" className="text-blue-600 dark:text-blue-400 hover:underline">Visual Workflow Builder</Link> is now available.
+                🚀 New: <Link to="/visual-workflow" className="text-accent hover:underline">Visual Workflow Builder</Link> is now available.
               </p>
             </div>
           </div>

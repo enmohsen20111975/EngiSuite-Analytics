@@ -16,8 +16,8 @@ const Card = forwardRef(({
       ref={ref}
       className={cn(
         'rounded-2xl border border-[var(--color-border)]',
-        'bg-white dark:bg-gray-900/80',
-        glass && 'backdrop-blur-xl bg-white/80 dark:bg-gray-900/80',
+        'bg-[var(--color-bg-primary)]',
+        glass && 'backdrop-blur-xl bg-[var(--color-bg-primary)]/80',
         hover && 'transition-all duration-300 ease-out hover:shadow-xl hover:shadow-accent/5 hover:border-accent/30',
         !hover && 'shadow-lg',
         className

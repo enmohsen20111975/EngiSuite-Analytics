@@ -1,0 +1,137 @@
+URL: http://localhost:4000/learning
+
+=== LIGHT MODE ===
+{
+  "checked": 34,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 33,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x2614",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgb(220, 252, 231)",
+      "classes": "flex items-center gap-2 px-3 py-2 bg-green-100 dark:bg-green",
+      "size": "138x36",
+      "tag": "div",
+      "text": "0% Complete"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Courses0"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Total Lessons0"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Current Viewcourses"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Completed0"
+    }
+  ],
+  "theme": "light",
+  "url": "/learning"
+}
+
+=== DARK MODE ===
+{
+  "checked": 35,
+  "darkBgBoxes": 22,
+  "lightBgBoxes": 0,
+  "sampleDark": [
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x2614",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Courses0"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Total Lessons0"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Current Viewcourses"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "272x82",
+      "tag": "div",
+      "text": "Completed0"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "1136x233",
+      "tag": "div",
+      "text": "Recommended for You3 picksQuick starts s"
+    }
+  ],
+  "sampleLight": [],
+  "theme": "dark",
+  "url": "/learning"
+}

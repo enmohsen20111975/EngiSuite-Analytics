@@ -16,12 +16,12 @@ import { useVDAData } from '../contexts/VDADataContext';
 
 // Widget Types
 const WIDGET_TYPES = {
-  header: { icon: Type, label: 'Header', color: 'text-blue-500' },
+  header: { icon: Type, label: 'Header', color: 'text-accent' },
   text: { icon: FileText, label: 'Text Block', color: 'text-gray-500' },
   table: { icon: Table2, label: 'Data Table', color: 'text-green-500' },
-  chart: { icon: ChartColumn, label: 'Chart', color: 'text-purple-500' },
+  chart: { icon: ChartColumn, label: 'Chart', color: 'text-accent' },
   image: { icon: Image, label: 'Image', color: 'text-orange-500' },
-  metric: { icon: Hash, label: 'Metric Card', color: 'text-indigo-500' },
+  metric: { icon: Hash, label: 'Metric Card', color: 'text-accent' },
   divider: { icon: Minimize2, label: 'Divider', color: 'text-gray-400' },
   spacer: { icon: Grid3x3, label: 'Spacer', color: 'text-gray-300' }
 };
@@ -578,7 +578,7 @@ const VisualReportBuilderPage = () => {
                   <button
                     key={type}
                     onClick={() => addWidget(type)}
-                    className="flex flex-col items-center gap-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border-2 border-transparent hover:border-indigo-300 transition"
+                    className="flex flex-col items-center gap-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 border-2 border-transparent hover:border-accent/30 transition"
                   >
                     <Icon className={`w-6 h-6 ${config.color}`} />
                     <span className="text-xs text-gray-600 dark:text-gray-300">{config.label}</span>
@@ -598,10 +598,10 @@ const VisualReportBuilderPage = () => {
                   <button
                     key={template.id}
                     onClick={() => applyTemplate(template)}
-                    className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 border-2 border-transparent hover:border-indigo-300 transition text-left"
+                    className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20 border-2 border-transparent hover:border-accent/30 transition text-left"
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <Icon className="w-5 h-5 text-indigo-500" />
+                      <Icon className="w-5 h-5 text-accent" />
                       <span className="font-medium text-gray-800 dark:text-white text-sm">{template.name}</span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{template.description}</p>
@@ -808,15 +808,15 @@ const VisualReportBuilderPage = () => {
                   {selectedWidget === widget.id && (
                     <>
                       <div
-                        className="absolute right-0 bottom-0 w-4 h-4 cursor-se-resize bg-indigo-500"
+                        className="absolute right-0 bottom-0 w-4 h-4 cursor-se-resize bg-accent"
                         onMouseDown={(e) => handleResizeStart(e, 'se')}
                       />
                       <div
-                        className="absolute right-0 top-0 w-4 h-4 cursor-e-resize bg-indigo-500"
+                        className="absolute right-0 top-0 w-4 h-4 cursor-e-resize bg-accent"
                         onMouseDown={(e) => handleResizeStart(e, 'e')}
                       />
                       <div
-                        className="absolute left-0 bottom-0 w-4 h-4 cursor-s-resize bg-indigo-500"
+                        className="absolute left-0 bottom-0 w-4 h-4 cursor-s-resize bg-accent"
                         onMouseDown={(e) => handleResizeStart(e, 's')}
                       />
                     </>

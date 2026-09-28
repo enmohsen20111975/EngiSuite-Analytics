@@ -46,8 +46,8 @@ export default function AdminSystemPage() {
       <div className="grid md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Server className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-accent/20 dark:bg-accent/20 rounded-lg">
+              <Server className="w-5 h-5 text-accent" />
             </div>
             <div>
               <p className="text-sm text-gray-500">CPU Usage</p>
@@ -55,7 +55,7 @@ export default function AdminSystemPage() {
             </div>
           </div>
           <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500" style={{ width: `${metrics?.cpu || 0}%` }} />
+            <div className="h-full bg-accent" style={{ width: `${metrics?.cpu || 0}%` }} />
           </div>
         </Card>
         <Card className="p-4">
@@ -88,8 +88,8 @@ export default function AdminSystemPage() {
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <RefreshCw className="w-5 h-5 text-purple-600" />
+            <div className="p-2 bg-accent/20 dark:bg-accent/20 rounded-lg">
+              <RefreshCw className="w-5 h-5 text-accent" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Uptime</p>
@@ -162,7 +162,7 @@ export default function AdminSystemPage() {
                 log.level === 'DEBUG' && 'text-gray-400',
               )}>
                 <span className="text-gray-500">[{new Date(log.timestamp).toLocaleString()}]</span>{' '}
-                <span className="text-blue-400">[{log.level}]</span>{' '}
+                <span className="text-accent/60">[{log.level}]</span>{' '}
                 <span>{log.message}</span>
               </div>
             ))

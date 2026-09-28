@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                   <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center text-white font-medium">
                           {(user.full_name || user.email || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -145,8 +145,8 @@ export default function AdminUsersPage() {
                     <td className="py-3 px-4">
                       <span className={cn(
                         'px-2 py-1 text-xs font-medium rounded-full',
-                        user.subscription_plan === 'pro' ? 'bg-purple-100 text-purple-700' :
-                        user.subscription_plan === 'enterprise' ? 'bg-blue-100 text-blue-700' :
+                        user.subscription_plan === 'pro' ? 'bg-accent/20 text-accent-hover' :
+                        user.subscription_plan === 'enterprise' ? 'bg-accent/20 text-accent-hover' :
                         'bg-gray-100 text-gray-700'
                       )}>
                         {user.subscription_plan || 'Free'}
@@ -252,7 +252,7 @@ export default function AdminUsersPage() {
         <Modal isOpen={showUserModal} onClose={() => setShowUserModal(false)} title="User Details">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-medium">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center text-white text-2xl font-medium">
                 {(selectedUser.full_name || selectedUser.email || 'U').charAt(0).toUpperCase()}
               </div>
               <div>

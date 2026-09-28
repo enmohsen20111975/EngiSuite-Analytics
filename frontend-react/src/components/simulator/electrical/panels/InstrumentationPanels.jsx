@@ -167,7 +167,7 @@ export const ThreePhaseMeterPanel = memo(({
       padding: '16px',
       border: '1px solid #ddd',
     }}>
-      <h4 style={{ margin: '0 0 12px 0', color: '#333' }}>{title}</h4>
+      <h4 style={{ margin: '0 0 12px 0', color: 'var(--color-text-primary)' }}>{title}</h4>
       
       {/* Voltage gauges */}
       <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '16px' }}>
@@ -215,20 +215,20 @@ export const ThreePhaseMeterPanel = memo(({
         borderRadius: '4px',
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Frequency</div>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Frequency</div>
           <div style={{ color: '#22c55e', fontSize: '16px', fontFamily: 'monospace' }}>
             {frequency.toFixed(2)} Hz
           </div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Power Factor</div>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Power Factor</div>
           <div style={{ color: powerFactor < 0.9 ? '#f59e0b' : '#22c55e', fontSize: '16px', fontFamily: 'monospace' }}>
             {powerFactor.toFixed(2)}
           </div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Active Power</div>
-          <div style={{ color: '#3b82f6', fontSize: '16px', fontFamily: 'monospace' }}>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Active Power</div>
+          <div style={{ color: 'var(--color-accent)', fontSize: '16px', fontFamily: 'monospace' }}>
             {activePower.toFixed(1)} kW
           </div>
         </div>
@@ -335,7 +335,7 @@ export const Oscilloscope = memo(({
             />
             <Tooltip
               contentStyle={{ backgroundColor: '#333', border: 'none', borderRadius: '4px' }}
-              labelStyle={{ color: '#888' }}
+              labelStyle={{ color: 'var(--color-text-muted)' }}
             />
             {channels.filter(ch => ch.enabled).map(channel => (
               <Line
@@ -363,7 +363,7 @@ export const Oscilloscope = memo(({
       }}>
         {/* Timebase */}
         <div>
-          <label style={{ color: '#888', fontSize: '10px', display: 'block' }}>Time/Div</label>
+          <label style={{ color: 'var(--color-text-muted)', fontSize: '10px', display: 'block' }}>Time/Div</label>
           <select
             value={currentTimebase}
             onChange={(e) => setCurrentTimebase(Number(e.target.value))}
@@ -386,7 +386,7 @@ export const Oscilloscope = memo(({
         
         {/* Voltage scale */}
         <div>
-          <label style={{ color: '#888', fontSize: '10px', display: 'block' }}>V/Div</label>
+          <label style={{ color: 'var(--color-text-muted)', fontSize: '10px', display: 'block' }}>V/Div</label>
           <select
             value={currentVoltageScale}
             onChange={(e) => setCurrentVoltageScale(Number(e.target.value))}
@@ -409,7 +409,7 @@ export const Oscilloscope = memo(({
         
         {/* Channel toggles */}
         <div>
-          <label style={{ color: '#888', fontSize: '10px', display: 'block' }}>Channels</label>
+          <label style={{ color: 'var(--color-text-muted)', fontSize: '10px', display: 'block' }}>Channels</label>
           <div style={{ display: 'flex', gap: '4px' }}>
             {channels.map(ch => (
               <span
@@ -419,7 +419,7 @@ export const Oscilloscope = memo(({
                   backgroundColor: ch.enabled ? ch.color : '#333',
                   borderRadius: '3px',
                   fontSize: '10px',
-                  color: ch.enabled ? '#fff' : '#666',
+                  color: ch.enabled ? '#fff' : 'var(--color-text-muted)',
                   cursor: 'pointer',
                 }}
               >
@@ -468,7 +468,7 @@ export const HarmonicAnalyzer = memo(({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <h4 style={{ margin: 0 }}>{title}</h4>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '10px', color: '#666' }}>THD</div>
+          <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>THD</div>
           <div style={{
             fontSize: '20px',
             fontWeight: 'bold',
@@ -487,7 +487,7 @@ export const HarmonicAnalyzer = memo(({
             <XAxis dataKey="order" stroke="#666" fontSize={10} label={{ value: 'Harmonic Order', position: 'insideBottom', fill: '#666' }} />
             <YAxis stroke="#666" fontSize={10} label={{ value: '% of Fundamental', angle: -90, position: 'insideLeft', fill: '#666' }} />
             <Tooltip contentStyle={{ backgroundColor: '#333', border: 'none', borderRadius: '4px' }} />
-            <Bar dataKey="magnitude" fill="#3b82f6" name="Measured" />
+            <Bar dataKey="magnitude" fill="var(--color-accent)" name="Measured" />
             <Line type="monotone" dataKey="limit" stroke="#ef4444" strokeWidth={2} strokeDasharray="5,5" name="Limit" dot={false} />
           </ComposedChart>
         </ResponsiveContainer>
@@ -512,7 +512,7 @@ export const HarmonicAnalyzer = memo(({
             borderRadius: '50%',
             backgroundColor: thd > 8 ? '#ef4444' : '#22c55e',
           }} />
-          <span style={{ fontSize: '12px', color: '#333' }}>
+          <span style={{ fontSize: '12px', color: 'var(--color-text-primary)' }}>
             {thd > 8 ? `Exceeds ${standard} limits` : `Compliant with ${standard}`}
           </span>
         </div>
@@ -638,7 +638,7 @@ export const PhasorDiagram = memo(({
       
       {/* PF indicator */}
       <div style={{ textAlign: 'center', marginTop: '8px' }}>
-        <span style={{ fontSize: '12px', color: '#666' }}>Power Factor: </span>
+        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Power Factor: </span>
         <span style={{ fontWeight: 'bold', color: powerFactor < 0.9 ? '#f59e0b' : '#22c55e' }}>
           {powerFactor.toFixed(2)} {powerFactor < 1 ? 'lagging' : ''}
         </span>
@@ -676,17 +676,17 @@ export const PowerFlowDisplay = memo(({
         <polygon
           points="20,120 180,120 180,120"
           fill="none"
-          stroke="#3b82f6"
+          stroke="var(--color-accent)"
           strokeWidth="2"
         />
         <line x1="20" y1="120" x2="180" y2="120" stroke="#22c55e" strokeWidth="3" />
         <line x1="180" y1="120" x2="180" y2={120 - (reactivePower / activePower) * 100} stroke="#f59e0b" strokeWidth="3" />
-        <line x1="20" y1="120" x2="180" y2={120 - (reactivePower / activePower) * 100} stroke="#3b82f6" strokeWidth="3" />
+        <line x1="20" y1="120" x2="180" y2={120 - (reactivePower / activePower) * 100} stroke="var(--color-accent)" strokeWidth="3" />
         
         {/* Labels */}
         <text x="100" y="140" textAnchor="middle" fontSize="10" fill="#22c55e">P = {activePower.toFixed(1)} kW</text>
         <text x="185" y={70 + (reactivePower / activePower) * 50} textAnchor="start" fontSize="10" fill="#f59e0b">Q = {reactivePower.toFixed(1)} kVAr</text>
-        <text x="80" y="50" textAnchor="middle" fontSize="10" fill="#3b82f6">S = {apparentPower.toFixed(1)} kVA</text>
+        <text x="80" y="50" textAnchor="middle" fontSize="10" fill="var(--color-accent)">S = {apparentPower.toFixed(1)} kVA</text>
         
         {/* Angle indicator */}
         <path
@@ -711,7 +711,7 @@ export const PowerFlowDisplay = memo(({
           borderRadius: '4px',
           textAlign: 'center',
         }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Active Power</div>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Active Power</div>
           <div style={{ color: '#22c55e', fontSize: '16px', fontFamily: 'monospace' }}>
             {activePower.toFixed(2)} kW
           </div>
@@ -722,7 +722,7 @@ export const PowerFlowDisplay = memo(({
           borderRadius: '4px',
           textAlign: 'center',
         }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Reactive Power</div>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Reactive Power</div>
           <div style={{ color: '#f59e0b', fontSize: '16px', fontFamily: 'monospace' }}>
             {reactivePower.toFixed(2)} kVAr
           </div>
@@ -733,8 +733,8 @@ export const PowerFlowDisplay = memo(({
           borderRadius: '4px',
           textAlign: 'center',
         }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Apparent Power</div>
-          <div style={{ color: '#3b82f6', fontSize: '16px', fontFamily: 'monospace' }}>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Apparent Power</div>
+          <div style={{ color: 'var(--color-accent)', fontSize: '16px', fontFamily: 'monospace' }}>
             {apparentPower.toFixed(2)} kVA
           </div>
         </div>
@@ -744,8 +744,8 @@ export const PowerFlowDisplay = memo(({
           borderRadius: '4px',
           textAlign: 'center',
         }}>
-          <div style={{ color: '#888', fontSize: '10px' }}>Energy</div>
-          <div style={{ color: '#a855f7', fontSize: '16px', fontFamily: 'monospace' }}>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '10px' }}>Energy</div>
+          <div style={{ color: 'var(--color-accent)', fontSize: '16px', fontFamily: 'monospace' }}>
             {energy.toFixed(2)} kWh
           </div>
         </div>
@@ -778,8 +778,8 @@ export const EventLogPanel = memo(({
     switch (type) {
       case 'alarm': return '#ef4444';
       case 'warning': return '#f59e0b';
-      case 'info': return '#3b82f6';
-      default: return '#666';
+      case 'info': return 'var(--color-accent)';
+      default: return 'var(--color-text-secondary)';
     }
   };
   
@@ -814,7 +814,7 @@ export const EventLogPanel = memo(({
               gap: '8px',
             }}
           >
-            <span style={{ color: '#666' }}>
+            <span style={{ color: 'var(--color-text-secondary)' }}>
               {new Date(event.timestamp).toLocaleTimeString()}
             </span>
             <span style={{
@@ -825,7 +825,7 @@ export const EventLogPanel = memo(({
             }}>
               [{event.type}]
             </span>
-            <span style={{ color: '#ccc' }}>{event.message}</span>
+            <span style={{ color: 'var(--color-text-secondary)' }}>{event.message}</span>
           </div>
         ))}
       </div>
@@ -875,7 +875,7 @@ export const InstrumentationPanel = memo(({
               padding: '12px',
               border: 'none',
               backgroundColor: activeTab === tab.id ? '#fff' : 'transparent',
-              borderBottom: activeTab === tab.id ? '2px solid #3b82f6' : 'none',
+              borderBottom: activeTab === tab.id ? '2px solid var(--color-accent)' : 'none',
               cursor: 'pointer',
               fontSize: '12px',
               fontWeight: activeTab === tab.id ? 'bold' : 'normal',

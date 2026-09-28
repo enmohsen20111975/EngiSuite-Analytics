@@ -99,8 +99,8 @@ function Sidebar({ collapsed, onToggle }) {
           className={cn(
             'mx-3 mt-3 px-3 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors',
             isLow
-              ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 animate-pulse'
-              : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]',
+              ? 'bg-danger/10 text-danger dark:bg-danger/20 dark:text-danger animate-pulse'
+              : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] dark:bg-[var(--color-bg-tertiary)] dark:text-[var(--color-text-secondary)]',
             direction === 'rtl' && 'flex-row-reverse'
           )}
         >
@@ -110,11 +110,11 @@ function Sidebar({ collapsed, onToggle }) {
               <span className="font-medium">{credits} pts</span>
               {isLow && <span className="text-xs font-bold">LOW!</span>}
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1">
+            <div className="w-full bg-[var(--color-bg-tertiary)] dark:bg-[var(--color-bg-tertiary)] rounded-full h-1 mt-1">
               <div
                 className={cn(
                   'h-1 rounded-full transition-all',
-                  credits > 50 ? 'bg-green-500' : credits > 20 ? 'bg-yellow-500' : 'bg-red-500'
+                  credits > 50 ? 'bg-success dark:bg-success' : credits > 20 ? 'bg-warning dark:bg-warning' : 'bg-danger dark:bg-danger'
                 )}
                 style={{ width: `${Math.min(100, (credits / 100) * 100)}%` }}
               />
@@ -128,7 +128,7 @@ function Sidebar({ collapsed, onToggle }) {
           onClick={() => navigate('/subscription')}
           className={cn(
             'mx-auto mt-3 p-2 rounded-lg transition-colors',
-            isLow ? 'text-red-500 animate-pulse' : 'text-[var(--color-text-muted)]'
+            isLow ? 'text-danger dark:text-danger animate-pulse' : 'text-[var(--color-text-muted)] dark:text-[var(--color-text-muted)]'
           )}
           title={`${credits} credits`}
         >

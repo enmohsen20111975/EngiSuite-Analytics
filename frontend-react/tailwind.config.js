@@ -8,22 +8,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary accent - Electric Cyan
+        // Primary accent — driven by CSS variables with alpha support.
+        // Uses rgb(var(--color-accent-rgb) / <alpha-value>) so opacity modifiers
+        // like bg-accent/10 or focus:ring-accent/20 work correctly.
         accent: {
-          DEFAULT: 'hsl(188, 94%, 43%)',
-          hover: 'hsl(188, 94%, 38%)',
-          glow: 'hsl(188, 94%, 50%)',
+          DEFAULT: 'rgb(var(--color-accent-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-accent-hover-rgb) / <alpha-value>)',
+          glow: 'rgb(var(--color-accent-glow-rgb) / <alpha-value>)',
         },
-        // Semantic colors
-        success: 'hsl(160, 84%, 39%)',
-        warning: 'hsl(38, 92%, 50%)',
-        danger: 'hsl(0, 84%, 60%)',
-        info: 'hsl(199, 89%, 48%)',
-        // Extended palette
-        amber: 'hsl(38, 92%, 50%)',
-        emerald: 'hsl(160, 84%, 39%)',
-        violet: 'hsl(263, 70%, 50%)',
-        rose: 'hsl(346, 77%, 50%)',
+        // Semantic colors — driven by CSS variables so dark mode can override
+        success: {
+          DEFAULT: 'rgb(var(--color-success-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-success-hover-rgb) / <alpha-value>)',
+        },
+        warning: {
+          DEFAULT: 'rgb(var(--color-warning-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-warning-hover-rgb) / <alpha-value>)',
+        },
+        danger: {
+          DEFAULT: 'rgb(var(--color-danger-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-danger-hover-rgb) / <alpha-value>)',
+        },
+        info: {
+          DEFAULT: 'rgb(var(--color-info-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--color-info-hover-rgb) / <alpha-value>)',
+        },
+        // Extended palette — all non-blue/indigo/violet. Map to semantic
+        // variables so the existing `amber`/`emerald`/`rose` Tailwind classes
+        // resolve to themed values (no forbidden blue/indigo/purple exposed).
+        amber: 'rgb(var(--color-warning-rgb) / <alpha-value>)',
+        emerald: 'rgb(var(--color-success-rgb) / <alpha-value>)',
+        rose: 'rgb(var(--color-danger-rgb) / <alpha-value>)',
+        teal: 'rgb(var(--color-info-rgb) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['DM Sans', 'system-ui', 'sans-serif'],
@@ -64,12 +80,7 @@ export default {
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },
-      backdropBlur: {
-        xs: '2px',
-      },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-}
+  plugins: [],
+};

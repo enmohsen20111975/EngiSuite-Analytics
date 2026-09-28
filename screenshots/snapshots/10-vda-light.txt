@@ -1,0 +1,44 @@
+- generic [ref=e374] clickable [onclick]
+  - heading "Visual Data Analysis" [level=1, ref=e375]
+  - StaticText "Untitled"
+  - button "Query" [ref=e376]
+  - button "New" [ref=e377]
+  - button "Save" [ref=e378]
+  - button "Export" [ref=e379]
+  - button "Delete" [disabled, ref=e380]
+  - link "Data Upload" [ref=e381]
+  - link "Query Builder" [ref=e382]
+  - link "Report Builder" [ref=e383]
+  - link "Dashboard Builder" [ref=e384]
+  - heading "ADD WIDGET" [level=3, ref=e385]
+  - StaticText "Charts"
+  - generic
+    - button "Bar Chart" [ref=e393]
+    - button "Line Chart" [ref=e394]
+    - button "Pie Chart" [ref=e395]
+    - button "Area Chart" [ref=e396]
+    - button "Scatter Plot" [ref=e397]
+    - button "Doughnut Chart" [ref=e398]
+    - button "Radar Chart" [ref=e399]
+    - button "Horizontal Bar" [ref=e400]
+  - StaticText "Other"
+  - button "Metric" [ref=e386]
+  - button "Table" [ref=e387]
+  - button "Text" [ref=e388]
+  - button "ListFilter" [ref=e389]
+  - heading "DATA SOURCES" [level=3, ref=e390]
+  - button "Upload Data" [ref=e391]
+  - generic
+    - button "Sample Sales Data" [ref=e401]
+    - button "Sample Analytics" [ref=e402]
+  - generic
+    - generic [ref=e403] clickable [onclick]
+    - paragraph
+    - paragraph
+    - generic
+      - button [ref=e404]
+      - button [ref=e405]
+      - button [ref=e406]
+    - generic
+      - StaticText "Ready | Widgets: 0"
+  - heading "Saved Dashboards" [level=3, ref=e392]

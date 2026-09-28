@@ -1,0 +1,67 @@
+- generic [ref=e436] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e440]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e459]
+        - listitem [level=1]
+          - link "Calculators" [ref=e460]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e461]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e462]
+        - listitem [level=1]
+          - link "Projects" [ref=e463]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e464]
+        - listitem [level=1]
+          - link "Reports" [ref=e465]
+        - listitem [level=1]
+          - link "Projects" [ref=e466]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e467]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e468]
+        - listitem [level=1]
+          - link "Pricing" [ref=e469]
+      - button "TOOLS" [ref=e454]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e470]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e471]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e472]
+        - listitem [level=1]
+          - link "Analytics" [ref=e473]
+      - button "INTERACTIVE SIMULATORS" [ref=e455]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e456]
+      - listitem [level=1]
+        - link "Settings" [ref=e457]
+    - button [ref=e441]
+  - banner
+    - textbox "Search..." [ref=e437]
+    - button "100 pts" [ref=e438]
+    - button "Language" [ref=e442]
+    - button [ref=e443]
+    - button [ref=e439]
+    - button "T" [ref=e444]
+  - main
+    - heading "Technical Reports" [level=1, ref=e445]
+    - textbox "Search reports..." [ref=e458]
+    - button "My Reports (0)" [ref=e446]
+    - button "Templates (3)" [ref=e447]
+    - button "All Types" [ref=e448]
+    - button "HTML" [ref=e449]
+    - button "MARKDOWN" [ref=e450]
+    - button "JSON" [ref=e451]
+    - heading "No Reports Found" [level=3, ref=e452]
+    - button "Browse Templates" [ref=e453]

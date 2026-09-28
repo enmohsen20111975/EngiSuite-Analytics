@@ -1,0 +1,109 @@
+URL: http://localhost:4000/ai-assistant
+
+=== LIGHT MODE ===
+{
+  "checked": 6,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 6,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "288x772",
+      "tag": "div",
+      "text": "Chat History×Ohm's Law calculationHow do"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "832x82",
+      "tag": "div",
+      "text": "EngiSuite AI AssistantYour intelligent e"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "832x674",
+      "tag": "div",
+      "text": "How can I help you today?I can help you "
+    }
+  ],
+  "theme": "light",
+  "url": "/ai-assistant"
+}
+
+=== DARK MODE ===
+{
+  "checked": 6,
+  "darkBgBoxes": 6,
+  "lightBgBoxes": 0,
+  "sampleDark": [
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "288x772",
+      "tag": "div",
+      "text": "Chat History×Ohm's Law calculationHow do"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "832x82",
+      "tag": "div",
+      "text": "EngiSuite AI AssistantYour intelligent e"
+    },
+    {
+      "bg": "rgba(17, 24, 39, 0.8)",
+      "classes": "rounded-2xl border border-[var(--color-border)] bg-white dar",
+      "size": "832x674",
+      "tag": "div",
+      "text": "How can I help you today?I can help you "
+    }
+  ],
+  "sampleLight": [],
+  "theme": "dark",
+  "url": "/ai-assistant"
+}

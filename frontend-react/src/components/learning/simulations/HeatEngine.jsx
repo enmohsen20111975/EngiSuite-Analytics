@@ -45,7 +45,7 @@ const HeatEngine = ({
           </div>
           
           {/* Heat flow out */}
-          <div className="absolute w-2 h-8 bg-blue-400 bottom-0 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+          <div className="absolute w-2 h-8 bg-accent/60 bottom-0 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
           
           {/* Work output */}
           <div className="absolute right-[-50px] flex items-center">
@@ -56,7 +56,7 @@ const HeatEngine = ({
         </div>
         
         {/* Cold Reservoir */}
-        <div className="w-48 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-center font-bold rounded-b-lg shadow-md">
+        <div className="w-48 py-3 bg-gradient-to-r from-accent to-cyan-500 text-white text-center font-bold rounded-b-lg shadow-md">
           Cold Reservoir (Tc = {tc}K)
         </div>
       </div>
@@ -81,7 +81,7 @@ const HeatEngine = ({
           </div>
         </div>
         <div>
-          <label className="block text-sm text-blue-700 dark:text-blue-300 mb-1">
+          <label className="block text-sm text-accent-hover dark:text-accent/40 mb-1">
             Cold Reservoir Tc (K): {tc}
           </label>
           <input 

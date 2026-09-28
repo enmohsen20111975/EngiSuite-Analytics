@@ -3,15 +3,17 @@
  * Renders connections between workflow nodes
  */
 import { memo, useMemo } from 'react';
-import { cn } from '../../lib/utils';
+import { cn, getThemeColor } from '../../lib/utils';
 
-// Connection colors
+// Connection colours resolved lazily so they track the active theme/accent.
+// (Previously these were static hex literals with `#3b82f6`/`#60a5fa` —
+// both forbidden blues that did not adapt to dark mode or accent changes.)
 const CONNECTION_COLORS = {
-  default: '#64748b',
-  selected: '#3b82f6',
-  hover: '#60a5fa',
-  data: '#22c55e',
-  error: '#ef4444'
+  default: () => getThemeColor('--color-text-muted', '#64748b'),
+  selected: () => getThemeColor('--color-accent', '#0891b2'),
+  hover: () => getThemeColor('--color-accent-glow', '#22d3ee'),
+  data: () => getThemeColor('--color-success', '#22c55e'),
+  error: () => getThemeColor('--color-danger', '#ef4444')
 };
 
 /**
@@ -93,9 +95,9 @@ export const ConnectionRenderer = memo(function ConnectionRenderer({
   
   // Determine color
   const lineColor = color || (
-    isSelected ? CONNECTION_COLORS.selected :
-    isHovered ? CONNECTION_COLORS.hover :
-    CONNECTION_COLORS.default
+    isSelected ? CONNECTION_COLORS.selected() :
+    isHovered ? CONNECTION_COLORS.hover() :
+    CONNECTION_COLORS.default()
   );
   
   // Create path
@@ -171,9 +173,9 @@ export const ConnectionRenderer = memo(function ConnectionRenderer({
           cy={(from.y + to.y) / 2}
           r={6}
           fill={
-            connection.status === 'success' ? '#22c55e' :
-            connection.status === 'error' ? '#ef4444' :
-            '#f59e0b'
+            connection.status === 'success' ? getThemeColor('--color-success', '#22c55e') :
+            connection.status === 'error' ? getThemeColor('--color-danger', '#ef4444') :
+            getThemeColor('--color-warning', '#f59e0b')
           }
           className="pointer-events-none"
         />
@@ -248,7 +250,7 @@ export const ConnectionPreview = memo(function ConnectionPreview({
       <path
         d={path}
         fill="none"
-        stroke={isValid ? '#22c55e' : '#ef4444'}
+        stroke={isValid ? getThemeColor('--color-success', '#22c55e') : getThemeColor('--color-danger', '#ef4444')}
         strokeWidth={2}
         strokeDasharray="8 4"
         className="pointer-events-none"
@@ -257,7 +259,7 @@ export const ConnectionPreview = memo(function ConnectionPreview({
         cx={toX}
         cy={toY}
         r={6}
-        fill={isValid ? '#22c55e' : '#ef4444'}
+        fill={isValid ? getThemeColor('--color-success', '#22c55e') : getThemeColor('--color-danger', '#ef4444')}
         className="pointer-events-none"
       />
     </g>
@@ -289,7 +291,7 @@ export const StraightConnectionRenderer = memo(function StraightConnectionRender
   to.x += offset.x;
   to.y += offset.y;
   
-  const lineColor = color || (isSelected ? CONNECTION_COLORS.selected : CONNECTION_COLORS.default);
+  const lineColor = color || (isSelected ? CONNECTION_COLORS.selected() : CONNECTION_COLORS.default());
   
   return (
     <g className="connection-group" data-connection-id={connection.id}>

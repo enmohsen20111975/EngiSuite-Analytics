@@ -27,7 +27,7 @@ const TABS = [
 
 const KANBAN_COLUMNS = [
   { key: 'todo', label: 'To Do', color: 'bg-slate-500' },
-  { key: 'in_progress', label: 'In Progress', color: 'bg-blue-500' },
+  { key: 'in_progress', label: 'In Progress', color: 'bg-accent' },
   { key: 'in_review', label: 'In Review', color: 'bg-amber-500' },
   { key: 'done', label: 'Done', color: 'bg-emerald-500' },
   { key: 'blocked', label: 'Blocked', color: 'bg-rose-500' },
@@ -35,7 +35,7 @@ const KANBAN_COLUMNS = [
 
 const PRIORITY_COLORS = {
   low: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
-  medium: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  medium: 'bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60',
   high: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
   critical: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
 };
@@ -46,7 +46,7 @@ function UpgradeRequired({ message }) {
       <CircleAlert className="w-12 h-12 text-amber-500 mx-auto mb-4" />
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Professional Plan Required</h3>
       <p className="text-gray-500 dark:text-gray-400 mb-4">{message || 'Projects are available on Pro and Enterprise plans.'}</p>
-      <a href="/pricing" className="inline-flex px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Upgrade Plan</a>
+      <a href="/pricing" className="inline-flex px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white">Upgrade Plan</a>
     </Card>
   );
 }
@@ -79,7 +79,7 @@ function TaskCard({ task, onDragStart, onClick }) {
         {task.completion_pct > 0 && task.status !== 'done' && (
           <div className="flex items-center gap-1">
             <div className="w-12 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${task.completion_pct}%` }} />
+              <div className="h-full bg-accent rounded-full" style={{ width: `${task.completion_pct}%` }} />
             </div>
             <span>{task.completion_pct}%</span>
           </div>
@@ -157,7 +157,7 @@ function KanbanView({ projectId, columns, onCreateTask, onTaskClick }) {
                 <TaskCard key={task.id} task={task} onDragStart={handleDragStart} onClick={onTaskClick} />
               ))}
               {newTaskColumn === column.key ? (
-                <div className="p-2 bg-white dark:bg-gray-900 rounded-lg border border-blue-300 dark:border-blue-600">
+                <div className="p-2 bg-white dark:bg-gray-900 rounded-lg border border-accent/30 dark:border-blue-600">
                   <input
                     autoFocus
                     value={newTaskTitle}
@@ -171,7 +171,7 @@ function KanbanView({ projectId, columns, onCreateTask, onTaskClick }) {
                   />
                   <div className="flex justify-end gap-2 mt-2">
                     <button onClick={() => { setNewTaskColumn(null); setNewTaskTitle(''); }} className="text-xs text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button onClick={() => handleAddTask(column.key)} className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700">Add</button>
+                    <button onClick={() => handleAddTask(column.key)} className="text-xs bg-accent text-white px-2 py-1 rounded hover:bg-accent-hover">Add</button>
                   </div>
                 </div>
               ) : (
@@ -229,7 +229,7 @@ function ListView({ tasks, onTaskClick }) {
                     <span className={cn(
                       "text-xs px-2 py-1 rounded-full font-medium",
                       task.status === 'done' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-                      task.status === 'in_progress' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                      task.status === 'in_progress' && "bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60",
                       task.status === 'in_review' && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
                       task.status === 'blocked' && "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
                       task.status === 'todo' && "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
@@ -250,7 +250,7 @@ function ListView({ tasks, onTaskClick }) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${task.completion_pct || 0}%` }} />
+                        <div className="h-full bg-accent rounded-full" style={{ width: `${task.completion_pct || 0}%` }} />
                       </div>
                       <span className="text-xs text-gray-500">{task.completion_pct || 0}%</span>
                     </div>
@@ -318,7 +318,7 @@ function GanttView({ project, tasks }) {
                           "absolute h-4 top-1 rounded transition-all",
                           task.status === 'done' ? "bg-emerald-500" :
                           task.status === 'blocked' ? "bg-rose-500" :
-                          task.status === 'in_progress' ? "bg-blue-500" :
+                          task.status === 'in_progress' ? "bg-accent" :
                           "bg-slate-400"
                         )}
                         style={{ left: `${leftPercent}%`, width: `${Math.min(widthPercent, 100 - leftPercent)}%` }}
@@ -388,15 +388,15 @@ function CalendarView({ tasks }) {
           return (
             <div key={day} className={cn(
               "h-20 p-1 border border-gray-100 dark:border-gray-800 rounded-lg",
-              isToday && "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+              isToday && "bg-accent/10 dark:bg-accent/20 border-accent/20 dark:border-accent/30"
             )}>
-              <span className={cn("text-xs font-medium", isToday && "text-blue-600 dark:text-blue-400")}>{day}</span>
+              <span className={cn("text-xs font-medium", isToday && "text-accent dark:text-accent/60")}>{day}</span>
               <div className="mt-1 space-y-0.5 overflow-hidden">
                 {dayTasks.slice(0, 2).map(task => (
                   <div key={task.id} className={cn(
                     "text-[10px] px-1 py-0.5 rounded truncate",
                     task.status === 'done' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
-                    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                    "bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60"
                   )}>
                     {task.title}
                   </div>
@@ -423,7 +423,7 @@ function TeamView({ project }) {
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">Team Members</h3>
-        <button className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 flex items-center gap-1">
+        <button className="text-xs bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover flex items-center gap-1">
           <Plus className="w-3 h-3" /> Invite
         </button>
       </div>
@@ -431,7 +431,7 @@ function TeamView({ project }) {
         {members.map(member => (
           <div key={member.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-cyan-500 flex items-center justify-center text-white font-semibold">
                 {member.name.charAt(0)}
               </div>
               <div>
@@ -441,8 +441,8 @@ function TeamView({ project }) {
             </div>
             <span className={cn(
               "text-xs px-2 py-1 rounded-full font-medium capitalize",
-              member.role === 'owner' && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-              member.role === 'manager' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+              member.role === 'owner' && "bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent",
+              member.role === 'manager' && "bg-accent/20 text-accent-hover dark:bg-accent/20 dark:text-accent/60",
               member.role === 'member' && "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
             )}>
               {member.role}
@@ -459,7 +459,7 @@ function FilesView() {
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">Project Files</h3>
-        <button className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 flex items-center gap-1">
+        <button className="text-xs bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover flex items-center gap-1">
           <Plus className="w-3 h-3" /> Upload
         </button>
       </div>
@@ -477,7 +477,7 @@ function RFIView() {
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">RFI Log</h3>
-        <button className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 flex items-center gap-1">
+        <button className="text-xs bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover flex items-center gap-1">
           <Plus className="w-3 h-3" /> New RFI
         </button>
       </div>
@@ -495,7 +495,7 @@ function BOMView() {
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">Bill of Materials</h3>
-        <button className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 flex items-center gap-1">
+        <button className="text-xs bg-accent text-white px-3 py-1.5 rounded-lg hover:bg-accent-hover flex items-center gap-1">
           <Plus className="w-3 h-3" /> Add Item
         </button>
       </div>
@@ -520,8 +520,8 @@ function ActivityView({ projectId }) {
       <div className="space-y-4">
         {activities.map(activity => (
           <div key={activity.id} className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-8 h-8 rounded-full bg-accent/20 dark:bg-accent/20 flex items-center justify-center">
+              <Activity className="w-4 h-4 text-accent dark:text-accent/60" />
             </div>
             <div>
               <p className="text-sm text-gray-900 dark:text-white">{activity.details}</p>
@@ -619,7 +619,7 @@ function SettingsView({ project, projectId }) {
         <button
           onClick={() => updateProjectMutation.mutate(form)}
           disabled={updateProjectMutation.isPending}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover disabled:opacity-50"
         >
           {updateProjectMutation.isPending ? 'Saving...' : 'Save Changes'}
         </button>
@@ -656,7 +656,7 @@ export default function ProjectDetailPage() {
   if (projectQuery.isLoading || kanbanQuery.isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <LoaderCircle className="w-10 h-10 animate-spin text-blue-500" />
+        <LoaderCircle className="w-10 h-10 animate-spin text-accent" />
       </div>
     );
   }
@@ -670,7 +670,7 @@ export default function ProjectDetailPage() {
 
   const statusColors = {
     planning: 'bg-slate-500',
-    active: 'bg-blue-500',
+    active: 'bg-accent',
     on_hold: 'bg-amber-500',
     completed: 'bg-emerald-500',
     cancelled: 'bg-rose-500',
@@ -696,9 +696,9 @@ export default function ProjectDetailPage() {
           <div className="text-xs text-gray-500 mb-1">Progress</div>
           <div className="flex items-center gap-2">
             <div className="w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${Math.min(100, project?.progress || 0)}%` }} />
+              <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${Math.min(100, project?.progress || 0)}%` }} />
             </div>
-            <span className="text-lg font-bold text-blue-600">{Math.round(project?.progress || 0)}%</span>
+            <span className="text-lg font-bold text-accent">{Math.round(project?.progress || 0)}%</span>
           </div>
           <div className="text-xs text-gray-500 mt-2">
             {project?.category} • {project?.priority} priority
@@ -719,7 +719,7 @@ export default function ProjectDetailPage() {
                 className={cn(
                   "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-all shrink-0",
                   isActive 
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400" 
+                    ? "border-accent text-accent dark:text-accent/60" 
                     : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 )}
               >

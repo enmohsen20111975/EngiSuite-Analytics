@@ -95,11 +95,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/10 via-white to-cyan-100 dark:from-accent/10 dark:via-slate-900 dark:to-cyan-950 px-4">
       <div className="w-full max-w-md">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-cyan-400 text-white text-2xl font-bold mb-4 shadow-lg shadow-accent/30">
             E
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -114,17 +114,17 @@ export default function LoginPage() {
         <Card className="p-6 shadow-xl">
           {/* Error Alert */}
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-2">
-              <CircleAlert className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <div className="mb-4 p-3 rounded-lg bg-danger/10 dark:bg-danger/20 border border-danger/20 dark:border-danger/30 flex items-start gap-2">
+              <CircleAlert className="w-5 h-5 text-danger flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-danger dark:text-danger/90">{error}</p>
             </div>
           )}
 
           {/* Success Alert */}
           {success && (
-            <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 flex items-start gap-2">
-              <CircleCheck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-green-600 dark:text-green-400">Login successful! Redirecting...</p>
+            <div className="mb-4 p-3 rounded-lg bg-success/10 dark:bg-success/20 border border-success/20 dark:border-success/30 flex items-start gap-2">
+              <CircleCheck className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-success dark:text-success/90">Login successful! Redirecting...</p>
             </div>
           )}
 
@@ -206,7 +206,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -220,14 +220,14 @@ export default function LoginPage() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent dark:border-gray-600"
                 />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Remember me</span>
               </label>
               
               <Link
                 to="/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                className="text-sm text-accent hover:text-accent-hover dark:text-accent"
               >
                 Forgot password?
               </Link>
@@ -255,7 +255,7 @@ export default function LoginPage() {
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="font-medium text-accent hover:text-accent-hover dark:text-accent"
             >
               Sign up for free
             </Link>

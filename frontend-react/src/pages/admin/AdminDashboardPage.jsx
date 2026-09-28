@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
       change: stats?.usersChange || '+12%',
       trend: 'up',
       icon: Users,
-      color: 'bg-blue-500',
+      color: 'bg-accent',
     },
     {
       title: 'Active Subscriptions',
@@ -70,7 +70,7 @@ export default function AdminDashboardPage() {
       change: stats?.revenueChange || '+15%',
       trend: 'up',
       icon: TrendingUp,
-      color: 'bg-purple-500',
+      color: 'bg-accent',
     },
   ];
 
@@ -169,7 +169,7 @@ export default function AdminDashboardPage() {
                 <div key={idx} className="flex items-start gap-3 p-2">
                   <div className={cn(
                     'w-2 h-2 rounded-full mt-2',
-                    item.type === 'user' ? 'bg-blue-500' :
+                    item.type === 'user' ? 'bg-accent' :
                     item.type === 'payment' ? 'bg-green-500' :
                     item.type === 'error' ? 'bg-red-500' :
                     'bg-gray-500'
@@ -205,7 +205,7 @@ export default function AdminDashboardPage() {
             href="/admin/users"
             className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-center"
           >
-            <Users className="w-6 h-6 mx-auto text-blue-500 mb-2" />
+            <Users className="w-6 h-6 mx-auto text-accent mb-2" />
             <span className="text-sm text-gray-900 dark:text-white">Manage Users</span>
           </a>
           <a
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
             href="/admin/financial"
             className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-center"
           >
-            <DollarSign className="w-6 h-6 mx-auto text-purple-500 mb-2" />
+            <DollarSign className="w-6 h-6 mx-auto text-accent mb-2" />
             <span className="text-sm text-gray-900 dark:text-white">Financial</span>
           </a>
           <a

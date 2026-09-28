@@ -184,7 +184,7 @@ export default function AIAssistantPage() {
                   <History className="w-4 h-4" />
                 </Button>
               )}
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+              <div className="p-2 bg-gradient-to-br from-accent to-accent rounded-xl">
                 <Bot className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -213,7 +213,7 @@ export default function AIAssistantPage() {
             {messages.length === 0 ? (
               /* Empty State */
               <div className="h-full flex flex-col items-center justify-center text-center">
-                <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-6">
+                <div className="p-4 bg-gradient-to-br from-accent to-accent rounded-2xl mb-6">
                   <Sparkles className="w-12 h-12 text-white" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -232,8 +232,8 @@ export default function AIAssistantPage() {
                         onClick={() => handleSuggestionClick(suggestion.prompt)}
                         className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
                       >
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                          <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <div className="p-2 bg-accent/20 dark:bg-accent/20 rounded-lg">
+                          <Icon className="w-5 h-5 text-accent dark:text-accent/60" />
                         </div>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {suggestion.title}
@@ -255,7 +255,7 @@ export default function AIAssistantPage() {
                 ))}
                 {isLoading && (
                   <div className="flex items-start gap-3">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+                    <div className="p-2 bg-gradient-to-br from-accent to-accent rounded-xl">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-tl-none px-4 py-3">
@@ -282,7 +282,7 @@ export default function AIAssistantPage() {
                   onKeyDown={handleKeyPress}
                   placeholder="Ask me anything about engineering..."
                   rows={1}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent resize-none"
                   style={{ minHeight: '48px', maxHeight: '200px' }}
                 />
                 <div className="absolute right-2 bottom-2 flex items-center gap-1">
@@ -325,8 +325,8 @@ function MessageBubble({ message, onCopy }) {
         className={cn(
           'p-2 rounded-xl flex-shrink-0',
           isUser
-            ? 'bg-blue-600'
-            : 'bg-gradient-to-br from-blue-500 to-purple-600'
+            ? 'bg-accent'
+            : 'bg-gradient-to-br from-accent to-accent'
         )}
       >
         {isUser ? (
@@ -339,7 +339,7 @@ function MessageBubble({ message, onCopy }) {
         className={cn(
           'max-w-[80%] rounded-2xl px-4 py-3',
           isUser
-            ? 'bg-blue-600 text-white rounded-tr-none'
+            ? 'bg-accent text-white rounded-tr-none'
             : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-tl-none'
         )}
       >
@@ -354,7 +354,7 @@ function MessageBubble({ message, onCopy }) {
           className={cn(
             'flex items-center gap-2 mt-3 pt-2 border-t',
             isUser
-              ? 'border-blue-500'
+              ? 'border-accent'
               : 'border-gray-200 dark:border-gray-700'
           )}
         >

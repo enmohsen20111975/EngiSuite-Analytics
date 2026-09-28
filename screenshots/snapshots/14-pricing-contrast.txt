@@ -1,0 +1,428 @@
+URL: http://localhost:4000/pricing
+
+=== LIGHT MODE ===
+{
+  "checked": 80,
+  "issuesFound": 20,
+  "theme": "light",
+  "url": "/pricing",
+  "worstIssues": [
+    {
+      "bg": "rgb(213, 234, 241)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 1.89,
+      "tag": "span",
+      "text": "Pricing",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(224, 244, 248)",
+      "classes": "text-accent font-medium text-sm",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.07,
+      "tag": "span",
+      "text": "T",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent text-whi",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "div",
+      "text": "Most Popular",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "inline-flex items-center justify-center gap-2 rounded-lg font-medium t",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "button",
+      "text": "Start Free Trial",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "inline-flex items-center justify-center gap-2 rounded-lg font-medium t",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "button",
+      "text": "Start Your Free Trial",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "ml-1 text-success",
+      "color": "rgb(16, 183, 127)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.48,
+      "tag": "span",
+      "text": "(Save 20%)",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "text-sm font-medium text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.06,
+      "tag": "span",
+      "text": "Annual",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "p",
+      "text": "Perfect for getting started",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "Advanced calculators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "API access",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "Custom workflows",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "Priority support",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "p",
+      "text": "For professional engineers",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "/month",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "Custom workflows",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "Dedicated support",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "p",
+      "text": "For teams and organizations",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "span",
+      "text": "/month",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 80,
+  "issuesFound": 17,
+  "theme": "dark",
+  "url": "/pricing",
+  "worstIssues": [
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent text-whi",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "div",
+      "text": "Most Popular",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "inline-flex items-center justify-center gap-2 rounded-lg font-medium t",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "button",
+      "text": "Start Free Trial",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(7, 185, 213)",
+      "classes": "inline-flex items-center justify-center gap-2 rounded-lg font-medium t",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.36,
+      "tag": "button",
+      "text": "Start Your Free Trial",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "p",
+      "text": "Perfect for getting started",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "Advanced calculators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "API access",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "Custom workflows",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "Priority support",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "p",
+      "text": "For professional engineers",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "/month",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "Custom workflows",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "Dedicated support",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)] mt-1",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "p",
+      "text": "For teams and organizations",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "span",
+      "text": "/month",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "text-sm font-medium text-[var(--color-text-muted)]",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.41,
+      "tag": "span",
+      "text": "Annual",
+      "threshold": 4.5
+    }
+  ]
+}

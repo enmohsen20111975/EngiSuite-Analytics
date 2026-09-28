@@ -18,7 +18,7 @@ const AtomModel = ({ element = 'Copper', atomicNumber = 29 }) => {
       {/* Atom Visualization */}
       <div className="relative w-full h-72 flex items-center justify-center overflow-hidden bg-slate-900 rounded-lg">
         {/* Glow effect */}
-        <div className="absolute inset-0 bg-gradient-radial from-blue-900/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-radial from-accent/20 to-transparent"></div>
         
         {/* Nucleus */}
         <div className="relative z-10">
@@ -35,20 +35,20 @@ const AtomModel = ({ element = 'Copper', atomicNumber = 29 }) => {
         
         {/* Electron Orbits */}
         {/* First shell */}
-        <div className="absolute w-24 h-24 border border-blue-500/30 rounded-full animate-[spin_3s_linear_infinite]">
-          <div className="w-3 h-3 bg-blue-400 rounded-full absolute -top-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+        <div className="absolute w-24 h-24 border border-accent/30 rounded-full animate-[spin_3s_linear_infinite]">
+          <div className="w-3 h-3 bg-accent/60 rounded-full absolute -top-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
         </div>
         
         {/* Second shell */}
-        <div className="absolute w-40 h-40 border border-blue-500/30 rounded-full animate-[spin_4s_linear_infinite_reverse]">
-          <div className="w-3 h-3 bg-blue-400 rounded-full absolute -top-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
-          <div className="w-3 h-3 bg-blue-400 rounded-full absolute -bottom-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+        <div className="absolute w-40 h-40 border border-accent/30 rounded-full animate-[spin_4s_linear_infinite_reverse]">
+          <div className="w-3 h-3 bg-accent/60 rounded-full absolute -top-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+          <div className="w-3 h-3 bg-accent/60 rounded-full absolute -bottom-1.5 left-1/2 -translate-x-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
         </div>
         
         {/* Third shell */}
-        <div className="absolute w-56 h-56 border border-blue-500/30 rounded-full animate-[spin_5s_linear_infinite]">
-          <div className="w-3 h-3 bg-blue-400 rounded-full absolute top-1/2 -left-1.5 -translate-y-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
-          <div className="w-3 h-3 bg-blue-400 rounded-full absolute top-1/2 -right-1.5 -translate-y-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+        <div className="absolute w-56 h-56 border border-accent/30 rounded-full animate-[spin_5s_linear_infinite]">
+          <div className="w-3 h-3 bg-accent/60 rounded-full absolute top-1/2 -left-1.5 -translate-y-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
+          <div className="w-3 h-3 bg-accent/60 rounded-full absolute top-1/2 -right-1.5 -translate-y-1/2 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></div>
         </div>
         
         {/* Fourth shell (outermost for conductors) */}

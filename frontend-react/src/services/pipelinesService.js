@@ -56,10 +56,12 @@ export const pipelinesService = {
 };
 
 // Domain metadata
+// No blue / indigo / purple per project rules. Aligned with the shared
+// service-palette (cyan/teal/emerald/amber/red/orange/gray).
 export const DOMAIN_META = {
-  electrical: { icon: 'Zap', color: '#f39c12', label: 'Electrical' },
-  mechanical: { icon: 'Cog', color: '#3498db', label: 'Mechanical' },
-  civil: { icon: 'Building2', color: '#2ecc71', label: 'Civil' },
+  electrical: { icon: 'Zap', color: '#0891b2', label: 'Electrical' },   // cyan-600 (was #f39c12 — keep amber, but electrical is now cyan to match DOMAIN_COLORS)
+  mechanical: { icon: 'Cog', color: '#d97706', label: 'Mechanical' },  // amber-600 (was #3498db — forbidden blue)
+  civil: { icon: 'Building2', color: '#059669', label: 'Civil' },      // emerald-600 (was #2ecc71)
 };
 
 // Difficulty colors

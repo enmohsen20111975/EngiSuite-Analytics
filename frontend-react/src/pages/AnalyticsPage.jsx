@@ -312,7 +312,7 @@ export default function AnalyticsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    ? 'border-accent text-accent dark:text-accent/60'
                     : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                 }`}
               >
@@ -343,7 +343,7 @@ export default function AnalyticsPage() {
                   <select
                     value={dbConfig.type}
                     onChange={(e) => setDbConfig({ ...dbConfig, type: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   >
                     <option value="mysql">MySQL</option>
                     <option value="postgresql">PostgreSQL</option>
@@ -360,7 +360,7 @@ export default function AnalyticsPage() {
                     value={dbConfig.host}
                     onChange={(e) => setDbConfig({ ...dbConfig, host: e.target.value })}
                     placeholder="localhost"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -372,7 +372,7 @@ export default function AnalyticsPage() {
                     value={dbConfig.port}
                     onChange={(e) => setDbConfig({ ...dbConfig, port: e.target.value })}
                     placeholder="3306"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -384,7 +384,7 @@ export default function AnalyticsPage() {
                     value={dbConfig.name}
                     onChange={(e) => setDbConfig({ ...dbConfig, name: e.target.value })}
                     placeholder="engineering_db"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -396,7 +396,7 @@ export default function AnalyticsPage() {
                     value={dbConfig.user}
                     onChange={(e) => setDbConfig({ ...dbConfig, user: e.target.value })}
                     placeholder="root"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   />
                 </div>
                 <div>
@@ -408,7 +408,7 @@ export default function AnalyticsPage() {
                     value={dbConfig.password}
                     onChange={(e) => setDbConfig({ ...dbConfig, password: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   />
                 </div>
               </div>
@@ -457,7 +457,7 @@ export default function AnalyticsPage() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Enter SQL query here..."
-                        className="w-full h-40 px-4 py-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"
+                        className="w-full h-40 px-4 py-3 font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent resize-none"
                       />
                       <div className="mt-3 flex gap-2">
                         <Button onClick={handleExecuteQuery} disabled={loading || !query.trim()}>
@@ -536,7 +536,7 @@ export default function AnalyticsPage() {
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  ? 'border-accent bg-accent/10 dark:bg-accent/20'
                   : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
               }`}
             >
@@ -618,7 +618,7 @@ export default function AnalyticsPage() {
                   <select
                     value={selectedDataset}
                     onChange={(e) => setSelectedDataset(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   >
                     <option value="">-- Select Dataset --</option>
                     <option value="calculations">Calculations Data</option>
@@ -633,7 +633,7 @@ export default function AnalyticsPage() {
                   <select
                     value={selectedColumn}
                     onChange={(e) => setSelectedColumn(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   >
                     <option value="">-- Select Column --</option>
                     <option value="value">Value</option>
@@ -650,7 +650,7 @@ export default function AnalyticsPage() {
                   <select
                     value={chartType}
                     onChange={(e) => setChartType(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   >
                     <option value="line">Line Chart</option>
                     <option value="bar">Bar Chart</option>
@@ -697,7 +697,7 @@ export default function AnalyticsPage() {
                     multiple
                     value={pivotRows}
                     onChange={(e) => setPivotRows(Array.from(e.target.selectedOptions, option => option.value))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 h-24"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent h-24"
                   >
                     <option value="category">Category</option>
                     <option value="region">Region</option>
@@ -712,7 +712,7 @@ export default function AnalyticsPage() {
                     multiple
                     value={pivotColumns}
                     onChange={(e) => setPivotColumns(Array.from(e.target.selectedOptions, option => option.value))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 h-24"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent h-24"
                   >
                     <option value="year">Year</option>
                     <option value="quarter">Quarter</option>
@@ -725,7 +725,7 @@ export default function AnalyticsPage() {
                   <select
                     value={pivotValue}
                     onChange={(e) => setPivotValue(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                   >
                     <option value="count">Count</option>
                     <option value="sum">Sum</option>
@@ -795,7 +795,7 @@ export default function AnalyticsPage() {
                 <select
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent"
                 >
                   <option value="7d">Last 7 days</option>
                   <option value="30d">Last 30 days</option>
@@ -813,8 +813,8 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <ChartColumnIncreasing className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 bg-accent/20 dark:bg-accent/20 rounded-lg">
+                    <ChartColumnIncreasing className="w-6 h-6 text-accent dark:text-accent/60" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Total Calculations</p>
@@ -849,8 +849,8 @@ export default function AnalyticsPage() {
               </Card>
               <Card className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                    <Wifi className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  <div className="p-3 bg-accent/20 dark:bg-accent/20 rounded-lg">
+                    <Wifi className="w-6 h-6 text-accent dark:text-accent" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Active Users</p>

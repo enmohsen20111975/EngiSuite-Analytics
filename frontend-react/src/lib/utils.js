@@ -65,7 +65,7 @@ export const storage = {
       return defaultValue;
     }
   },
-  
+
   set(key, value) {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -74,7 +74,7 @@ export const storage = {
       return false;
     }
   },
-  
+
   remove(key) {
     try {
       localStorage.removeItem(key);
@@ -83,4 +83,52 @@ export const storage = {
       return false;
     }
   },
+};
+
+/**
+ * Read a CSS custom property from :root, returning a fallback when the
+ * variable is not set (e.g. during SSR or before the theme boots).
+ *
+ * Canvas 2D and SVG elements cannot consume Tailwind classes directly, so
+ * callers use this helper to wire theme tokens into `stroke`/`fill` props.
+ *
+ * Because this reads `getComputedStyle(document.documentElement)` on every
+ * call, it naturally picks up the current theme (and accent color) on the
+ * next render after the `.dark` class toggles — no subscription required.
+ *
+ * @param {string} varName - CSS variable name, e.g. '--color-accent'
+ * @param {string} fallback - Hex fallback used if the variable is empty
+ * @returns {string} Resolved color value (or fallback)
+ */
+export function getThemeColor(varName, fallback) {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const root = getComputedStyle(document.documentElement);
+    const value = root.getPropertyValue(varName).trim();
+    return value || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Convenience accessors for the standard theme palette. Each function reads
+ * the live CSS variable so colours update on theme/accent change.
+ */
+export const themeColors = {
+  accent: (fallback = '#0891b2') => getThemeColor('--color-accent', fallback),
+  accentHover: (fallback = '#0e7490') => getThemeColor('--color-accent-hover', fallback),
+  accentGlow: (fallback = '#22d3ee') => getThemeColor('--color-accent-glow', fallback),
+  success: (fallback = '#10b981') => getThemeColor('--color-success', fallback),
+  warning: (fallback = '#f59e0b') => getThemeColor('--color-warning', fallback),
+  danger: (fallback = '#ef4444') => getThemeColor('--color-danger', fallback),
+  info: (fallback = '#0ea5e9') => getThemeColor('--color-info', fallback),
+  bgPrimary: (fallback = '#ffffff') => getThemeColor('--color-bg-primary', fallback),
+  bgSecondary: (fallback = '#f1f5f9') => getThemeColor('--color-bg-secondary', fallback),
+  bgTertiary: (fallback = '#e2e8f0') => getThemeColor('--color-bg-tertiary', fallback),
+  textPrimary: (fallback = '#0f172a') => getThemeColor('--color-text-primary', fallback),
+  textSecondary: (fallback = '#475569') => getThemeColor('--color-text-secondary', fallback),
+  textMuted: (fallback = '#6b7280') => getThemeColor('--color-text-muted', fallback),
+  border: (fallback = '#e5e7eb') => getThemeColor('--color-border', fallback),
+  borderHover: (fallback = '#cbd5e1') => getThemeColor('--color-border-hover', fallback),
 };

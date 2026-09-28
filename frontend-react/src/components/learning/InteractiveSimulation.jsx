@@ -41,7 +41,7 @@ const MandelbrotExplorer = lazy(() => import('./simulations/MandelbrotExplorer')
 // Loading fallback component
 const SimulationLoader = () => (
   <div className="flex items-center justify-center h-48 bg-gray-50 dark:bg-slate-800 rounded-xl">
-    <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+    <Loader2 className="w-8 h-8 animate-spin text-accent" />
     <span className="ml-2 text-gray-600 dark:text-gray-300">Loading simulation...</span>
   </div>
 );

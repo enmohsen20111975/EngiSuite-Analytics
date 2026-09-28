@@ -752,7 +752,7 @@ function CircuitExamplesPanel({ onLoadExample }) {
             onClick={() => onLoadExample(key)}
             className="w-full px-3 py-2 text-left rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
           >
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-accent dark:group-hover:text-accent/60">
               {example.name}
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -795,7 +795,7 @@ function ComponentPalette({ onAddComponent }) {
             className={cn(
               "px-2 py-1 text-xs rounded transition-colors",
               activeCategory === key
-                ? "bg-blue-500 text-white"
+                ? "bg-accent text-white"
                 : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
             )}
           >
@@ -1418,7 +1418,7 @@ export default function LogicSimulatorPage() {
       <div className="relative flex flex-wrap items-center justify-between gap-2 px-3 md:px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center gap-3 min-w-0">
           <h1 className="text-lg font-semibold flex items-center gap-2">
-            <CircuitBoard className="w-5 h-5 text-blue-500" />
+            <CircuitBoard className="w-5 h-5 text-accent" />
             Logic Simulator
           </h1>
           <span className="hidden md:inline text-sm text-gray-500 truncate">{currentCircuit?.name || 'Untitled'}</span>
@@ -1588,7 +1588,7 @@ export default function LogicSimulatorPage() {
           
           {/* Connection hint */}
           {connectingFrom && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-500 text-white rounded-lg shadow text-sm">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-accent text-white rounded-lg shadow text-sm">
               Click another port to connect (ESC to cancel)
             </div>
           )}
@@ -1656,7 +1656,7 @@ export default function LogicSimulatorPage() {
                     className={cn(
                       "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
                       currentCircuit?.id === c.id
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                        ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                         : "hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                   >
@@ -1751,7 +1751,7 @@ export default function LogicSimulatorPage() {
                       className={cn(
                         "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
                         currentCircuit?.id === c.id
-                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                          ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                           : "hover:bg-gray-100 dark:hover:bg-gray-700"
                       )}
                     >

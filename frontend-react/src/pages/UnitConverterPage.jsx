@@ -283,7 +283,7 @@ export default function UnitConverterPage() {
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                     isActive
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                      ? 'bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/40'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   )}
                 >
@@ -321,7 +321,7 @@ export default function UnitConverterPage() {
                   <select
                     value={fromUnit}
                     onChange={(e) => setFromUnit(e.target.value)}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 appearance-none"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent appearance-none"
                   >
                     {Object.entries(selectedCategory.units).map(([key, unit]) => (
                       <option key={key} value={key}>
@@ -336,7 +336,7 @@ export default function UnitConverterPage() {
                   value={fromValue}
                   onChange={(e) => setFromValue(e.target.value)}
                   placeholder="Enter value"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-lg"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent text-lg"
                 />
               </div>
 
@@ -344,7 +344,7 @@ export default function UnitConverterPage() {
               <div className="flex justify-center">
                 <button
                   onClick={handleSwap}
-                  className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                  className="p-3 rounded-full bg-accent/20 dark:bg-accent/20 text-accent dark:text-accent/60 hover:bg-accent/20 dark:hover:bg-accent/20 transition-colors"
                 >
                   <ArrowRightLeft className="w-5 h-5" />
                 </button>
@@ -359,7 +359,7 @@ export default function UnitConverterPage() {
                   <select
                     value={toUnit}
                     onChange={(e) => setToUnit(e.target.value)}
-                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 appearance-none"
+                    className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent appearance-none"
                   >
                     {Object.entries(selectedCategory.units).map(([key, unit]) => (
                       <option key={key} value={key}>
@@ -393,13 +393,13 @@ export default function UnitConverterPage() {
 
             {/* Conversion Result */}
             {fromValue && convertedValue !== '' && (
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="mt-6 p-4 bg-accent/10 dark:bg-accent/20 rounded-lg">
                 <p className="text-center text-lg">
-                  <span className="font-semibold text-blue-700 dark:text-blue-300">
+                  <span className="font-semibold text-accent-hover dark:text-accent/40">
                     {fromValue} {selectedCategory.units[fromUnit]?.name} ({fromUnit})
                   </span>
                   <span className="mx-3 text-gray-500">=</span>
-                  <span className="font-semibold text-blue-700 dark:text-blue-300">
+                  <span className="font-semibold text-accent-hover dark:text-accent/40">
                     {formatNumber(convertedValue)} {selectedCategory.units[toUnit]?.name} ({toUnit})
                   </span>
                 </p>

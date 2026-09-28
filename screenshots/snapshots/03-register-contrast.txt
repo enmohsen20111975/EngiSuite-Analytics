@@ -1,0 +1,153 @@
+URL: http://localhost:4000/register
+
+=== LIGHT MODE ===
+{
+  "checked": 122,
+  "issuesFound": 9,
+  "theme": "light",
+  "url": "/dashboard",
+  "worstIssues": [
+    {
+      "bg": "rgb(213, 234, 241)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 1.89,
+      "tag": "span",
+      "text": "Dashboard",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(224, 244, 248)",
+      "classes": "text-accent font-medium text-sm",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.07,
+      "tag": "span",
+      "text": "T",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "2.4V",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "5.2 kW",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "24.5 m³",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-xs text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "div",
+      "text": "4x120mm²",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(216, 230, 253)",
+      "classes": "px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/20 text-blue-",
+      "color": "rgb(59, 130, 246)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.92,
+      "tag": "span",
+      "text": "NEW",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 122,
+  "issuesFound": 3,
+  "theme": "dark",
+  "url": "/dashboard",
+  "worstIssues": [
+    {
+      "bg": "rgb(25, 44, 78)",
+      "classes": "px-2 py-0.5 text-xs font-medium rounded-full bg-blue-500/20 text-blue-",
+      "color": "rgb(59, 130, 246)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.77,
+      "tag": "span",
+      "text": "NEW",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    }
+  ]
+}

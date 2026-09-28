@@ -46,7 +46,7 @@ function CalculatorCard({ calculator, onClick }) {
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400">
+            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-accent dark:group-hover:text-accent/60">
               {calculator.name}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -83,7 +83,7 @@ function CalculatorCard({ calculator, onClick }) {
           </div>
           
           {/* Arrow */}
-          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
+          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-accent group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </Card>
@@ -286,7 +286,7 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
                     <div key={input.symbol || input.name || index}>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         {input.name}
-                        {input.symbol && <span className="text-blue-500 ml-1">({input.symbol})</span>}
+                        {input.symbol && <span className="text-accent ml-1">({input.symbol})</span>}
                         {input.unit && <span className="text-gray-400 ml-1">[{input.unit}]</span>}
                         {input.required && <span className="text-red-500 ml-1">*</span>}
                       </label>
@@ -351,12 +351,12 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
                 </div>
 
                 {/* Save to project */}
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                  <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-3">
+                <div className="p-4 bg-accent/10 dark:bg-accent/20 border border-accent/20 dark:border-accent/30 rounded-lg">
+                  <h4 className="text-sm font-semibold text-accent-hover dark:text-accent/40 mb-3">
                     Save to Project Task
                   </h4>
                   {projectsError?.response?.status === 402 ? (
-                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                    <p className="text-xs text-accent-hover dark:text-accent/40">
                       Upgrade to Pro/Enterprise to link calculation outputs to projects.
                     </p>
                   ) : (
@@ -364,7 +364,7 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
                       <select
                         value={selectedProjectId}
                         onChange={(e) => setSelectedProjectId(e.target.value)}
-                        className="rounded-lg border border-blue-300 dark:border-blue-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                        className="rounded-lg border border-accent/30 dark:border-accent/30 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
                       >
                         <option value="">Select project</option>
                         {projects.map((project) => (
@@ -391,14 +391,14 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
                           });
                         }}
                         disabled={!selectedProjectId || saveTaskMutation.isPending}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm disabled:opacity-50"
+                        className="px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm disabled:opacity-50"
                       >
                         {saveTaskMutation.isPending ? 'Saving...' : 'Save Task'}
                       </button>
                     </div>
                   )}
                   {saveMessage && (
-                    <p className="text-xs mt-2 text-blue-700 dark:text-blue-300">{saveMessage}</p>
+                    <p className="text-xs mt-2 text-accent-hover dark:text-accent/40">{saveMessage}</p>
                   )}
                 </div>
               </div>
@@ -424,7 +424,7 @@ function CalculatorModal({ calculator, isOpen, onClose }) {
               <button
                 onClick={handleCalculate}
                 disabled={isCalculating}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
               >
                 {isCalculating ? (
                   <>
@@ -582,7 +582,7 @@ export default function CalculatorsPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader className="w-10 h-10 animate-spin text-blue-500" />
+          <Loader className="w-10 h-10 animate-spin text-accent" />
           <p className="text-gray-500 dark:text-gray-400 mt-4">
             Loading calculators from database...
           </p>
@@ -602,7 +602,7 @@ export default function CalculatorsPage() {
           <div className="flex justify-center gap-3">
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+              className="px-4 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg"
             >
               Try Again
             </button>

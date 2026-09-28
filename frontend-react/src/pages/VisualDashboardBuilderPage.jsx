@@ -16,8 +16,8 @@ import { useVDAData } from '../contexts/VDADataContext';
 
 // Widget Types
 const WIDGET_TYPES = {
-  chart: { icon: ChartColumn, label: 'Chart', color: 'text-purple-500', defaultSize: { w: 4, h: 2 } },
-  metric: { icon: Hash, label: 'KPI Card', color: 'text-blue-500', defaultSize: { w: 2, h: 1 } },
+  chart: { icon: ChartColumn, label: 'Chart', color: 'text-accent', defaultSize: { w: 4, h: 2 } },
+  metric: { icon: Hash, label: 'KPI Card', color: 'text-accent', defaultSize: { w: 2, h: 1 } },
   table: { icon: Table2, label: 'Data Table', color: 'text-green-500', defaultSize: { w: 4, h: 2 } },
   text: { icon: Type, label: 'Text', color: 'text-gray-500', defaultSize: { w: 2, h: 1 } },
   gauge: { icon: Gauge, label: 'Gauge', color: 'text-orange-500', defaultSize: { w: 2, h: 2 } },
@@ -594,7 +594,7 @@ const VisualDashboardBuilderPage = () => {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3">
           <div
-            className="h-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all"
+            className="h-3 rounded-full bg-gradient-to-r from-accent to-accent-hover transition-all"
             style={{ width: `${Math.min(100, percentage)}%` }}
           />
         </div>
@@ -611,7 +611,7 @@ const VisualDashboardBuilderPage = () => {
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-3 shadow-lg z-50">
+      <header className="bg-gradient-to-r from-accent to-pink-600 text-white px-4 py-3 shadow-lg z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -625,7 +625,7 @@ const VisualDashboardBuilderPage = () => {
                 <LayoutDashboard className="w-6 h-6" />
                 Dashboard Builder
               </h1>
-              <p className="text-xs text-purple-200">
+              <p className="text-xs text-accent/30">
                 {selectedCount > 0
                   ? `${selectedCount} source(s) selected for analysis`
                   : 'Create interactive dashboards'
@@ -644,14 +644,14 @@ const VisualDashboardBuilderPage = () => {
             />
             
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg">
-              <Clock className="w-4 h-4 text-purple-200" />
+              <Clock className="w-4 h-4 text-accent/30" />
               <span className="text-sm">{currentTime.toLocaleTimeString()}</span>
             </div>
             
             <button
               onClick={() => setEditMode(!editMode)}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-2 transition ${
-                editMode ? 'bg-white text-purple-700' : 'bg-white/20 hover:bg-white/30'
+                editMode ? 'bg-white text-accent-hover' : 'bg-white/20 hover:bg-white/30'
               }`}
             >
               {editMode ? <Eye className="w-4 h-4" /> : <EditIcon className="w-4 h-4" />}
@@ -677,7 +677,7 @@ const VisualDashboardBuilderPage = () => {
             
             <button
               onClick={exportDashboard}
-              className="px-4 py-2 bg-white text-purple-700 hover:bg-purple-50 rounded-lg flex items-center gap-2 font-medium transition"
+              className="px-4 py-2 bg-white text-accent-hover hover:bg-accent/10 rounded-lg flex items-center gap-2 font-medium transition"
             >
               <Download className="w-4 h-4" />
               Export
@@ -708,7 +708,7 @@ const VisualDashboardBuilderPage = () => {
         </a>
         <a
           href="/visual-dashboard-builder"
-          className="px-3 py-1.5 text-sm rounded-md bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 font-medium"
+          className="px-3 py-1.5 text-sm rounded-md bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/80 font-medium"
         >
           Dashboard Builder
         </a>
@@ -739,7 +739,7 @@ const VisualDashboardBuilderPage = () => {
                     <button
                       key={type}
                       onClick={() => addWidget(type)}
-                      className="flex flex-col items-center gap-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 border-2 border-transparent hover:border-purple-300 transition"
+                      className="flex flex-col items-center gap-1 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20/30 border-2 border-transparent hover:border-accent/30 transition"
                     >
                       <Icon className={`w-5 h-5 ${config.color}`} />
                       <span className="text-xs text-gray-600 dark:text-gray-300">{config.label}</span>
@@ -759,10 +759,10 @@ const VisualDashboardBuilderPage = () => {
                     <button
                       key={template.id}
                       onClick={() => applyTemplate(template)}
-                      className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 border-2 border-transparent hover:border-purple-300 transition text-left"
+                      className="w-full p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20/30 border-2 border-transparent hover:border-accent/30 transition text-left"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Icon className="w-5 h-5 text-purple-500" />
+                        <Icon className="w-5 h-5 text-accent" />
                         <span className="font-medium text-gray-800 dark:text-white text-sm">{template.name}</span>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{template.description}</p>
@@ -780,9 +780,9 @@ const VisualDashboardBuilderPage = () => {
                       <button
                         key={dashboard.id}
                         onClick={() => loadDashboard(dashboard)}
-                        className="w-full p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 border border-gray-200 dark:border-gray-600 transition text-left flex items-center gap-2"
+                        className="w-full p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-accent/10 dark:hover:bg-accent/20/30 border border-gray-200 dark:border-gray-600 transition text-left flex items-center gap-2"
                       >
-                        <LayoutDashboard className="w-4 h-4 text-purple-500" />
+                        <LayoutDashboard className="w-4 h-4 text-accent" />
                         <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{dashboard.title}</span>
                       </button>
                     ))}
@@ -917,7 +917,7 @@ const VisualDashboardBuilderPage = () => {
                 {/* Resize Handle */}
                 {editMode && selectedWidget === widget.id && (
                   <div
-                    className="absolute right-0 bottom-0 w-4 h-4 cursor-se-resize bg-purple-500 rounded-tl"
+                    className="absolute right-0 bottom-0 w-4 h-4 cursor-se-resize bg-accent rounded-tl"
                     onMouseDown={(e) => handleResizeStart(e, 'se')}
                   />
                 )}

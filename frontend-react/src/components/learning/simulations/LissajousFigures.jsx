@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { Card, Button } from '../../ui';
 import { Play, Pause, RotateCcw, Settings, Zap, Target, BookOpen } from 'lucide-react';
-import { cn } from '../../../lib/utils';
+import { cn, getThemeColor } from '../../../lib/utils';
 
 export default function LissajousFigures() {
   const [freqA, setFreqA] = useState(3);
@@ -129,26 +129,26 @@ export default function LissajousFigures() {
                     dataKey="x" 
                     domain={[-1.5, 1.5]} 
                     tickCount={5}
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 10 }}
+                    stroke={getThemeColor('--color-text-muted', '#9ca3af')}
+                    tick={{ fill: getThemeColor('--color-text-muted', '#9ca3af'), fontSize: 10 }}
                   />
                   <YAxis 
                     type="number" 
                     dataKey="y" 
                     domain={[-1.5, 1.5]} 
                     tickCount={5}
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 10 }}
+                    stroke={getThemeColor('--color-text-muted', '#9ca3af')}
+                    tick={{ fill: getThemeColor('--color-text-muted', '#9ca3af'), fontSize: 10 }}
                   />
                   <ZAxis type="number" range={[1, 1]} />
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#374151')} opacity={0.3} />
                   <Scatter 
                     data={curveData} 
-                    fill="#06b6d4"
-                    stroke="#0891b2"
+                    fill={getThemeColor('--color-accent', '#06b6d4')}
+                    stroke={getThemeColor('--color-accent-hover', '#0891b2')}
                     strokeWidth={1}
                     dot={false}
-                    line={{ stroke: '#06b6d4', strokeWidth: 2 }}
+                    line={{ stroke: getThemeColor('--color-accent', '#06b6d4'), strokeWidth: 2 }}
                     shape="circle"
                   />
                 </ScatterChart>
@@ -160,7 +160,7 @@ export default function LissajousFigures() {
               <div className="px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 rounded-full text-cyan-700 dark:text-cyan-300">
                 Frequency Ratio: {freqA}:{freqB}
               </div>
-              <div className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-700 dark:text-purple-300">
+              <div className="px-3 py-1 bg-accent/20 dark:bg-accent/20 rounded-full text-accent-hover dark:text-accent/80">
                 Phase: {(phase * 180 / Math.PI).toFixed(0)}°
               </div>
               <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 rounded-full text-green-700 dark:text-green-300">
@@ -309,11 +309,11 @@ export default function LissajousFigures() {
                   <LineChart data={waveDataA}>
                     <XAxis dataKey="t" hide />
                     <YAxis domain={[-1.5, 1.5]} hide />
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#374151')} opacity={0.2} />
                     <Line 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="#3b82f6" 
+                      stroke={getThemeColor('--color-accent', '#0891b2')} 
                       strokeWidth={2} 
                       dot={false}
                     />
@@ -330,11 +330,11 @@ export default function LissajousFigures() {
                   <LineChart data={waveDataB}>
                     <XAxis dataKey="t" hide />
                     <YAxis domain={[-1.5, 1.5]} hide />
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#374151')} opacity={0.2} />
                     <Line 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="#22c55e" 
+                      stroke={getThemeColor('--color-success', '#22c55e')} 
                       strokeWidth={2} 
                       dot={false}
                     />
@@ -349,16 +349,16 @@ export default function LissajousFigures() {
       {!showParametric && (
         <button
           onClick={() => setShowParametric(true)}
-          className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400"
+          className="text-sm text-accent hover:text-accent dark:text-accent/60"
         >
           Show Component Waves
         </button>
       )}
 
       {/* Educational Info */}
-      <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+      <Card className="p-4 bg-accent/10 dark:bg-accent/20 border-accent/20 dark:border-accent/30">
         <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-blue-500" />
+          <BookOpen className="w-4 h-4 text-accent" />
           About Lissajous Figures
         </h4>
         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">

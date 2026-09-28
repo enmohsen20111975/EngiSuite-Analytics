@@ -96,7 +96,7 @@ const PistonSim = ({ initialHeat = 0 }) => {
         </div>
         <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-orange-200 dark:border-orange-700">
           <div className="text-gray-500 dark:text-gray-400">ΔU</div>
-          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{(heat * 0.6).toFixed(0)} J</div>
+          <div className="text-lg font-bold text-accent dark:text-accent/60">{(heat * 0.6).toFixed(0)} J</div>
         </div>
       </div>
 

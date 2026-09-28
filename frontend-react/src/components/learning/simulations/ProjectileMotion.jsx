@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { getThemeColor } from '../../../lib/utils';
 
 const ProjectileMotion = ({
   initialVelocity = 20,
@@ -69,7 +70,7 @@ const ProjectileMotion = ({
           <path 
             d={svgPath} 
             fill="none" 
-            stroke="#0ea5e9" 
+            stroke={getThemeColor('--color-accent', '#0ea5e9')} 
             strokeWidth="3" 
             strokeLinecap="round"
           />
@@ -79,11 +80,11 @@ const ProjectileMotion = ({
               cx={trajectory[trajectory.length - 1].x} 
               cy={150 - trajectory[trajectory.length - 1].y} 
               r="5" 
-              fill="#0284c7" 
+              fill={getThemeColor('--color-accent', '#0284c7')} 
             />
           )}
           {/* Launch point */}
-          <circle cx="0" cy="150" r="4" fill="#0284c7" />
+          <circle cx="0" cy="150" r="4" fill={getThemeColor('--color-accent', '#0284c7')} />
         </svg>
         
         {/* Angle indicator */}

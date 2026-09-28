@@ -130,13 +130,19 @@ export const workflowService = {
 };
 
 // Domain colors for workflow nodes
+// No blue / indigo / purple per project rules. Aligned with the shared
+// service-palette (cyan/teal/emerald/amber/red/orange/gray).
 export const DOMAIN_COLORS = {
-  electrical: '#1976d2',
-  mechanical: '#f57c00',
-  civil: '#388e3c',
-  mathematics: '#7b1fa2',
-  scientific: '#7b1fa2',
-  general: '#616161'
+  electrical: '#0891b2',   // cyan-600 (was #1976d2 — forbidden blue)
+  mechanical: '#d97706',   // amber-600
+  civil: '#059669',        // emerald-600
+  hvac: '#dc2626',          // red-600
+  hydraulics: '#0d9488',   // teal-600
+  chemical: '#ea580c',     // orange-600
+  mathematics: '#059669',  // emerald-600 (was #7b1fa2 — forbidden purple)
+  science: '#0891b2',      // cyan-600 (was #7b1fa2 — forbidden purple)
+  scientific: '#0891b2',   // alias of `science` (kept for legacy callers)
+  general: '#6b7280',      // gray-500
 };
 
 export default workflowService;

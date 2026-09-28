@@ -1,0 +1,77 @@
+- generic [ref=e640] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e644]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e668]
+        - listitem [level=1]
+          - link "Calculators" [ref=e669]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e670]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e671]
+        - listitem [level=1]
+          - link "Projects" [ref=e672]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e673]
+        - listitem [level=1]
+          - link "Reports" [ref=e674]
+        - listitem [level=1]
+          - link "Projects" [ref=e675]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e676]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e677]
+        - listitem [level=1]
+          - link "Pricing" [ref=e678]
+      - button "TOOLS" [ref=e654]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e679]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e680]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e681]
+        - listitem [level=1]
+          - link "Analytics" [ref=e682]
+      - button "INTERACTIVE SIMULATORS" [ref=e655]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e666]
+      - listitem [level=1]
+        - link "Settings" [ref=e667]
+    - button [ref=e645]
+  - banner
+    - textbox "Search..." [ref=e641]
+    - button "100 pts" [ref=e642]
+    - button "Language" [ref=e646]
+    - button [ref=e647]
+    - button [ref=e643]
+    - button "T" [ref=e648]
+  - main
+    - heading "Profile Settings" [level=1, ref=e649]
+    - paragraph
+    - generic
+      - button [ref=e656]
+    - heading "Test User" [level=2, ref=e650]
+    - paragraph
+    - paragraph
+    - form
+      - heading "Personal Information" [level=3, ref=e657]
+      - textbox "Full Name" [ref=e658]: Test User
+      - textbox "Email" [disabled, ref=e659]: test@test.com
+      - textbox "Company" [ref=e660]
+      - textbox "Phone" [ref=e661]
+      - textbox "Location" [ref=e662]
+      - textbox "Tell us about yourself..." [ref=e663]
+      - button "Cancel" [ref=e664]
+      - button "Save Changes" [ref=e665]
+    - heading "Security" [level=3, ref=e651]
+    - button "Change Password" [ref=e652]
+    - button "Enable" [ref=e653]

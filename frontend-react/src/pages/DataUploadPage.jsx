@@ -14,9 +14,9 @@ import { useVDAData } from '../contexts/VDADataContext';
 // File type configurations
 const FILE_TYPES = {
   xlsx: { icon: FileSpreadsheet, label: 'Excel', color: 'text-green-500', accept: '.xlsx,.xls' },
-  csv: { icon: FileText, label: 'CSV', color: 'text-blue-500', accept: '.csv' },
+  csv: { icon: FileText, label: 'CSV', color: 'text-accent', accept: '.csv' },
   json: { icon: FileCode, label: 'JSON', color: 'text-yellow-500', accept: '.json' },
-  db: { icon: Database, label: 'SQLite', color: 'text-purple-500', accept: '.db,.sqlite,.sqlite3' }
+  db: { icon: Database, label: 'SQLite', color: 'text-accent', accept: '.db,.sqlite,.sqlite3' }
 };
 
 const DataUploadPage = () => {
@@ -285,13 +285,13 @@ const DataUploadPage = () => {
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 shadow-lg">
+      <header className="bg-gradient-to-r from-accent to-accent-hover text-white px-6 py-4 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FolderOpen className="w-8 h-8" />
             <div>
               <h1 className="text-xl font-bold">Data Upload & Management</h1>
-              <p className="text-sm text-blue-100">
+              <p className="text-sm text-accent/20">
                 {isSubscribed 
                   ? 'Upload Excel, CSV, JSON, and SQLite files (Server Storage)'
                   : 'Upload Excel, CSV, JSON files (Local Storage - Upgrade for more)'
@@ -315,7 +315,7 @@ const DataUploadPage = () => {
       <div className="flex items-center gap-1 px-6 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <a
           href="/data-upload"
-          className="px-3 py-1.5 text-sm rounded-md bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium"
+          className="px-3 py-1.5 text-sm rounded-md bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/40 font-medium"
         >
           Data Upload
         </a>
@@ -353,8 +353,8 @@ const DataUploadPage = () => {
               className={`
                 border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all
                 ${isDragging 
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                  : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10'
+                  ? 'border-accent bg-accent/10 dark:bg-accent/20' 
+                  : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-accent/10 dark:hover:bg-accent/20/10'
                 }
               `}
             >
@@ -366,7 +366,7 @@ const DataUploadPage = () => {
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              <Upload className={`w-10 h-10 mx-auto mb-2 ${isDragging ? 'text-blue-500' : 'text-gray-400'}`} />
+              <Upload className={`w-10 h-10 mx-auto mb-2 ${isDragging ? 'text-accent' : 'text-gray-400'}`} />
               <p className="font-medium text-gray-700 dark:text-gray-300">
                 {isDragging ? 'Drop files here' : 'Drop files or click to browse'}
               </p>
@@ -383,7 +383,7 @@ const DataUploadPage = () => {
               <button
                 onClick={convertToDatabase}
                 disabled={dataSources.length === 0}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                className="w-full px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
               >
                 <Database className="w-4 h-4" />
                 Convert to Database
@@ -408,7 +408,7 @@ const DataUploadPage = () => {
                 placeholder="Search files..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
           </div>
@@ -423,7 +423,7 @@ const DataUploadPage = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={selectAllSources}
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-xs text-accent dark:text-accent/60 hover:underline"
                   >
                     Select All
                   </button>
@@ -460,7 +460,7 @@ const DataUploadPage = () => {
                         className={`
                           p-3 rounded-lg cursor-pointer transition-all relative
                           ${isSelected
-                            ? 'bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-500'
+                            ? 'bg-accent/10 dark:bg-accent/20 border-2 border-accent'
                             : 'bg-gray-50 dark:bg-gray-700/50 border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600'
                           }
                           ${isMultiSelected && !isSelected ? 'ring-2 ring-green-400 ring-offset-1' : ''}
@@ -521,7 +521,7 @@ const DataUploadPage = () => {
                               e.stopPropagation();
                               setExpandedFiles(prev => ({ ...prev, [file.id]: !prev[file.id] }));
                             }}
-                            className="mt-2 flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                            className="mt-2 flex items-center gap-1 text-xs text-accent dark:text-accent/60 hover:underline"
                           >
                             {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                             {file.sheets.length} sheets
@@ -562,7 +562,7 @@ const DataUploadPage = () => {
                 <h3 className="font-semibold text-gray-900 dark:text-white">Select Sheets to Use</h3>
                 <button
                   onClick={selectAllSheets}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-sm text-accent dark:text-accent/60 hover:underline"
                 >
                   Select All
                 </button>
@@ -575,7 +575,7 @@ const DataUploadPage = () => {
                     className={`
                       px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2
                       ${selectedSheets.includes(sheet.name)
-                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                        ? 'bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/40'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                       }
                     `}
@@ -712,7 +712,7 @@ const DataUploadPage = () => {
                     <button
                       onClick={() => navigateWithData('/visual-dashboard-builder')}
                       disabled={selectedSourceIds.length === 0 && !activeDataSource}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LayoutDashboard className="w-4 h-4" />
                       Dashboard Builder
@@ -729,7 +729,7 @@ const DataUploadPage = () => {
       {(isLoading || contextLoading) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center">
-            <LoaderCircle className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-3" />
+            <LoaderCircle className="w-10 h-10 text-accent animate-spin mx-auto mb-3" />
             <p className="font-medium text-gray-900 dark:text-white">Processing files...</p>
           </div>
         </div>

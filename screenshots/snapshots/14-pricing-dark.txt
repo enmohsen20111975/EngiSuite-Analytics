@@ -1,0 +1,176 @@
+- generic [ref=e528] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e532]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e581]
+        - listitem [level=1]
+          - link "Calculators" [ref=e582]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e583]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e584]
+        - listitem [level=1]
+          - link "Projects" [ref=e585]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e586]
+        - listitem [level=1]
+          - link "Reports" [ref=e587]
+        - listitem [level=1]
+          - link "Projects" [ref=e588]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e589]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e590]
+        - listitem [level=1]
+          - link "Pricing" [ref=e591]
+      - button "TOOLS" [ref=e547]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e592]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e593]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e594]
+        - listitem [level=1]
+          - link "Analytics" [ref=e595]
+      - button "INTERACTIVE SIMULATORS" [ref=e548]
+        - paragraph
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e555]
+      - listitem [level=1]
+        - link "Settings" [ref=e556]
+    - button [ref=e533]
+  - banner
+    - textbox "Search..." [ref=e529]
+    - button "100 pts" [ref=e530]
+      - StaticText "100"
+      - StaticText " pts"
+    - button "Language" [ref=e534]
+    - button [ref=e535]
+    - button [ref=e531]
+    - button "T" [ref=e536]
+      - StaticText "T"
+  - main
+    - heading "Simple, Transparent Pricing" [level=1, ref=e537]
+    - paragraph
+      - StaticText "Choose the plan that fits your needs. All plans include access to our core engineering calculation tools."
+    - StaticText "Monthly"
+    - button [ref=e538]
+    - StaticText "Annual"
+    - StaticText "(Save 20%)"
+    - heading "Free" [level=3, ref=e549]
+    - paragraph
+      - StaticText "Perfect for getting started"
+    - generic
+      - StaticText "$0"
+    - button "Get Started" [ref=e550]
+    - list
+      - listitem [level=1]
+        - StaticText "10 calculations per month"
+      - listitem [level=1]
+        - StaticText "Basic calculators"
+      - listitem [level=1]
+        - StaticText "Standard support"
+      - listitem [level=1]
+        - StaticText "Export to PDF"
+      - listitem [level=1]
+        - StaticText "Advanced calculators"
+      - listitem [level=1]
+        - StaticText "API access"
+      - listitem [level=1]
+        - StaticText "Custom workflows"
+      - listitem [level=1]
+        - StaticText "Priority support"
+    - generic
+      - StaticText "Most Popular"
+      - heading "Pro" [level=3, ref=e551]
+      - paragraph
+        - StaticText "For professional engineers"
+      - generic
+        - StaticText "$5/month"
+      - button "Start Free Trial" [ref=e552]
+      - list
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+        - listitem [level=1]
+    - heading "Enterprise" [level=3, ref=e553]
+    - paragraph
+      - StaticText "For teams and organizations"
+    - generic
+      - StaticText "$8/month"
+    - button "Contact Sales" [ref=e554]
+    - list
+      - listitem [level=1]
+        - StaticText "Everything in Pro"
+      - listitem [level=1]
+        - StaticText "Unlimited team members"
+      - listitem [level=1]
+        - StaticText "Custom workflows"
+      - listitem [level=1]
+        - StaticText "Dedicated support"
+      - listitem [level=1]
+        - StaticText "SSO authentication"
+      - listitem [level=1]
+        - StaticText "Custom integrations"
+      - listitem [level=1]
+        - StaticText "On-premise option"
+      - listitem [level=1]
+        - StaticText "SLA guarantee"
+    - heading "Compare Plans" [level=2, ref=e539]
+    - table
+      - rowgroup
+        - row
+          - columnheader "Feature" [ref=e596]
+          - columnheader "Free" [ref=e597]
+          - columnheader "Pro" [ref=e598]
+          - columnheader "Enterprise" [ref=e599]
+      - row
+        - cell "Calculations per month" [ref=e557]
+        - cell "10" [ref=e558]
+        - cell "Unlimited" [ref=e559]
+        - cell "Unlimited" [ref=e560]
+      - row
+        - cell "Calculator types" [ref=e561]
+        - cell "Basic" [ref=e562]
+        - cell "All" [ref=e563]
+        - cell "All + Custom" [ref=e564]
+      - row
+        - cell "Export formats" [ref=e565]
+        - cell "PDF" [ref=e566]
+        - cell "PDF, Excel" [ref=e567]
+        - cell "PDF, Excel, Word" [ref=e568]
+      - row
+        - cell "API access" [ref=e569]
+        - cell "-" [ref=e570]
+        - cell "✓" [ref=e571]
+        - cell "✓" [ref=e572]
+      - row
+        - cell "Team members" [ref=e573]
+        - cell "1" [ref=e574]
+        - cell "5" [ref=e575]
+        - cell "Unlimited" [ref=e576]
+      - row
+        - cell "Support" [ref=e577]
+        - cell "Email" [ref=e578]
+        - cell "Priority" [ref=e579]
+        - cell "Dedicated" [ref=e580]
+    - heading "Frequently Asked Questions" [level=2, ref=e540]
+    - heading "Can I switch plans anytime?" [level=3, ref=e541]
+    - heading "Is there a free trial?" [level=3, ref=e542]
+    - heading "What payment methods do you accept?" [level=3, ref=e543]
+    - heading "Do you offer discounts for annual billing?" [level=3, ref=e544]
+    - heading "Ready to get started?" [level=2, ref=e545]
+    - button "Start Your Free Trial" [ref=e546]

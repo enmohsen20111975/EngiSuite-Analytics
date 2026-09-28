@@ -1,0 +1,131 @@
+URL: http://localhost:4000/settings
+
+=== LIGHT MODE ===
+{
+  "checked": 38,
+  "issuesFound": 7,
+  "theme": "light",
+  "url": "/settings",
+  "worstIssues": [
+    {
+      "bg": "rgb(213, 234, 241)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 1.89,
+      "tag": "span",
+      "text": "Settings",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(224, 244, 248)",
+      "classes": "text-accent font-medium text-sm",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.07,
+      "tag": "span",
+      "text": "T",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(230, 248, 251)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 2.15,
+      "tag": "span",
+      "text": "Appearance",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(243, 252, 253)",
+      "classes": "font-medium text-accent",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 2.25,
+      "tag": "span",
+      "text": "Dark",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-[var(--color-text-muted)] mb-4",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.25,
+      "tag": "p",
+      "text": "Choose your preferred accent color for the application.",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 38,
+  "issuesFound": 3,
+  "theme": "dark",
+  "url": "/settings",
+  "worstIssues": [
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(16, 23, 37)",
+      "classes": "text-sm text-[var(--color-text-muted)] mb-4",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 4.22,
+      "tag": "p",
+      "text": "Choose your preferred accent color for the application.",
+      "threshold": 4.5
+    }
+  ]
+}

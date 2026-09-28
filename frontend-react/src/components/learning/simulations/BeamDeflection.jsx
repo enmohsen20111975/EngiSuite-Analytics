@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { getThemeColor } from '../../../lib/utils';
 
 const BeamDeflection = () => {
   return (
@@ -41,7 +42,7 @@ const BeamDeflection = () => {
           <path 
             d="M 0 2 Q 50% 40 100% 2" 
             fill="none" 
-            stroke="#f97316" 
+            stroke={getThemeColor('--color-warning', '#f97316')} 
             strokeWidth="3" 
             strokeDasharray="8,4"
           />

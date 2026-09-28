@@ -1,0 +1,131 @@
+URL: http://localhost:4000/calculators
+
+=== LIGHT MODE ===
+{
+  "checked": 33,
+  "issuesFound": 6,
+  "theme": "light",
+  "url": "/calculators",
+  "worstIssues": [
+    {
+      "bg": "rgb(213, 234, 241)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 1.89,
+      "tag": "span",
+      "text": "Calculators",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(224, 244, 248)",
+      "classes": "text-accent font-medium text-sm",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.07,
+      "tag": "span",
+      "text": "T",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(98, 155, 248)",
+      "classes": "ml-2 px-2 py-0.5 rounded-full text-xs bg-white/20",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.78,
+      "tag": "span",
+      "text": "0",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(59, 130, 246)",
+      "classes": "px-4 py-2 rounded-lg font-medium text-sm transition-all text-white sha",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.68,
+      "tag": "button",
+      "text": "All",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 3.69,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 33,
+  "issuesFound": 4,
+  "theme": "dark",
+  "url": "/calculators",
+  "worstIssues": [
+    {
+      "bg": "rgb(98, 155, 248)",
+      "classes": "ml-2 px-2 py-0.5 rounded-full text-xs bg-white/20",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 2.78,
+      "tag": "span",
+      "text": "0",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(59, 130, 246)",
+      "classes": "px-4 py-2 rounded-lg font-medium text-sm transition-all text-white sha",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.68,
+      "tag": "button",
+      "text": "All",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Tools",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "text-xs font-semibold text-[var(--color-text-muted)] uppercase trackin",
+      "color": "rgb(115, 123, 140)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 4.02,
+      "tag": "p",
+      "text": "Interactive Simulators",
+      "threshold": 4.5
+    }
+  ]
+}

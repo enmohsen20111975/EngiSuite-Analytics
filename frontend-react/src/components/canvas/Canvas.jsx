@@ -3,7 +3,7 @@
  * Main reusable canvas component for drawing and workflow editing
  */
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { cn } from '../../lib/utils';
+import { cn, getThemeColor } from '../../lib/utils';
 import { useCanvas } from './hooks/useCanvas';
 import { 
   ZoomIn, ZoomOut, Maximize, Undo, Redo, 
@@ -311,7 +311,7 @@ export const Canvas = forwardRef(function Canvas({
           <path
             d={path}
             fill="none"
-            stroke="#64748b"
+            stroke={getThemeColor('--color-text-muted', '#64748b')}
             strokeWidth="2"
             className="cursor-pointer hover:stroke-blue-500"
             onClick={() => {
@@ -320,7 +320,7 @@ export const Canvas = forwardRef(function Canvas({
               }
             }}
           />
-          <circle cx={toX} cy={toY} r="4" fill="#64748b" />
+          <circle cx={toX} cy={toY} r="4" fill={getThemeColor('--color-text-muted', '#64748b')} />
         </g>
       );
     });
@@ -369,7 +369,7 @@ export const Canvas = forwardRef(function Canvas({
             height={h}
             rx={4 * zoom}
             fill="white"
-            stroke={isSelected ? "#3b82f6" : "#e2e8f0"}
+            stroke={isSelected ? getThemeColor('--color-accent', '#3b82f6') : getThemeColor('--color-border', '#e2e8f0')}
             strokeWidth={isSelected ? 2 : 1}
             className="drop-shadow-md"
           />
@@ -379,7 +379,7 @@ export const Canvas = forwardRef(function Canvas({
             width={w}
             height={30 * zoom}
             rx={4 * zoom}
-            fill={element.color || "#3b82f6"}
+            fill={element.color || getThemeColor('--color-accent', '#3b82f6')}
             className="opacity-80"
           />
           
@@ -402,7 +402,7 @@ export const Canvas = forwardRef(function Canvas({
                 cy={40 * zoom + i * 25 * zoom}
                 r={DEFAULT_PORT_RADIUS * zoom}
                 fill="white"
-                stroke="#64748b"
+                stroke={getThemeColor('--color-text-muted', '#64748b')}
                 strokeWidth={2}
                 className="cursor-crosshair hover:fill-blue-100"
               />
@@ -410,7 +410,7 @@ export const Canvas = forwardRef(function Canvas({
                 x={15 * zoom}
                 y={44 * zoom + i * 25 * zoom}
                 fontSize={10 * zoom}
-                fill="#64748b"
+                fill={getThemeColor('--color-text-muted', '#64748b')}
                 className="select-none pointer-events-none"
               >
                 {input.name || input.symbol || `Input ${i + 1}`}
@@ -426,7 +426,7 @@ export const Canvas = forwardRef(function Canvas({
                 cy={40 * zoom + i * 25 * zoom}
                 r={DEFAULT_PORT_RADIUS * zoom}
                 fill="white"
-                stroke="#22c55e"
+                stroke={getThemeColor('--color-success', '#22c55e')}
                 strokeWidth={2}
                 className="cursor-crosshair hover:fill-green-100"
               />
@@ -434,7 +434,7 @@ export const Canvas = forwardRef(function Canvas({
                 x={w - 10 * zoom}
                 y={44 * zoom + i * 25 * zoom}
                 fontSize={10 * zoom}
-                fill="#64748b"
+                fill={getThemeColor('--color-text-muted', '#64748b')}
                 textAnchor="end"
                 className="select-none pointer-events-none"
               >
@@ -466,7 +466,7 @@ export const Canvas = forwardRef(function Canvas({
         width={screenW}
         height={screenH}
         fill="rgba(59, 130, 246, 0.1)"
-        stroke="#3b82f6"
+        stroke={getThemeColor('--color-accent', '#3b82f6')}
         strokeWidth="1"
         strokeDasharray="4"
         className="pointer-events-none"
@@ -487,7 +487,7 @@ export const Canvas = forwardRef(function Canvas({
             className={cn(
               "p-2 rounded-md transition-colors",
               tool === 'select' 
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400" 
+                ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60" 
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
             title="Select tool"
@@ -499,7 +499,7 @@ export const Canvas = forwardRef(function Canvas({
             className={cn(
               "p-2 rounded-md transition-colors",
               tool === 'pan' 
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400" 
+                ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60" 
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
             title="Pan tool"
@@ -537,7 +537,7 @@ export const Canvas = forwardRef(function Canvas({
           className={cn(
             "p-2 rounded-md transition-colors",
             gridEnabled 
-              ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400" 
+              ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60" 
               : "hover:bg-gray-100 dark:hover:bg-gray-700"
           )}
           title="Toggle grid"

@@ -64,11 +64,11 @@ const LogicGates = ({ initialGate = 'AND' }) => {
   };
 
   return (
-    <div className="bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-xl p-6 my-8">
-      <h4 className="text-xl font-semibold text-purple-900 dark:text-purple-100 mb-4">
+    <div className="bg-accent/10 dark:bg-accent/20 border border-purple-200 dark:border-accent/30 rounded-xl p-6 my-8">
+      <h4 className="text-xl font-semibold text-accent-hover dark:text-accent mb-4">
         Digital Logic Gates
       </h4>
-      <p className="text-purple-700 dark:text-purple-300 mb-6 text-sm">
+      <p className="text-accent-hover dark:text-accent/80 mb-6 text-sm">
         Toggle the inputs and select a gate to see the truth table in action.
       </p>
       
@@ -87,7 +87,7 @@ const LogicGates = ({ initialGate = 'AND' }) => {
             >
               {inputA ? '1' : '0'}
             </button>
-            <span className="text-center text-sm text-purple-600 dark:text-purple-400">Input A</span>
+            <span className="text-center text-sm text-accent dark:text-accent">Input A</span>
             
             <button 
               onClick={() => setInputB(!inputB)}
@@ -99,7 +99,7 @@ const LogicGates = ({ initialGate = 'AND' }) => {
             >
               {inputB ? '1' : '0'}
             </button>
-            <span className="text-center text-sm text-purple-600 dark:text-purple-400">Input B</span>
+            <span className="text-center text-sm text-accent dark:text-accent">Input B</span>
           </div>
           
           {/* Connection Lines */}
@@ -141,21 +141,21 @@ const LogicGates = ({ initialGate = 'AND' }) => {
             >
               {output ? '1' : '0'}
             </div>
-            <span className="mt-2 text-sm text-purple-600 dark:text-purple-400">Output</span>
+            <span className="mt-2 text-sm text-accent dark:text-accent">Output</span>
           </div>
         </div>
 
         {/* Truth Table */}
         <div className="w-full max-w-md">
-          <h5 className="text-lg font-medium text-purple-800 dark:text-purple-200 mb-3 text-center">
+          <h5 className="text-lg font-medium text-accent-hover dark:text-accent mb-3 text-center">
             Truth Table - {gate} Gate
           </h5>
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-purple-200 dark:bg-purple-800">
-                <th className="p-2 border border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-200">A</th>
-                <th className="p-2 border border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-200">B</th>
-                <th className="p-2 border border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-200">Output</th>
+              <tr className="bg-accent/20 dark:bg-accent/20">
+                <th className="p-2 border border-accent/30 dark:border-accent/30 text-accent-hover dark:text-accent">A</th>
+                <th className="p-2 border border-accent/30 dark:border-accent/30 text-accent-hover dark:text-accent">B</th>
+                <th className="p-2 border border-accent/30 dark:border-accent/30 text-accent-hover dark:text-accent">Output</th>
               </tr>
             </thead>
             <tbody>
@@ -164,19 +164,19 @@ const LogicGates = ({ initialGate = 'AND' }) => {
                   key={idx}
                   className={`${
                     row.a === inputA && row.b === inputB 
-                      ? 'bg-purple-100 dark:bg-purple-900/50' 
+                      ? 'bg-accent/20 dark:bg-accent/20' 
                       : 'bg-white dark:bg-slate-800'
                   }`}
                 >
-                  <td className={`p-2 border border-purple-200 dark:border-purple-700 text-center font-mono
+                  <td className={`p-2 border border-purple-200 dark:border-accent/30 text-center font-mono
                     ${row.a ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {row.a ? '1' : '0'}
                   </td>
-                  <td className={`p-2 border border-purple-200 dark:border-purple-700 text-center font-mono
+                  <td className={`p-2 border border-purple-200 dark:border-accent/30 text-center font-mono
                     ${row.b ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {row.b ? '1' : '0'}
                   </td>
-                  <td className={`p-2 border border-purple-200 dark:border-purple-700 text-center font-mono font-bold
+                  <td className={`p-2 border border-purple-200 dark:border-accent/30 text-center font-mono font-bold
                     ${row.result ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {row.result ? '1' : '0'}
                   </td>
@@ -187,9 +187,9 @@ const LogicGates = ({ initialGate = 'AND' }) => {
         </div>
 
         {/* Gate Explanations */}
-        <div className="w-full max-w-md p-4 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-purple-700">
-          <h5 className="font-medium text-purple-800 dark:text-purple-200 mb-2">Gate Definitions:</h5>
-          <div className="text-sm text-purple-700 dark:text-purple-300 space-y-1">
+        <div className="w-full max-w-md p-4 bg-white dark:bg-slate-800 rounded-lg border border-purple-200 dark:border-accent/30">
+          <h5 className="font-medium text-accent-hover dark:text-accent mb-2">Gate Definitions:</h5>
+          <div className="text-sm text-accent-hover dark:text-accent/80 space-y-1">
             <p><strong>AND:</strong> Output is 1 only when both inputs are 1</p>
             <p><strong>OR:</strong> Output is 1 when at least one input is 1</p>
             <p><strong>XOR:</strong> Output is 1 when inputs are different</p>

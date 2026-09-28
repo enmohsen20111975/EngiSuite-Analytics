@@ -1,0 +1,461 @@
+URL: http://localhost:4000/pipelines
+
+=== LIGHT MODE ===
+{
+  "checked": 380,
+  "issuesFound": 80,
+  "theme": "light",
+  "url": "/pipelines",
+  "worstIssues": [
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "37 Pipelines",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "5 Disciplines",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "81 Total Steps",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 26,
+      "isLarge": true,
+      "ratio": 1.08,
+      "tag": "h1",
+      "text": "Engineering Calculation Pipelines",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 13,
+      "isLarge": false,
+      "ratio": 1.08,
+      "tag": "p",
+      "text": "Step-by-step workflows — enter inputs, get real calculations",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(213, 234, 241)",
+      "classes": "",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 1.89,
+      "tag": "span",
+      "text": "Projects",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(224, 244, 248)",
+      "classes": "text-accent font-medium text-sm",
+      "color": "rgb(7, 185, 213)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.07,
+      "tag": "span",
+      "text": "T",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(153, 153, 153)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.85,
+      "tag": "span",
+      "text": "🔍",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 8-10 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 8-10 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 8-10 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 8-10 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 12-15 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 8-10 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(245, 245, 245)",
+      "classes": "",
+      "color": "rgb(136, 136, 136)",
+      "fontSize": 10.5,
+      "isLarge": false,
+      "ratio": 3.25,
+      "tag": "span",
+      "text": "⏱ 10-12 min",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 380,
+  "issuesFound": 115,
+  "theme": "dark",
+  "url": "/pipelines",
+  "worstIssues": [
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "37 Pipelines",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "5 Disciplines",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(246, 247, 250)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 12,
+      "isLarge": false,
+      "ratio": 1.07,
+      "tag": "span",
+      "text": "81 Total Steps",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 26,
+      "isLarge": true,
+      "ratio": 1.08,
+      "tag": "h1",
+      "text": "Engineering Calculation Pipelines",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(244, 246, 249)",
+      "classes": "",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 13,
+      "isLarge": false,
+      "ratio": 1.08,
+      "tag": "p",
+      "text": "Step-by-step workflows — enter inputs, get real calculations",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🌬️",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🚰",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "⚡",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "💧",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "❄️",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "💨",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🏭",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🌍",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🔆",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🌀",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🚒",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🌡️",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "❄️",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "🔥",
+      "threshold": 3
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "",
+      "color": "rgb(242, 242, 242)",
+      "fontSize": 30,
+      "isLarge": true,
+      "ratio": 1.12,
+      "tag": "div",
+      "text": "⬛",
+      "threshold": 3
+    }
+  ]
+}

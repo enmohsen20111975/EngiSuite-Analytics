@@ -1,0 +1,87 @@
+URL: http://localhost:4000/diagram-studio
+
+=== LIGHT MODE ===
+{
+  "checked": 41,
+  "issuesFound": 2,
+  "theme": "light",
+  "url": "/diagram-studio",
+  "worstIssues": [
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "text-sm text-gray-400",
+      "color": "rgb(156, 163, 175)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 2.54,
+      "tag": "p",
+      "text": "No saved diagrams",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(59, 130, 246)",
+      "classes": "text-[7px] mt-0.5 leading-tight",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": 7,
+      "isLarge": false,
+      "ratio": 3.68,
+      "tag": "span",
+      "text": "Select",
+      "threshold": 4.5
+    }
+  ]
+}
+
+=== DARK MODE ===
+{
+  "checked": 41,
+  "issuesFound": 4,
+  "theme": "dark",
+  "url": "/diagram-studio",
+  "worstIssues": [
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-sm text-gray-500",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "span",
+      "text": "Untitled",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "button",
+      "text": "x",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 16,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "button",
+      "text": "x",
+      "threshold": 4.5
+    },
+    {
+      "bg": "rgb(31, 41, 55)",
+      "classes": "text-sm text-gray-500",
+      "color": "rgb(107, 114, 128)",
+      "fontSize": 14,
+      "isLarge": false,
+      "ratio": 3.04,
+      "tag": "p",
+      "text": "Select a shape to edit properties",
+      "threshold": 4.5
+    }
+  ]
+}

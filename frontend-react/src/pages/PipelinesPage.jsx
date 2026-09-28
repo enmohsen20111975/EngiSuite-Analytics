@@ -5,19 +5,19 @@ const API = '/api/local-pipelines';
 
 const DOMAINS = [
   { key: 'all',        label: 'All',           icon: '🗂️',  color: '#607d8b' },
-  { key: 'electrical', label: 'Electrical',     icon: '⚡',  color: '#1565c0' },
+  { key: 'electrical', label: 'Electrical',     icon: '⚡',  color: '#f59e0b' },
   { key: 'mechanical', label: 'Mechanical',     icon: '⚙️',  color: '#e65100' },
   { key: 'civil',      label: 'Civil / Struct', icon: '🏗️',  color: '#2e7d32' },
   { key: 'hvac',       label: 'HVAC',           icon: '🌬️',  color: '#00695c' },
-  { key: 'hydraulics', label: 'Hydraulics',     icon: '💧',  color: '#1565c0' },
+  { key: 'hydraulics', label: 'Hydraulics',     icon: '💧',  color: '#0d9488' },
 ];
 
 const DOMAIN_META = {
-  electrical: { bg: '#e3f2fd', border: '#1565c0', badge: '#1565c0' },
+  electrical: { bg: '#fef3c7', border: '#f59e0b', badge: '#f59e0b' },
   mechanical:  { bg: '#fff3e0', border: '#e65100', badge: '#e65100' },
   civil:       { bg: '#e8f5e9', border: '#2e7d32', badge: '#2e7d32' },
   hvac:        { bg: '#e0f7fa', border: '#00695c', badge: '#00695c' },
-  hydraulics:  { bg: '#e8eaf6', border: '#3949ab', badge: '#3949ab' },
+  hydraulics:  { bg: '#ccfbf1', border: '#0d9488', badge: '#0d9488' },
 };
 
 const DIFFICULTY_META = {
@@ -35,83 +35,87 @@ const SORT_OPTIONS = [
 ];
 
 // ─── Inline Styles ────────────────────────────────────────────────────────────
+// Theme-aware inline styles. Surfaces (page bg, header, filter bar, card,
+// modal, sidebar) are styled via Tailwind classes with `dark:` variants in the
+// JSX below — the entries here only hold layout + theme-aware CSS variables
+// (which `--color-bg-primary` etc. redefine per theme in src/index.css).
 const S = {
-  page: { minHeight: '100vh', background: '#f4f6f9', fontFamily: "'Segoe UI', Arial, sans-serif" },
+  page: { minHeight: '100vh', fontFamily: "'Segoe UI', Arial, sans-serif" },
   header: {
-    background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
     color: '#fff', padding: '32px 40px 24px',
   },
   headerRow: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 },
   headerTitle: { fontSize: 26, fontWeight: 700, margin: 0 },
   headerSub: { fontSize: 13, opacity: 0.85, marginTop: 6, maxWidth: 580 },
-  statChip: (color) => ({
+  statChip: () => ({
     background: 'rgba(255,255,255,0.15)', borderRadius: 20, padding: '4px 14px',
     fontSize: 12, fontWeight: 600, color: '#fff', border: '1px solid rgba(255,255,255,0.25)',
   }),
 
-  // Filter bar
+  // Filter bar (background & border via Tailwind classes)
   filterBar: {
-    background: '#fff', borderBottom: '1px solid #e0e0e0',
     padding: '12px 32px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap',
     position: 'sticky', top: 0, zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
   },
   searchWrap: { position: 'relative', flex: '1 1 220px', maxWidth: 320 },
-  searchIcon: { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#999' },
+  searchIcon: { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14 },
   searchInput: {
-    width: '100%', border: '1.5px solid #ddd', borderRadius: 8, padding: '8px 12px 8px 32px',
+    width: '100%', borderRadius: 8, padding: '8px 12px 8px 32px',
     fontSize: 13, outline: 'none', boxSizing: 'border-box',
   },
   domainTabs: { display: 'flex', gap: 4, flexWrap: 'wrap' },
   domainTab: (active, color) => ({
-    border: active ? `2px solid ${color}` : '2px solid #e0e0e0',
-    background: active ? color : '#fff',
-    color: active ? '#fff' : '#444',
+    border: active ? `2px solid ${color}` : '2px solid var(--color-border)',
+    background: active ? color : 'var(--color-bg-primary)',
+    color: active ? '#fff' : 'var(--color-text-secondary)',
     borderRadius: 20, padding: '5px 14px', fontSize: 12, fontWeight: 600,
     cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
   }),
   diffPills: { display: 'flex', gap: 4 },
   diffPill: (active, meta) => ({
-    border: active ? `2px solid ${meta?.color ?? '#607d8b'}` : '2px solid #e0e0e0',
-    background: active ? (meta?.bg ?? '#f5f5f5') : '#fff',
-    color: active ? (meta?.color ?? '#333') : '#666',
+    border: active ? `2px solid ${meta?.color ?? 'var(--color-text-muted)'}` : '2px solid var(--color-border)',
+    background: active ? (meta?.bg ?? 'var(--color-bg-tertiary)') : 'var(--color-bg-primary)',
+    color: active ? (meta?.color ?? 'var(--color-text-primary)') : 'var(--color-text-secondary)',
     borderRadius: 20, padding: '5px 12px', fontSize: 12, fontWeight: 600,
     cursor: 'pointer', transition: 'all 0.15s',
   }),
   sortSelect: {
-    border: '1.5px solid #ddd', borderRadius: 8, padding: '7px 10px', fontSize: 12,
-    background: '#fff', cursor: 'pointer', outline: 'none',
+    borderRadius: 8, padding: '7px 10px', fontSize: 12,
+    cursor: 'pointer', outline: 'none',
   },
-  resultCount: { fontSize: 12, color: '#888', whiteSpace: 'nowrap' },
+  resultCount: { fontSize: 12, whiteSpace: 'nowrap' },
 
   // Main body
   body: { maxWidth: 1280, margin: '0 auto', padding: '24px 24px 48px' },
 
-  // Group header
+  // Group header (border via Tailwind class)
   groupHeader: {
     display: 'flex', alignItems: 'center', gap: 10,
-    margin: '28px 0 14px', paddingBottom: 8, borderBottom: '2px solid #e0e0e0',
+    margin: '28px 0 14px', paddingBottom: 8,
   },
   groupIcon: { fontSize: 22 },
-  groupTitle: { fontSize: 16, fontWeight: 700, color: '#1a1a2e' },
-  groupCount: { fontSize: 12, color: '#888', background: '#f5f5f5', borderRadius: 12, padding: '2px 10px' },
+  groupTitle: { fontSize: 16, fontWeight: 700 },
+  groupCount: {
+    fontSize: 12, borderRadius: 12, padding: '2px 10px',
+    color: 'var(--color-text-muted)', background: 'var(--color-bg-tertiary)',
+  },
 
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 },
   card: (domain) => ({
-    background: '#fff',
-    border: `2px solid ${DOMAIN_META[domain]?.border ?? '#ccc'}`,
+    border: `2px solid ${DOMAIN_META[domain]?.border ?? 'var(--color-border)'}`,
     borderRadius: 12, padding: 22, cursor: 'pointer',
     transition: 'transform 0.15s, box-shadow 0.15s',
     boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
   }),
   cardIcon: { fontSize: 30, marginBottom: 8 },
-  cardTitle: { fontSize: 15, fontWeight: 700, margin: '0 0 6px', color: '#1a1a2e' },
-  cardDesc: { fontSize: 12, color: '#666', lineHeight: 1.6, marginBottom: 12 },
+  cardTitle: { fontSize: 15, fontWeight: 700, margin: '0 0 6px' },
+  cardDesc: { fontSize: 12, lineHeight: 1.6, marginBottom: 12 },
   cardMeta: { display: 'flex', gap: 6, flexWrap: 'wrap' },
   badge: (bg, color) => ({
     background: bg, color, fontSize: 10.5, fontWeight: 600,
     padding: '2px 9px', borderRadius: 20,
   }),
-  empty: { textAlign: 'center', color: '#aaa', padding: '60px 20px', fontSize: 14 },
+  empty: { textAlign: 'center', padding: '60px 20px', fontSize: 14 },
 
   // Modal overlay / wizard
   overlay: {
@@ -120,12 +124,11 @@ const S = {
     overflowY: 'auto', padding: '24px 16px',
   },
   modal: {
-    background: '#fff', borderRadius: 14, width: '100%', maxWidth: 940,
+    borderRadius: 14, width: '100%', maxWidth: 940,
     boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: 500,
     display: 'flex', flexDirection: 'column',
   },
   modalHeader: {
-    background: 'linear-gradient(135deg, #1565c0 0%, #0d47a1 100%)',
     color: '#fff', padding: '20px 28px', borderRadius: '14px 14px 0 0',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   },
@@ -134,69 +137,78 @@ const S = {
     width: 32, height: 32, borderRadius: 8, cursor: 'pointer',
     fontSize: 18, lineHeight: '32px', textAlign: 'center',
   },
-  progressBar: { height: 4, background: '#e0e0e0', borderRadius: 0 },
-  progressFill: (pct) => ({ height: 4, background: '#1565c0', width: `${pct}%`, transition: 'width 0.4s' }),
+  progressBar: { height: 4, borderRadius: 0, background: 'var(--color-border)' },
+  progressFill: (pct) => ({ height: 4, background: 'var(--color-accent)', width: `${pct}%`, transition: 'width 0.4s' }),
   wizardBody: { display: 'flex', flex: 1, minHeight: 400 },
   sidebar: {
-    width: 200, borderRight: '1px solid #e0e0e0', padding: '16px 0',
-    background: '#fafafa', flexShrink: 0, borderRadius: '0 0 0 14px',
+    width: 200, padding: '16px 0',
+    flexShrink: 0, borderRadius: '0 0 0 14px',
   },
   sidebarItem: (active, done) => ({
     padding: '10px 20px', cursor: 'pointer', fontSize: 13,
-    background: active ? '#e3f2fd' : 'transparent',
-    borderLeft: active ? '3px solid #1565c0' : '3px solid transparent',
-    color: active ? '#1565c0' : done ? '#2e7d32' : '#555',
+    background: active ? 'rgba(var(--color-accent-rgb), 0.12)' : 'transparent',
+    borderLeft: active ? '3px solid var(--color-accent)' : '3px solid transparent',
+    color: active ? 'var(--color-accent)' : done ? 'var(--color-success)' : 'var(--color-text-secondary)',
     fontWeight: active ? 600 : 400,
   }),
   stepContent: { flex: 1, padding: '24px 28px', overflowY: 'auto' },
-  stepTitle: { fontSize: 19, fontWeight: 700, color: '#1a1a2e', margin: '0 0 6px' },
-  stepDesc: { fontSize: 13, color: '#555', lineHeight: 1.6, margin: '0 0 20px' },
+  stepTitle: { fontSize: 19, fontWeight: 700, margin: '0 0 6px' },
+  stepDesc: { fontSize: 13, lineHeight: 1.6, margin: '0 0 20px' },
   standardRef: {
     display: 'inline-block', background: '#fff3e0', color: '#e65100',
     border: '1px solid #ffe0b2', borderRadius: 20, padding: '2px 10px',
     fontSize: 11, marginBottom: 16,
   },
   sectionLabel: {
-    fontSize: 12, fontWeight: 600, color: '#1565c0',
+    fontSize: 12, fontWeight: 600, color: 'var(--color-accent)',
     textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
   },
   inputGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 },
   inputGroup: { display: 'flex', flexDirection: 'column', gap: 4 },
-  label: { fontSize: 12.5, fontWeight: 500, color: '#333' },
-  input: { border: '1.5px solid #ddd', borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none' },
-  inputAutoFilled: { border: '1.5px solid #1565c0', borderRadius: 7, padding: '8px 12px', fontSize: 13, background: '#e3f2fd' },
-  select: { border: '1.5px solid #ddd', borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none', background: '#fff' },
-  helpText: { fontSize: 11, color: '#999', lineHeight: 1.4 },
-  outputsBox: { background: '#f0f7ff', border: '1.5px solid #90caf9', borderRadius: 10, padding: '16px 20px', marginTop: 20 },
-  outputRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #e3f0ff' },
-  outputLabel: { fontSize: 13, color: '#333' },
-  outputValue: { fontSize: 13, fontWeight: 700, color: '#1565c0' },
-  outputPass: { fontSize: 13, fontWeight: 700, color: '#2e7d32' },
-  outputFail: { fontSize: 13, fontWeight: 700, color: '#c62828' },
+  label: { fontSize: 12.5, fontWeight: 500 },
+  input: { borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none' },
+  inputAutoFilled: {
+    borderRadius: 7, padding: '8px 12px', fontSize: 13,
+    background: 'rgba(var(--color-accent-rgb), 0.12)',
+  },
+  select: { borderRadius: 7, padding: '8px 12px', fontSize: 13, outline: 'none' },
+  helpText: { fontSize: 11, lineHeight: 1.4 },
+  outputsBox: {
+    borderRadius: 10, padding: '16px 20px', marginTop: 20,
+    background: 'rgba(var(--color-accent-rgb), 0.08)',
+  },
+  outputRow: {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    padding: '6px 0', borderBottom: '1px solid var(--color-border)',
+  },
+  outputLabel: { fontSize: 13 },
+  outputValue: { fontSize: 13, fontWeight: 700, color: 'var(--color-accent)' },
+  outputPass: { fontSize: 13, fontWeight: 700, color: 'var(--color-success)' },
+  outputFail: { fontSize: 13, fontWeight: 700, color: 'var(--color-danger)' },
   warningBox: { background: '#fff3e0', border: '1.5px solid #ffb74d', borderRadius: 8, padding: '12px 16px', marginTop: 12 },
   warningText: { color: '#e65100', fontSize: 12.5 },
   formulaBox: { background: '#1a1a2e', borderRadius: 8, padding: '14px 18px', marginTop: 16 },
   formulaLine: { color: '#a5d6a7', fontFamily: 'Courier New, monospace', fontSize: 12.5, lineHeight: 1.9, display: 'block' },
-  footer: { padding: '16px 28px', borderTop: '1px solid #e0e0e0', display: 'flex', alignItems: 'center', gap: 8 },
+  footer: { padding: '16px 28px', display: 'flex', alignItems: 'center', gap: 8 },
   calcBtn: {
-    background: 'linear-gradient(135deg, #1565c0, #0d47a1)', color: '#fff',
+    color: '#fff',
     border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600,
   },
   calcBtnDisabled: {
-    background: '#90caf9', color: '#fff',
+    color: '#fff',
     border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'not-allowed', fontSize: 13, fontWeight: 600,
   },
   nextBtn: {
-    background: '#2e7d32', color: '#fff',
+    color: '#fff',
     border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginLeft: 8,
   },
   reportBtn: {
-    background: 'linear-gradient(135deg, #6a1b9a, #4a148c)', color: '#fff',
+    color: '#fff',
     border: 'none', borderRadius: 8, padding: '10px 22px', cursor: 'pointer', fontSize: 13, fontWeight: 600, marginLeft: 8,
   },
   reportFrame: { width: '100%', border: 'none', minHeight: 600, borderRadius: '0 0 14px 14px' },
-  spinner: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200, color: '#1565c0', fontSize: 15 },
-  error: { background: '#ffebee', border: '1px solid #ef9a9a', borderRadius: 8, padding: '14px 18px', color: '#c62828', fontSize: 13 },
+  spinner: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200, fontSize: 15 },
+  error: { borderRadius: 8, padding: '14px 18px', fontSize: 13 },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -621,10 +633,10 @@ export default function PipelinesPage() {
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={S.page}>
+    <div style={S.page} className="bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100">
 
       {/* ─── Header ─────────────────────────────────────────────────────── */}
-      <div style={S.header}>
+      <div style={S.header} className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500 text-white">
         <div style={S.headerRow}>
           <div>
             <h1 style={S.headerTitle}>Engineering Calculation Pipelines</h1>
@@ -647,16 +659,17 @@ export default function PipelinesPage() {
       </div>
 
       {/* ─── Filter Bar ─────────────────────────────────────────────────── */}
-      <div style={S.filterBar}>
+      <div style={S.filterBar} className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
         {/* Search */}
         <div style={S.searchWrap}>
-          <span style={S.searchIcon}>🔍</span>
+          <span style={S.searchIcon} className="text-gray-400 dark:text-gray-500">🔍</span>
           <input
             type="text"
             placeholder="Search pipelines…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={S.searchInput}
+            className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           />
         </div>
 
@@ -694,7 +707,7 @@ export default function PipelinesPage() {
         </div>
 
         {/* Sort */}
-        <select value={sort} onChange={e => setSort(e.target.value)} style={S.sortSelect}>
+        <select value={sort} onChange={e => setSort(e.target.value)} style={S.sortSelect} className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">
           {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
 
@@ -702,9 +715,9 @@ export default function PipelinesPage() {
         <button
           onClick={() => setGroupByDomainFlag(f => !f)}
           style={{
-            border: groupByDomainFlag ? '2px solid #1565c0' : '2px solid #e0e0e0',
-            background: groupByDomainFlag ? '#e3f2fd' : '#fff',
-            color: groupByDomainFlag ? '#1565c0' : '#666',
+            border: groupByDomainFlag ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+            background: groupByDomainFlag ? 'rgba(var(--color-accent-rgb), 0.12)' : 'var(--color-bg-primary)',
+            color: groupByDomainFlag ? 'var(--color-accent)' : 'var(--color-text-secondary)',
             borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
           }}
           title="Group by discipline"
@@ -712,21 +725,22 @@ export default function PipelinesPage() {
           🗂 Group
         </button>
 
-        <span style={S.resultCount}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
+        <span style={S.resultCount} className="text-gray-500 dark:text-gray-400">{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* ─── Main Content ────────────────────────────────────────────────── */}
       <div style={S.body}>
-        {loading && <div style={S.spinner}>Loading pipelines…</div>}
-        {fetchError && <div style={S.error}>{fetchError}</div>}
+        {loading && <div style={S.spinner} className="text-accent">Loading pipelines…</div>}
+        {fetchError && <div style={S.error} className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300">{fetchError}</div>}
 
         {!loading && !fetchError && filtered.length === 0 && (
-          <div style={S.empty}>
+          <div style={S.empty} className="text-gray-400 dark:text-gray-500">
             <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
             <div>No pipelines match your filters.</div>
             <button
               onClick={() => { setSearch(''); setDomainFilter('all'); setDiffFilter('all'); }}
               style={{ ...S.calcBtn, marginTop: 16, fontSize: 12 }}
+              className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500"
             >
               Clear filters
             </button>
@@ -743,7 +757,7 @@ export default function PipelinesPage() {
                 const meta = DOMAIN_META[d] ?? DOMAIN_META.electrical;
                 return (
                   <div key={d}>
-                    <div style={S.groupHeader}>
+                    <div style={S.groupHeader} className="border-b-2 border-gray-200 dark:border-slate-700">
                       <span style={S.groupIcon}>{dom?.icon}</span>
                       <span style={{ ...S.groupTitle, color: meta.border }}>{dom?.label ?? d}</span>
                       <span style={S.groupCount}>{groups[d].length} pipeline{groups[d].length !== 1 ? 's' : ''}</span>
@@ -766,9 +780,9 @@ export default function PipelinesPage() {
       {/* ─── Wizard Modal ─────────────────────────────────────────────────── */}
       {activePipeline && (
         <div style={S.overlay} onClick={e => e.target === e.currentTarget && closeWizard()}>
-          <div style={S.modal}>
+          <div style={S.modal} className="bg-white dark:bg-slate-900">
 
-            <div style={S.modalHeader}>
+            <div style={S.modalHeader} className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500 text-white">
               <div>
                 <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 4 }}>
                   {activePipeline.icon} {activePipeline.domain.toUpperCase()} PIPELINE
@@ -784,20 +798,21 @@ export default function PipelinesPage() {
 
             {showReport ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ padding: '14px 24px', borderBottom: '1px solid #e0e0e0', display: 'flex', gap: 10, alignItems: 'center' }}>
+                <div style={{ padding: '14px 24px', display: 'flex', gap: 10, alignItems: 'center' }} className="border-b border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
                   <button
                     onClick={() => setShowReport(false)}
-                    style={{ background: '#e0e0e0', border: 'none', borderRadius: 7, padding: '7px 16px', cursor: 'pointer', fontSize: 13 }}
+                    style={{ border: 'none', borderRadius: 7, padding: '7px 16px', cursor: 'pointer', fontSize: 13 }}
+                    className="bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600"
                   >
                     ← Back to Wizard
                   </button>
-                  <button onClick={downloadHtml} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }}>
+                  <button onClick={downloadHtml} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }} className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500">
                     ⬇ Download HTML Report
                   </button>
-                  <button onClick={downloadPdf} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }}>
+                  <button onClick={downloadPdf} style={{ ...S.calcBtn, padding: '7px 16px', fontSize: 13 }} className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500">
                     ⬇ Download PDF
                   </button>
-                  <button onClick={downloadJson} style={{ ...S.nextBtn, marginLeft: 0, padding: '7px 16px', fontSize: 13 }}>
+                  <button onClick={downloadJson} style={{ ...S.nextBtn, marginLeft: 0, padding: '7px 16px', fontSize: 13 }} className="bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-600">
                     ⬇ Download JSON
                   </button>
                 </div>
@@ -806,8 +821,8 @@ export default function PipelinesPage() {
             ) : (
               <>
                 <div style={S.wizardBody}>
-                  <div style={S.sidebar}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#999', padding: '0 20px 8px', textTransform: 'uppercase', letterSpacing: 0.5 }}>Steps</div>
+                  <div style={S.sidebar} className="bg-gray-50 dark:bg-slate-900/50 border-r border-gray-200 dark:border-slate-700">
+                    <div style={{ fontSize: 11, fontWeight: 600, padding: '0 20px 8px', textTransform: 'uppercase', letterSpacing: 0.5 }} className="text-gray-400 dark:text-gray-500">Steps</div>
                     {activePipeline.steps.map((step, idx) => {
                       const done = !!stepOutputs[step.stepNumber];
                       const active = idx === currentStepIdx;
@@ -826,6 +841,7 @@ export default function PipelinesPage() {
                           onClick={generateReport}
                           disabled={generatingReport}
                           style={{ ...S.reportBtn, width: '100%', marginLeft: 0, padding: '9px 12px', fontSize: 12 }}
+                          className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500"
                         >
                           {generatingReport ? '⏳ Generating…' : '📋 View Report'}
                         </button>
@@ -835,9 +851,9 @@ export default function PipelinesPage() {
 
                   {currentStep && (
                     <div style={S.stepContent}>
-                      <h2 style={S.stepTitle}>Step {currentStep.stepNumber}: {currentStep.name}</h2>
+                      <h2 style={S.stepTitle} className="text-gray-900 dark:text-white">Step {currentStep.stepNumber}: {currentStep.name}</h2>
                       <span style={S.standardRef}>{currentStep.standard_ref}</span>
-                      <p style={S.stepDesc}>{currentStep.description}</p>
+                      <p style={S.stepDesc} className="text-gray-600 dark:text-gray-400">{currentStep.description}</p>
 
                       <div style={S.sectionLabel}>Inputs</div>
                       <div style={S.inputGrid}>
@@ -849,17 +865,17 @@ export default function PipelinesPage() {
                           const val = currentInputs[inp.name] ?? '';
                           return (
                             <div key={inp.name} style={S.inputGroup}>
-                              <label style={S.label}>
+                              <label style={S.label} className="text-gray-700 dark:text-gray-300">
                                 {inp.label}
-                                {inp.unit ? <span style={{ color: '#1565c0', fontWeight: 400 }}> ({inp.unit})</span> : null}
+                                {inp.unit ? <span style={{ fontWeight: 400 }} className="text-accent"> ({inp.unit})</span> : null}
                                 {isAutoFilled && (
-                                  <span style={{ fontSize: 10, color: '#1565c0', marginLeft: 6, background: '#e3f2fd', padding: '1px 6px', borderRadius: 10 }}>
+                                  <span style={{ fontSize: 10, marginLeft: 6, background: 'rgba(var(--color-accent-rgb), 0.12)', padding: '1px 6px', borderRadius: 10 }} className="text-accent">
                                     auto-filled
                                   </span>
                                 )}
                               </label>
                               {inp.type === 'select' ? (
-                                <select value={val} onChange={e => setField(inp.name, e.target.value)} style={S.select}>
+                                <select value={val} onChange={e => setField(inp.name, e.target.value)} style={S.select} className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100">
                                   {inp.options?.map(o => (
                                     <option key={o.value} value={o.value}>{o.label}</option>
                                   ))}
@@ -873,19 +889,22 @@ export default function PipelinesPage() {
                                   step="any"
                                   onChange={e => setField(inp.name, e.target.value === '' ? '' : Number(e.target.value))}
                                   style={isAutoFilled ? S.inputAutoFilled : S.input}
+                                  className={isAutoFilled
+                                    ? "border-accent text-gray-900 dark:text-gray-100"
+                                    : "bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100"}
                                 />
                               )}
-                              <span style={S.helpText}>{inp.help}</span>
+                              <span style={S.helpText} className="text-gray-400 dark:text-gray-500">{inp.help}</span>
                             </div>
                           );
                         })}
                       </div>
 
-                      {calcError && <div style={{ ...S.error, marginBottom: 12 }}>{calcError}</div>}
+                      {calcError && <div style={{ ...S.error, marginBottom: 12 }} className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300">{calcError}</div>}
 
                       {currentOutputs && (
                         <>
-                          <div style={S.outputsBox}>
+                          <div style={S.outputsBox} className="border border-accent dark:border-accent">
                             <div style={{ ...S.sectionLabel, marginBottom: 10 }}>Calculated Results</div>
                             {currentStep.outputs.map(out => {
                               const val = currentOutputs[out.name];
@@ -893,7 +912,7 @@ export default function PipelinesPage() {
                               const { text, style } = formatOutputValue(val, out);
                               return (
                                 <div key={out.name} style={S.outputRow}>
-                                  <span style={S.outputLabel}>{out.label}{out.unit ? ` (${out.unit})` : ''}</span>
+                                  <span style={S.outputLabel} className="text-gray-700 dark:text-gray-300">{out.label}{out.unit ? ` (${out.unit})` : ''}</span>
                                   <span style={style}>{text}</span>
                                 </div>
                               );
@@ -902,7 +921,7 @@ export default function PipelinesPage() {
 
                           {(warnings[currentStep.stepNumber] ?? []).length > 0 && (
                             <div style={S.warningBox}>
-                              <div style={{ fontWeight: 600, color: '#e65100', fontSize: 13, marginBottom: 6 }}>⚠ Warnings</div>
+                              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 6 }} className="text-amber-700 dark:text-amber-300">⚠ Warnings</div>
                               {warnings[currentStep.stepNumber].map((w, i) => (
                                 <div key={i} style={S.warningText}>• {w}</div>
                               ))}
@@ -911,7 +930,7 @@ export default function PipelinesPage() {
 
                           {(formulaDisplay[currentStep.stepNumber] ?? []).length > 0 && (
                             <div style={S.formulaBox}>
-                              <div style={{ fontSize: 11, fontWeight: 600, color: '#90caf9', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 8 }}>
+                              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 8 }} className="text-accent">
                                 Governing Equations
                               </div>
                               {formulaDisplay[currentStep.stepNumber].map((f, i) => (
@@ -925,24 +944,25 @@ export default function PipelinesPage() {
                   )}
                 </div>
 
-                <div style={S.footer}>
+                <div style={S.footer} className="border-t border-gray-200 dark:border-slate-700">
                   {currentStepIdx > 0 && (
                     <button
                       onClick={() => goToStep(currentStepIdx - 1)}
-                      style={{ background: '#e0e0e0', border: 'none', borderRadius: 7, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}
+                      style={{ border: 'none', borderRadius: 7, padding: '10px 20px', cursor: 'pointer', fontSize: 13 }}
+                      className="bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-slate-600"
                     >
                       ← Previous
                     </button>
                   )}
                   <div style={{ flex: 1 }} />
-                  <button onClick={calculate} disabled={calculating} style={calculating ? S.calcBtnDisabled : S.calcBtn}>
+                  <button onClick={calculate} disabled={calculating} style={calculating ? S.calcBtnDisabled : S.calcBtn} className={calculating ? "bg-accent/40 dark:bg-accent/40" : "bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500"}>
                     {calculating ? '⏳ Calculating…' : '⚡ Calculate'}
                   </button>
                   {currentOutputs && !isLastStep && (
-                    <button onClick={nextStep} style={S.nextBtn}>Next Step →</button>
+                    <button onClick={nextStep} style={S.nextBtn} className="bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-600">Next Step →</button>
                   )}
                   {currentOutputs && isLastStep && (
-                    <button onClick={generateReport} disabled={generatingReport} style={S.reportBtn}>
+                    <button onClick={generateReport} disabled={generatingReport} style={S.reportBtn} className="bg-gradient-to-br from-accent to-cyan-600 dark:from-accent dark:to-cyan-500">
                       {generatingReport ? '⏳ Generating…' : '📋 Generate Report'}
                     </button>
                   )}
@@ -972,17 +992,18 @@ function PipelineCard({ p, onClick }) {
         e.currentTarget.style.transform = '';
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
       }}
+      className="bg-white dark:bg-slate-800"
     >
       <div style={S.cardIcon}>{p.icon || '🧩'}</div>
-      <h3 style={S.cardTitle}>{p.name}</h3>
-      <p style={S.cardDesc}>{p.description}</p>
+      <h3 style={S.cardTitle} className="text-gray-900 dark:text-white">{p.name}</h3>
+      <p style={S.cardDesc} className="text-gray-600 dark:text-gray-400">{p.description}</p>
       <div style={S.cardMeta}>
         <span style={S.badge(dc.bg, dc.badge)}>{p.domain.toUpperCase()}</span>
-        <span style={S.badge('#e3f2fd', '#0d47a1')}>{(p.main_classification || p.domain).toUpperCase()}</span>
-        <span style={S.badge('#eef2ff', '#3949ab')}>{p.sub_classification || 'General'}</span>
+        <span style={S.badge('#fef3c7', '#b45309')}>{(p.main_classification || p.domain).toUpperCase()}</span>
+        <span style={S.badge('#ccfbf1', '#0f766e')}>{p.sub_classification || 'General'}</span>
         <span style={S.badge(df.bg, df.color)}>{df.label}</span>
-        <span style={S.badge('#f5f5f5', '#555')}>{p.step_count} steps</span>
-        <span style={S.badge('#f5f5f5', '#888')}>⏱ {p.estimated_time}</span>
+        <span style={S.badge('var(--color-bg-tertiary)', 'var(--color-text-secondary)')}>{p.step_count} steps</span>
+        <span style={S.badge('var(--color-bg-tertiary)', 'var(--color-text-muted)')}>⏱ {p.estimated_time}</span>
       </div>
     </div>
   );

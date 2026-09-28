@@ -71,11 +71,11 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent/10 via-white to-cyan-100 dark:from-accent/10 dark:via-slate-900 dark:to-cyan-950 px-4">
       <div className="w-full max-w-md">
         {/* Logo/Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-bold mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-cyan-400 text-white text-2xl font-bold mb-4 shadow-lg shadow-accent/30">
             E
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -88,7 +88,7 @@ export default function VerifyEmailPage() {
           {/* Loading State */}
           {status === 'loading' && (
             <div className="text-center py-8">
-              <LoaderCircle className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+              <LoaderCircle className="w-12 h-12 text-accent animate-spin mx-auto mb-4" />
               <p className="text-gray-600 dark:text-gray-400">
                 Verifying your email address...
               </p>
@@ -98,8 +98,8 @@ export default function VerifyEmailPage() {
           {/* Success State */}
           {status === 'success' && (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CircleCheck className="w-8 h-8 text-green-500" />
+              <div className="w-16 h-16 bg-success/20 dark:bg-success/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CircleCheck className="w-8 h-8 text-success" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Email Verified!
@@ -122,8 +122,8 @@ export default function VerifyEmailPage() {
           {/* Error State */}
           {status === 'error' && (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CircleX className="w-8 h-8 text-red-500" />
+              <div className="w-16 h-16 bg-danger/20 dark:bg-danger/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CircleX className="w-8 h-8 text-danger" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Verification Failed
@@ -169,8 +169,8 @@ export default function VerifyEmailPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                  <p className="text-sm text-green-600 dark:text-green-400">
+                <div className="bg-success/10 dark:bg-success/20 border border-success/20 dark:border-success/30 rounded-lg p-4">
+                  <p className="text-sm text-success dark:text-success/90">
                     {message}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ export default function VerifyEmailPage() {
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Link
                   to="/login"
-                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                  className="text-accent hover:text-accent-hover dark:text-accent"
                 >
                   Back to Login
                 </Link>

@@ -3,28 +3,49 @@
  * Renders workflow nodes with ports
  */
 import { memo } from 'react';
-import { cn } from '../../lib/utils';
+import { cn, getThemeColor, themeColors } from '../../lib/utils';
 import { GripVertical } from 'lucide-react';
 
 // Default port radius
 const PORT_RADIUS = 8;
 
-// Domain colors for nodes
-const DOMAIN_COLORS = {
-  electrical: '#1976d2',
-  mechanical: '#f57c00',
-  civil: '#388e3c',
-  chemical: '#7b1fa2',
-  mathematics: '#00796b',
-  general: '#455a64',
-  default: '#64748b'
-};
-
 /**
- * Get color for a domain
+ * Resolve a theme-aware domain color for a node. The domain palette now maps
+ * to the project's semantic tokens (accent/success/warning/danger/info) so
+ * nodes follow the active theme + accent color instead of hard-coded blues
+ * and purples. Falls back to the muted text token for unknown domains.
  */
 export function getDomainColor(domain) {
-  return DOMAIN_COLORS[domain] || DOMAIN_COLORS.default;
+  switch (domain) {
+    case 'electrical':
+      // was #1976d2 (forbidden blue) — amber/orange is the approved electrical accent
+      return getThemeColor('--color-warning', '#f59e0b');
+    case 'mechanical':
+      return getThemeColor('--color-warning', '#f59e0b');
+    case 'civil':
+      return getThemeColor('--color-success', '#10b981');
+    case 'chemical':
+      // was #7b1fa2 (forbidden purple) — use accent token instead
+      return getThemeColor('--color-accent', '#0891b2');
+    case 'mathematics':
+      return getThemeColor('--color-info', '#0ea5e9');
+    case 'general':
+      return getThemeColor('--color-text-secondary', '#475569');
+    default:
+      return getThemeColor('--color-text-muted', '#64748b');
+  }
+}
+
+// Resolve the selection/accent palette once per render pass so all SVG nodes
+// in the same render share the same value (re-read on every render so
+// theme/accent changes propagate).
+function resolveSelectionPalette() {
+  return {
+    accent: themeColors.accent(),
+    border: themeColors.border(),
+    textMuted: themeColors.textMuted(),
+    success: themeColors.success(),
+  };
 }
 
 /**
@@ -41,15 +62,17 @@ export const NodeRenderer = memo(function NodeRenderer({
   customRender
 }) {
   const { zoom = 1, offset = { x: 0, y: 0 } } = viewport || {};
-  
+
   // Calculate screen position
   const screenX = node.x * zoom + offset.x;
   const screenY = node.y * zoom + offset.y;
   const screenW = (node.width || 200) * zoom;
   const screenH = (node.height || 100) * zoom;
-  
+
   // Get domain color
   const color = getDomainColor(node.domain);
+  // Resolve theme tokens (re-read each render so theme changes propagate)
+  const palette = resolveSelectionPalette();
   
   // Custom render function
   if (customRender) {
@@ -80,7 +103,7 @@ export const NodeRenderer = memo(function NodeRenderer({
           height={screenH + 8 * zoom}
           rx={6 * zoom}
           fill="none"
-          stroke="#3b82f6"
+          stroke={palette.accent}
           strokeWidth={2}
           strokeDasharray="4"
           className="pointer-events-none"
@@ -104,7 +127,7 @@ export const NodeRenderer = memo(function NodeRenderer({
         height={screenH}
         rx={4 * zoom}
         fill="white"
-        stroke={isSelected ? '#3b82f6' : '#e2e8f0'}
+        stroke={isSelected ? palette.accent : palette.border}
         strokeWidth={isSelected ? 2 : 1}
         className="drop-shadow-sm"
       />
@@ -149,7 +172,7 @@ export const NodeRenderer = memo(function NodeRenderer({
         x={24 * zoom}
         y={42 * zoom}
         fontSize={9 * zoom}
-        fill="#64748b"
+        fill={palette.textMuted}
         className="select-none pointer-events-none"
       >
         {node.domain || 'general'}
@@ -184,7 +207,7 @@ export const NodeRenderer = memo(function NodeRenderer({
               x={14 * zoom}
               y={portY + 3 * zoom}
               fontSize={9 * zoom}
-              fill="#64748b"
+              fill={palette.textMuted}
               className="select-none pointer-events-none"
             >
               {input.name || input.symbol || `In ${i + 1}`}
@@ -205,20 +228,20 @@ export const NodeRenderer = memo(function NodeRenderer({
               x={screenW - 14 * zoom}
               y={portY + 3 * zoom}
               fontSize={9 * zoom}
-              fill="#64748b"
+              fill={palette.textMuted}
               textAnchor="end"
               className="select-none pointer-events-none"
             >
               {output.name || output.symbol || `Out ${i + 1}`}
             </text>
-            
+
             {/* Port circle */}
             <circle
               cx={screenW}
               cy={portY}
               r={portRadius * zoom}
-              fill={isConnected ? '#22c55e' : 'white'}
-              stroke="#22c55e"
+              fill={isConnected ? palette.success : 'white'}
+              stroke={palette.success}
               strokeWidth={2}
               className="cursor-crosshair hover:scale-125 transition-transform"
               onMouseDown={(e) => {
@@ -238,7 +261,7 @@ export const NodeRenderer = memo(function NodeRenderer({
           cx={screenW}
           cy={screenH}
           r={6 * zoom}
-          fill="#3b82f6"
+          fill={palette.accent}
           stroke="white"
           strokeWidth={2}
           className="cursor-se-resize"

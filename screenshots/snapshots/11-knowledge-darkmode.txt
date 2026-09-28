@@ -1,0 +1,138 @@
+URL: http://localhost:4000/knowledge
+
+=== LIGHT MODE ===
+{
+  "checked": 8,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 8,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x948",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(236, 239, 244)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    },
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-[calc(100vh-4rem)] bg-slate-50 p-4 sm:p-6",
+      "size": "1136x836",
+      "tag": "div",
+      "text": "Knowledge LibraryProfessional certificat"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Certifications"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Ready lessons"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Knowledge Objects"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Ready questions"
+    }
+  ],
+  "theme": "light",
+  "url": "/knowledge"
+}
+
+=== DARK MODE ===
+{
+  "checked": 8,
+  "darkBgBoxes": 3,
+  "lightBgBoxes": 5,
+  "sampleDark": [
+    {
+      "bg": "rgb(14, 18, 27)",
+      "classes": "min-h-screen bg-[var(--color-bg-primary)]",
+      "size": "1440x948",
+      "tag": "div",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "relative flex flex-col h-full bg-[var(--color-bg-secondary)]",
+      "size": "256x900",
+      "tag": "aside",
+      "text": "EngiSuite100 ptsDashboardCalculatorsEngi"
+    },
+    {
+      "bg": "rgb(22, 28, 39)",
+      "classes": "hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-[v",
+      "size": "256x54",
+      "tag": "div",
+      "text": ""
+    }
+  ],
+  "sampleLight": [
+    {
+      "bg": "rgb(248, 250, 252)",
+      "classes": "min-h-[calc(100vh-4rem)] bg-slate-50 p-4 sm:p-6",
+      "size": "1136x836",
+      "tag": "div",
+      "text": "Knowledge LibraryProfessional certificat"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Certifications"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Ready lessons"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Knowledge Objects"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "rounded-xl border border-slate-200 bg-white p-4",
+      "size": "263x86",
+      "tag": "div",
+      "text": "0Ready questions"
+    }
+  ],
+  "theme": "dark",
+  "url": "/knowledge"
+}

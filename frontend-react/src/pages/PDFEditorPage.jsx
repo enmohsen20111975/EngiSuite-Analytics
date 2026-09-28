@@ -107,7 +107,7 @@ function LayerPanel({ layers, activeLayerId, onSelectLayer, onToggleVisibility, 
             className={cn(
               "flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-xs",
               activeLayerId === layer.id
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
           >
@@ -152,7 +152,7 @@ function ToolPalette({ activeTool, onToolChange, strokeColor, onColorChange, str
             className={cn(
               "p-2 rounded-md transition-colors flex flex-col items-center",
               activeTool === id
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
             title={config.label}
@@ -172,7 +172,7 @@ function ToolPalette({ activeTool, onToolChange, strokeColor, onColorChange, str
               onClick={() => onColorChange(color)}
               className={cn(
                 "w-6 h-6 rounded-md border-2 transition-transform",
-                strokeColor === color ? "scale-110 border-blue-500" : "border-gray-300"
+                strokeColor === color ? "scale-110 border-accent" : "border-gray-300"
               )}
               style={{ backgroundColor: color }}
             />
@@ -298,14 +298,14 @@ function PageThumbnail({ page, index, isActive, onClick, annotations }) {
       className={cn(
         "w-full p-2 rounded-lg transition-colors",
         isActive
-          ? "bg-blue-100 dark:bg-blue-900"
+          ? "bg-accent/20 dark:bg-accent/20"
           : "hover:bg-gray-100 dark:hover:bg-gray-700"
       )}
     >
       <div className="aspect-[3/4] bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 flex items-center justify-center relative">
         <span className="text-gray-400 text-sm">Page {index + 1}</span>
         {annotations > 0 && (
-          <span className="absolute top-1 right-1 bg-blue-500 text-white text-[10px] px-1 rounded">
+          <span className="absolute top-1 right-1 bg-accent text-white text-[10px] px-1 rounded">
             {annotations}
           </span>
         )}
@@ -1033,7 +1033,7 @@ export default function PDFEditorPage() {
             variant="ghost" 
             size="sm" 
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? 'text-blue-500' : ''}
+            className={showFilters ? 'text-accent' : ''}
           >
             <ListFilter className="w-4 h-4" />
           </Button>
@@ -1362,7 +1362,7 @@ export default function PDFEditorPage() {
                     className={cn(
                       "w-full px-2 py-1.5 text-left text-xs rounded transition-colors truncate",
                       currentDocument?.id === doc.id
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                        ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                         : "hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                   >

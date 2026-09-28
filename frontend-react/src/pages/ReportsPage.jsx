@@ -38,12 +38,12 @@ function ReportCard({ report, onView, onDownload, onDelete }) {
     <Card hover className="group">
       <div className="p-5">
         <div className="flex items-start gap-4">
-          <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+          <div className="p-3 rounded-xl bg-accent/20 dark:bg-accent/20 text-accent dark:text-accent/60">
             <TypeIcon className="w-6 h-6" />
           </div>
           
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-accent dark:group-hover:text-accent/60 transition-colors">
               {report.title}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -58,7 +58,7 @@ function ReportCard({ report, onView, onDownload, onDelete }) {
                 {report.reportType || report.type}
               </span>
               {report.project && (
-                <span className="text-blue-500">
+                <span className="text-accent">
                   {report.project.name}
                 </span>
               )}
@@ -125,7 +125,7 @@ function TemplateCard({ template, onSelect }) {
           </div>
           
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-accent dark:group-hover:text-accent/60 transition-colors">
               {template.name}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -147,7 +147,7 @@ function TemplateCard({ template, onSelect }) {
             </div>
           </div>
           
-          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
+          <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-accent group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </Card>
@@ -307,12 +307,12 @@ function GenerateReportModal({ template, isOpen, onClose, onGenerate }) {
                 className={cn(
                   "p-3 rounded-lg border-2 text-left transition-all",
                   format === fmt.value
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    ? "border-accent bg-accent/10 dark:bg-accent/20"
                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
                 )}
               >
                 <div className="flex items-center gap-2">
-                  {format === fmt.value && <Check className="w-4 h-4 text-blue-500" />}
+                  {format === fmt.value && <Check className="w-4 h-4 text-accent" />}
                   <span className="font-medium text-sm text-gray-900 dark:text-white">
                     {fmt.label}
                   </span>
@@ -542,7 +542,7 @@ export default function ReportsPage() {
           className={cn(
             "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
             activeTab === 'reports'
-              ? "text-blue-600 border-blue-600"
+              ? "text-accent border-blue-600"
               : "text-gray-500 border-transparent hover:text-gray-700"
           )}
         >
@@ -554,7 +554,7 @@ export default function ReportsPage() {
           className={cn(
             "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
             activeTab === 'templates'
-              ? "text-blue-600 border-blue-600"
+              ? "text-accent border-blue-600"
               : "text-gray-500 border-transparent hover:text-gray-700"
           )}
         >
@@ -575,7 +575,7 @@ export default function ReportsPage() {
                 className={cn(
                   "px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
                   filterType === type
-                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                    ? "bg-accent/20 dark:bg-accent/20 text-accent dark:text-accent/60"
                     : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                 )}
               >
@@ -587,7 +587,7 @@ export default function ReportsPage() {
           {/* Loading State */}
           {isLoading && (
             <div className="flex justify-center py-12">
-              <PageLoader className="w-8 h-8 animate-spin text-blue-500" />
+              <PageLoader className="w-8 h-8 animate-spin text-accent" />
             </div>
           )}
           
@@ -648,7 +648,7 @@ export default function ReportsPage() {
         <>
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <PageLoader className="w-8 h-8 animate-spin text-blue-500" />
+              <PageLoader className="w-8 h-8 animate-spin text-accent" />
             </div>
           ) : filteredTemplates.length === 0 ? (
             <Card className="p-8 text-center">

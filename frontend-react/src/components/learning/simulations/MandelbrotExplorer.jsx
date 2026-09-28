@@ -200,7 +200,7 @@ export default function MandelbrotExplorer() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <Zap className="w-5 h-5 text-purple-500" />
+          <Zap className="w-5 h-5 text-accent" />
           Mandelbrot Fractal Explorer
         </h3>
         <div className="flex items-center gap-2">
@@ -250,7 +250,7 @@ export default function MandelbrotExplorer() {
           {/* Iterations Control */}
           <Card className="p-4">
             <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Target className="w-4 h-4 text-blue-500" />
+              <Target className="w-4 h-4 text-accent" />
               Iterations: {maxIter}
             </h4>
             <input
@@ -291,15 +291,15 @@ export default function MandelbrotExplorer() {
 
           {/* Selected Point Info */}
           {selectedPoint && (
-            <Card className="p-4 bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800">
+            <Card className="p-4 bg-accent/10 dark:bg-accent/20 border-purple-200 dark:border-accent/30">
               <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <Target className="w-4 h-4 text-purple-500" />
+                <Target className="w-4 h-4 text-accent" />
                 Selected Point
               </h4>
               <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                 <p>Real: {selectedPoint.x.toFixed(6)}</p>
                 <p>Imaginary: {selectedPoint.y.toFixed(6)}</p>
-                <p className="font-medium text-purple-600 dark:text-purple-400">
+                <p className="font-medium text-accent dark:text-accent">
                   Iterations: {selectedPoint.iterations.toFixed(1)}
                 </p>
                 <p className="text-xs mt-2">
@@ -314,9 +314,9 @@ export default function MandelbrotExplorer() {
       </div>
 
       {/* Educational Info */}
-      <Card className="p-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+      <Card className="p-4 bg-accent/10 dark:bg-accent/20 border-accent/20 dark:border-accent/30">
         <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-blue-500" />
+          <BookOpen className="w-4 h-4 text-accent" />
           About the Mandelbrot Set
         </h4>
         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">

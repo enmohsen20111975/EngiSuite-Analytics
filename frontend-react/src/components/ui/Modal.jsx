@@ -59,7 +59,7 @@ function Modal({
       <div
         className={cn(
           'relative w-full rounded-2xl shadow-2xl',
-          'bg-white dark:bg-gray-900',
+          'bg-[var(--color-bg-primary)]',
           'border border-[var(--color-border)]',
           'animate-scale-in',
           sizes[size],
@@ -83,10 +83,12 @@ function Modal({
             </div>
             {showClose && (
               <button
+                type="button"
                 onClick={onClose}
+                aria-label="Close"
                 className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5" aria-hidden="true" />
               </button>
             )}
           </div>

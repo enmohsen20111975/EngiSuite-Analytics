@@ -27,7 +27,7 @@ function InteractiveBlock({ config }) {
   return (
     <div className="my-4">
       <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-center">
-        <FlaskConical className="w-8 h-8 mx-auto mb-2 text-purple-500" />
+        <FlaskConical className="w-8 h-8 mx-auto mb-2 text-accent" />
         <p className="text-sm text-gray-600 dark:text-gray-400">Interactive Simulation</p>
         <div className="mt-2 flex items-center justify-center gap-2">
           <Button size="sm" onClick={() => setOpen((s) => !s)}>
@@ -59,9 +59,9 @@ const disciplineIcons = {
 
 // Type colors for lesson types
 const typeColors = {
-  reading: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+  reading: 'bg-accent/10 text-accent dark:bg-accent/20',
   video: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  interactive: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  interactive: 'bg-accent/10 text-accent dark:bg-accent/20',
   quiz: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
 };
 
@@ -91,25 +91,25 @@ const certificationColorStyles = {
     accent: 'text-green-600 dark:text-green-300',
   },
   blue: {
-    card: 'border-blue-200 dark:border-blue-800/80',
-    iconWrap: 'bg-blue-100 dark:bg-blue-900/30',
-    icon: 'text-blue-600 dark:text-blue-300',
-    badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-    accent: 'text-blue-600 dark:text-blue-300',
+    card: 'border-accent/30 dark:border-accent/40',
+    iconWrap: 'bg-accent/10 dark:bg-accent/20',
+    icon: 'text-accent',
+    badge: 'bg-accent/10 text-accent dark:bg-accent/20',
+    accent: 'text-accent',
   },
   purple: {
-    card: 'border-purple-200 dark:border-purple-800/80',
-    iconWrap: 'bg-purple-100 dark:bg-purple-900/30',
-    icon: 'text-purple-600 dark:text-purple-300',
-    badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-    accent: 'text-purple-600 dark:text-purple-300',
+    card: 'border-accent/30 dark:border-accent/40',
+    iconWrap: 'bg-accent/10 dark:bg-accent/20',
+    icon: 'text-accent',
+    badge: 'bg-accent/10 text-accent dark:bg-accent/20',
+    accent: 'text-accent',
   },
   indigo: {
-    card: 'border-indigo-200 dark:border-indigo-800/80',
-    iconWrap: 'bg-indigo-100 dark:bg-indigo-900/30',
-    icon: 'text-indigo-600 dark:text-indigo-300',
-    badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-    accent: 'text-indigo-600 dark:text-indigo-300',
+    card: 'border-accent/30 dark:border-accent/40',
+    iconWrap: 'bg-accent/10 dark:bg-accent/20',
+    icon: 'text-accent',
+    badge: 'bg-accent/10 text-accent dark:bg-accent/20',
+    accent: 'text-accent',
   },
   emerald: {
     card: 'border-emerald-200 dark:border-emerald-800/80',
@@ -405,7 +405,7 @@ export default function LearningPage() {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 w-48"
+                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent w-48"
               />
             </div>
             
@@ -423,8 +423,8 @@ export default function LearningPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 bg-accent/10 dark:bg-accent/20 rounded-lg">
+                <BookOpen className="w-5 h-5 text-accent" />
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Courses</p>
@@ -436,8 +436,8 @@ export default function LearningPage() {
           </Card>
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="p-2 bg-accent/10 dark:bg-accent/20 rounded-lg">
+                <GraduationCap className="w-5 h-5 text-accent" />
               </div>
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Total Lessons</p>
@@ -546,7 +546,7 @@ function LearningSidebar({
       <div className="space-y-1">
         <button
           onClick={() => onCourseSelect(null)}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-sm text-accent hover:underline"
         >
           All Courses
         </button>
@@ -579,7 +579,7 @@ function LearningSidebar({
               className={cn(
                 'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
                 selectedModule === module.id
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  ? 'bg-accent/10 dark:bg-accent/20 text-accent'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
@@ -603,7 +603,7 @@ function LearningSidebar({
               className={cn(
                 'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
                 selectedChapter === chapter.id
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  ? 'bg-accent/10 dark:bg-accent/20 text-accent'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
@@ -629,7 +629,7 @@ function LearningSidebar({
                 className={cn(
                   'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
                   selectedLesson === lesson.id
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    ? 'bg-accent/10 dark:bg-accent/20 text-accent'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 )}
               >
@@ -769,12 +769,12 @@ function CourseGridView({ courses, onSelect, progress }) {
               }}
             >
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl group-hover:scale-110 transition-transform">
-                  <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                <div className="p-3 bg-accent/10 dark:bg-accent/20 rounded-xl group-hover:scale-110 transition-transform">
+                  <Icon className="w-8 h-8 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-accent">
                       {course.title}
                     </h3>
                     {!courseIsComplete && (
@@ -802,7 +802,7 @@ function CourseGridView({ courses, onSelect, progress }) {
                   </div>
                 </div>
                 {courseIsComplete ? (
-                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-accent group-hover:translate-x-1 transition-transform" />
                 ) : (
                   <Lock className="w-5 h-5 text-amber-500" />
                 )}
@@ -891,9 +891,9 @@ function CourseGridView({ courses, onSelect, progress }) {
               >
                 <div className="flex items-center gap-2">
                   {module.type === 'SIMULATION_MOTOR' || module.type === 'SIMULATION_PID' || module.type === 'SIMULATION_INVERTER' ? (
-                    <FlaskConical className="w-4 h-4 text-purple-500" />
+                    <FlaskConical className="w-4 h-4 text-accent" />
                   ) : (
-                    <BookOpen className="w-4 h-4 text-blue-500" />
+                    <BookOpen className="w-4 h-4 text-accent" />
                   )}
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {module.title}
@@ -941,7 +941,7 @@ function CourseGridView({ courses, onSelect, progress }) {
         badge={!isKineticComplete ? <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">Coming soon</span> : null}
         meta={(
           <>
-            <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+            <span className="px-2 py-1 text-xs rounded-full bg-accent/10 text-accent dark:bg-accent/20">
               {KINETIC_GEOMETRY_COURSE.level}
             </span>
             <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -953,9 +953,9 @@ function CourseGridView({ courses, onSelect, progress }) {
         )}
         isOpen={openSections.kineticGeometry}
         onToggle={() => toggleSection('kineticGeometry')}
-        className="border-2 border-purple-200 dark:border-purple-800"
-        iconWrapClassName="bg-purple-100 dark:bg-purple-900/30"
-        iconClassName="text-purple-600 dark:text-purple-400"
+        className="border-2 border-accent/30 dark:border-accent/40"
+        iconWrapClassName="bg-accent/10 dark:bg-accent/20"
+        iconClassName="text-accent"
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {KINETIC_GEOMETRY_COURSE.features.map((feature, index) => (
@@ -978,9 +978,9 @@ function CourseGridView({ courses, onSelect, progress }) {
               >
                 <div className="flex items-center gap-2">
                   {module.type === 'SIMULATION_CURVES' || module.type === 'SIMULATION_FRACTALS' || module.type === 'SIMULATION_COORDINATES' ? (
-                    <Atom className="w-4 h-4 text-purple-500" />
+                    <Atom className="w-4 h-4 text-accent" />
                   ) : (
-                    <BookOpen className="w-4 h-4 text-blue-500" />
+                    <BookOpen className="w-4 h-4 text-accent" />
                   )}
                   <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {module.title}
@@ -1000,7 +1000,7 @@ function CourseGridView({ courses, onSelect, progress }) {
               if (!isKineticComplete) return;
               onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
             }}
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-accent hover:bg-accent-hover"
             disabled={!isKineticComplete}
           >
             <Play className="w-4 h-4 mr-2" />
@@ -1012,7 +1012,7 @@ function CourseGridView({ courses, onSelect, progress }) {
               if (!isKineticComplete) return;
               onSelect({ id: 'kinetic-geometry-lab', title: KINETIC_GEOMETRY_COURSE.title, description: KINETIC_GEOMETRY_COURSE.description, totalLessons: KINETIC_GEOMETRY_COURSE.totalLessons, discipline: 'mathematics' });
             }}
-            className="border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300"
+            className="border-accent/30 dark:border-accent/40 text-accent"
             disabled={!isKineticComplete}
           >
             <Atom className="w-4 h-4 mr-2" />
@@ -1195,7 +1195,7 @@ function ModuleListView({ modules, onSelect, onBack, progress }) {
                 onClick={() => onSelect(module)}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-cyan-400 flex items-center justify-center text-white font-bold text-lg">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1327,7 +1327,7 @@ function LessonListView({ lessons, onSelect, onBack, progress }) {
                     isCompleted 
                       ? 'bg-green-100 dark:bg-green-900/30'
                       : isStarted
-                        ? 'bg-blue-100 dark:bg-blue-900/30'
+                        ? 'bg-accent/10 dark:bg-accent/20'
                         : 'bg-gray-100 dark:bg-gray-800'
                   )}>
                     {isCompleted ? (
@@ -1354,7 +1354,7 @@ function LessonListView({ lessons, onSelect, onBack, progress }) {
                         {lesson.duration || 15} min
                       </span>
                       {isStarted && !isCompleted && (
-                        <span className="text-xs text-blue-500">In Progress</span>
+                        <span className="text-xs text-accent">In Progress</span>
                       )}
                     </div>
                   </div>
@@ -1376,8 +1376,8 @@ function RecommendedCard({ icon: Icon, title, discipline, level, duration }) {
   return (
     <Card className="p-4 cursor-pointer hover:shadow-md transition-all">
       <div className="flex items-start gap-3">
-        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-          <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <div className="p-2 bg-accent/10 dark:bg-accent/20 rounded-lg">
+          <Icon className="w-5 h-5 text-accent" />
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-medium text-gray-900 dark:text-white text-sm">
@@ -1479,7 +1479,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                 activeSection === 'content'
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  ? 'bg-accent/10 dark:bg-accent/20 text-accent'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
@@ -1492,7 +1492,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                   activeSection === 'quiz'
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    ? 'bg-accent/10 dark:bg-accent/20 text-accent'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 )}
               >
@@ -1509,7 +1509,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
             </h4>
             <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all"
+                className="h-full bg-accent rounded-full transition-all"
                 style={{ width: `${readingProgress}%` }}
               />
             </div>
@@ -1557,7 +1557,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
             {lesson.prevLesson && (
               <button
                 onClick={() => window.location.reload()} // Simplified - would need proper navigation
-                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-accent"
               >
                 ← Previous: {lesson.prevLesson.title}
               </button>
@@ -1565,7 +1565,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
             {lesson.nextLesson && (
               <button
                 onClick={() => window.location.reload()} // Simplified - would need proper navigation
-                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                className="w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-accent"
               >
                 Next: {lesson.nextLesson.title} →
               </button>
@@ -1653,7 +1653,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
                       }
                       if (line.startsWith('> ')) {
                         elems.push(
-                          <blockquote key={key} className="border-l-4 border-blue-500 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
+                          <blockquote key={key} className="border-l-4 border-accent pl-4 italic my-4 text-gray-600 dark:text-gray-400">
                             {line.slice(2)}
                           </blockquote>
                         );
@@ -1729,7 +1729,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
         {activeSection === 'quiz' && quiz && quiz.questions && (
           <Card className="p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <PenTool className="w-5 h-5 text-purple-500" />
+              <PenTool className="w-5 h-5 text-accent" />
               Quiz
             </h2>
             
@@ -1750,7 +1750,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
                           className={cn(
                             'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
                             quizAnswers[qIndex] === oIndex
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                              ? 'border-accent bg-accent/10 dark:bg-accent/20'
                               : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                           )}
                         >
@@ -1759,7 +1759,7 @@ function LessonContentView({ lesson, quiz, onBack, loading, progress, onComplete
                             name={`question-${qIndex}`}
                             checked={quizAnswers[qIndex] === oIndex}
                             onChange={() => handleAnswerSelect(qIndex, oIndex)}
-                            className="text-blue-500"
+                            className="text-accent"
                           />
                           <span className="text-gray-700 dark:text-gray-300">{option}</span>
                         </label>

@@ -32,7 +32,7 @@ function UpgradeRequired({ message }) {
       <CircleAlert className="w-12 h-12 text-amber-500 mx-auto mb-4" />
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Professional Plan Required</h3>
       <p className="text-gray-500 dark:text-gray-400 mb-4">{message || 'Projects are available on Pro and Enterprise plans.'}</p>
-      <a href="/pricing" className="inline-flex px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">Upgrade Plan</a>
+      <a href="/pricing" className="inline-flex px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white">Upgrade Plan</a>
     </Card>
   );
 }
@@ -43,7 +43,7 @@ function TemplateCard({ template, onSelect }) {
   return (
     <button
       onClick={() => onSelect(template)}
-      className="text-left p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all group"
+      className="text-left p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-400 dark:hover:border-accent hover:shadow-md transition-all group"
     >
       <div className="flex items-start gap-3">
         <div 
@@ -53,7 +53,7 @@ function TemplateCard({ template, onSelect }) {
           <Icon className="w-5 h-5" style={{ color: template.color }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+          <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-accent dark:group-hover:text-accent/60">
             {template.name}
           </h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -124,7 +124,7 @@ export default function ProjectsPage() {
   if (templatesQuery.isLoading || projectsQuery.isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <Loader className="w-10 h-10 animate-spin text-blue-500" />
+        <Loader className="w-10 h-10 animate-spin text-accent" />
       </div>
     );
   }
@@ -168,7 +168,7 @@ export default function ProjectsPage() {
             setSelectedTemplate(null);
             setShowForm(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white"
         >
           <Plus className="w-4 h-4" />
           New Project
@@ -281,7 +281,7 @@ export default function ProjectsPage() {
                   });
                 }}
                 disabled={createProjectMutation.isPending || !form.name.trim()}
-                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white disabled:opacity-50"
               >
                 {createProjectMutation.isPending ? 'Creating...' : 'Create Project'}
               </button>
@@ -300,7 +300,7 @@ export default function ProjectsPage() {
             <p className="text-gray-500 dark:text-gray-400 mb-4">Create your first project to start planning tasks and deliveries.</p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white"
             >
               <Plus className="w-4 h-4" />
               Create Project
@@ -320,7 +320,7 @@ export default function ProjectsPage() {
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{project.name}</h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{project.category}</p>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded bg-blue-500/10 text-blue-500">{project.status}</span>
+                    <span className="text-xs px-2 py-1 rounded bg-accent/10 text-accent">{project.status}</span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 min-h-[40px]">{project.description || 'No description'}</p>
                   <div className="mt-4">
@@ -329,7 +329,7 @@ export default function ProjectsPage() {
                       <span>{Math.round(project.progress || 0)}%</span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, project.progress || 0)}%` }} />
+                      <div className="h-full bg-accent" style={{ width: `${Math.min(100, project.progress || 0)}%` }} />
                     </div>
                   </div>
                 </Card>

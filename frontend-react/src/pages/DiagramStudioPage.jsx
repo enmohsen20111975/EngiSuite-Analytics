@@ -513,7 +513,7 @@ function ToolPalette({ activeTool, onToolChange, onAddShape }) {
             className={cn(
               "p-0.5 rounded text-xs transition-colors flex flex-col items-center",
               activeTool === tool.id
-                ? "bg-blue-500 text-white dark:bg-blue-600"
+                ? "bg-accent text-white dark:bg-accent"
                 : "hover:bg-gray-200 dark:hover:bg-gray-700"
             )}
             title={tool.label}
@@ -908,7 +908,7 @@ function TemplatesPanel({ onLoadTemplate }) {
           <button
             key={key}
             onClick={() => onLoadTemplate(key)}
-            className="w-full px-1 py-0.5 text-left rounded text-[9px] border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+            className="w-full px-1 py-0.5 text-left rounded text-[9px] border border-gray-200 dark:border-gray-700 hover:bg-accent/10 dark:hover:bg-accent/20/30 hover:border-accent/30 dark:hover:border-blue-700 transition-colors"
           >
             <div className="font-medium text-gray-700 dark:text-gray-300 truncate text-[9px]">{template.name}</div>
           </button>
@@ -933,7 +933,7 @@ function LayersPanel({ shapes, selectedId, onSelect, onReorder, onToggleVisibili
             className={cn(
               "flex items-center gap-0.5 px-1 py-0.5 rounded cursor-pointer text-[8px]",
               selectedId === shape.id
-                ? "bg-blue-500 text-white dark:bg-blue-600"
+                ? "bg-accent text-white dark:bg-accent"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
           >
@@ -1564,7 +1564,7 @@ export default function DiagramStudioPage() {
       <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold flex items-center gap-2">
-            <PenTool className="w-5 h-5 text-blue-500" />
+            <PenTool className="w-5 h-5 text-accent" />
             Diagram Studio
           </h1>
           <span className="text-sm text-gray-500">{currentDiagram?.name || 'Untitled'}</span>
@@ -1614,7 +1614,7 @@ export default function DiagramStudioPage() {
             variant="ghost"
             size="sm"
             onClick={() => setGridEnabled(!gridEnabled)}
-            className={gridEnabled ? 'text-blue-500' : ''}
+            className={gridEnabled ? 'text-accent' : ''}
           >
             <Grid3x3 className="w-4 h-4" />
           </Button>
@@ -1799,7 +1799,7 @@ export default function DiagramStudioPage() {
                         className={cn(
                           "w-full px-2 py-1 text-left text-xs rounded transition-colors",
                           currentDiagram?.id === d.id
-                            ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                            ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                             : "hover:bg-gray-100 dark:hover:bg-gray-700"
                         )}
                       >

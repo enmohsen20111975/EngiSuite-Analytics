@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Square, RotateCw, Zap, Thermometer, Weight, TrendingUp, Info, Fan, Activity } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { getThemeColor } from '../../../lib/utils';
 
 const SinamicsMotorLab = () => {
   const [simState, setSimState] = useState({
@@ -337,11 +338,11 @@ const SinamicsMotorLab = () => {
           {/* Telemetry Grid */}
           <div className="grid grid-cols-2 gap-3 pt-2">
              <DataCard label="Voltage" value={(simState.voltage).toFixed(0)} unit="V" icon={<Zap size={14} className="text-yellow-500"/>} />
-             <DataCard label="Current" value={simState.current.toFixed(1)} unit="A" icon={<TrendingUp size={14} className="text-blue-500"/>} />
+             <DataCard label="Current" value={simState.current.toFixed(1)} unit="A" icon={<TrendingUp size={14} className="text-accent"/>} />
              <DataCard label="Torque" value={(simState.torque || 0).toFixed(1)} unit="Nm" icon={<Weight size={14} className="text-orange-500"/>} />
              <DataCard label="Power" value={(simState.power || 0).toFixed(2)} unit="kW" icon={<Zap size={14} className="text-cyan-500"/>} />
              <DataCard label="Temp" value={simState.temperature.toFixed(1)} unit="°C" icon={<Thermometer size={14} className="text-red-500"/>} />
-             <DataCard label="cos φ" value={(simState.cosPhi || 0).toFixed(2)} unit="" icon={<Activity size={14} className="text-indigo-500"/>} />
+             <DataCard label="cos φ" value={(simState.cosPhi || 0).toFixed(2)} unit="" icon={<Activity size={14} className="text-accent"/>} />
           </div>
         </div>
 
@@ -400,17 +401,17 @@ const SinamicsMotorLab = () => {
                  <div className="flex-1 w-full min-h-0">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:stroke-slate-700" />
+                            <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#e2e8f0')} className="dark:stroke-slate-700" />
                             <XAxis dataKey="time" hide />
                             <YAxis yAxisId="left" domain={[0, 1800]} tick={{fontSize: 10}} className="dark:text-slate-400" />
                             <YAxis yAxisId="right" orientation="right" domain={[0, 10]} tick={{fontSize: 10}} className="dark:text-slate-400" />
                             <Tooltip 
-                                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
+                                contentStyle={{ borderRadius: '8px', border: `1px solid ${getThemeColor('--color-border', '#e2e8f0')}`, boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
                                 labelStyle={{ display: 'none' }} 
                             />
                             <Legend verticalAlign="top" height={36}/>
-                            <Line yAxisId="left" type="monotone" dataKey="rpm" stroke="#0891b2" strokeWidth={2} name="Speed (RPM)" dot={false} isAnimationActive={false} />
-                            <Line yAxisId="right" type="monotone" dataKey="current" stroke="#f59e0b" strokeWidth={2} name="Current (A)" dot={false} isAnimationActive={false} />
+                            <Line yAxisId="left" type="monotone" dataKey="rpm" stroke={getThemeColor('--color-accent', '#0891b2')} strokeWidth={2} name="Speed (RPM)" dot={false} isAnimationActive={false} />
+                            <Line yAxisId="right" type="monotone" dataKey="current" stroke={getThemeColor('--color-warning', '#f59e0b')} strokeWidth={2} name="Current (A)" dot={false} isAnimationActive={false} />
                         </LineChart>
                     </ResponsiveContainer>
                  </div>

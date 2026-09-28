@@ -1,0 +1,96 @@
+URL: http://localhost:4000/visual-data-analysis
+
+=== LIGHT MODE ===
+{
+  "checked": 8,
+  "darkBgBoxes": 0,
+  "lightBgBoxes": 8,
+  "sampleDark": [],
+  "sampleLight": [
+    {
+      "bg": "rgb(243, 244, 246)",
+      "classes": "h-screen w-screen flex flex-col overflow-hidden bg-gray-100 ",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "Visual Data AnalysisUntitledQueryNewSave"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "flex items-center justify-between px-4 py-2 bg-white dark:bg",
+      "size": "1440x49",
+      "tag": "div",
+      "text": "Visual Data AnalysisUntitledQueryNewSave"
+    },
+    {
+      "bg": "rgb(249, 250, 251)",
+      "classes": "flex items-center gap-1 px-4 py-2 bg-gray-50 dark:bg-gray-85",
+      "size": "1440x49",
+      "tag": "div",
+      "text": "Data UploadQuery BuilderReport BuilderDa"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg",
+      "size": "289x304",
+      "tag": "div",
+      "text": "Add WidgetChartsBar ChartLine ChartPie C"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg",
+      "size": "289x116",
+      "tag": "div",
+      "text": "Data SourcesSample Sales DataSample Anal"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "absolute bottom-4 right-4 flex items-center gap-1 bg-white d",
+      "size": "167x40",
+      "tag": "div",
+      "text": "100%"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 p",
+      "size": "152x36",
+      "tag": "div",
+      "text": "Ready | Widgets: 0"
+    },
+    {
+      "bg": "rgb(255, 255, 255)",
+      "classes": "bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4",
+      "size": "256x84",
+      "tag": "div",
+      "text": "Saved DashboardsNo saved dashboards"
+    }
+  ],
+  "theme": "light",
+  "url": "/visual-data-analysis"
+}
+
+=== DARK MODE ===
+{
+  "checked": 8,
+  "darkBgBoxes": 1,
+  "lightBgBoxes": 1,
+  "sampleDark": [
+    {
+      "bg": "rgb(17, 24, 39)",
+      "classes": "h-screen w-screen flex flex-col overflow-hidden bg-gray-100 ",
+      "size": "1440x900",
+      "tag": "div",
+      "text": "Visual Data AnalysisUntitledQueryNewSave"
+    }
+  ],
+  "sampleLight": [
+    {
+      "bg": "rgb(249, 250, 251)",
+      "classes": "flex items-center gap-1 px-4 py-2 bg-gray-50 dark:bg-gray-85",
+      "size": "1440x49",
+      "tag": "div",
+      "text": "Data UploadQuery BuilderReport BuilderDa"
+    }
+  ],
+  "theme": "dark",
+  "url": "/visual-data-analysis"
+}

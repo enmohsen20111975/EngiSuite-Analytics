@@ -504,7 +504,7 @@ function DataUploadPanel({ onDataUpload, dataSources, activeSource, onSelectSour
             className={cn(
               "w-full px-2 py-1.5 text-left text-xs rounded transition-colors truncate",
               activeSource?.id === source.id
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                 : "hover:bg-gray-100 dark:hover:bg-gray-700"
             )}
           >
@@ -559,7 +559,7 @@ function QueryBuilderPanel({ dataSource, onQuery, result }) {
                 className={cn(
                   "px-2 py-0.5 text-xs rounded",
                   selectedFields.includes(field)
-                    ? "bg-blue-500 text-white"
+                    ? "bg-accent text-white"
                     : "bg-gray-100 dark:bg-gray-700"
                 )}
               >
@@ -989,7 +989,7 @@ export default function VisualDataAnalysisPage() {
       <div className="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold flex items-center gap-2">
-            <ChartColumn className="w-5 h-5 text-purple-500" />
+            <ChartColumn className="w-5 h-5 text-accent" />
             Visual Data Analysis
           </h1>
           <span className="text-sm text-gray-500">{currentDashboard?.name || 'Untitled'}</span>
@@ -1000,7 +1000,7 @@ export default function VisualDataAnalysisPage() {
             variant="ghost"
             size="sm"
             onClick={() => setShowQueryBuilder(!showQueryBuilder)}
-            className={showQueryBuilder ? 'text-blue-500' : ''}
+            className={showQueryBuilder ? 'text-accent' : ''}
           >
             <Search className="w-4 h-4 mr-1" />
             Query
@@ -1049,7 +1049,7 @@ export default function VisualDataAnalysisPage() {
         </a>
         <a
           href="/visual-dashboard-builder"
-          className="px-3 py-1.5 text-sm rounded-md bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium"
+          className="px-3 py-1.5 text-sm rounded-md bg-accent/20 dark:bg-accent/20 text-accent-hover dark:text-accent/40 font-medium"
         >
           Dashboard Builder
         </a>
@@ -1295,7 +1295,7 @@ export default function VisualDataAnalysisPage() {
                     className={cn(
                       "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
                       currentDashboard?.id === d.id
-                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+                        ? "bg-accent/20 text-accent dark:bg-accent/20 dark:text-accent/60"
                         : "hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                   >

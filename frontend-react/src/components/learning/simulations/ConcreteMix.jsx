@@ -45,7 +45,7 @@ const ConcreteMix = ({
       {/* Visual Mix Proportions */}
       <div className="h-14 rounded-lg overflow-hidden mb-6 flex shadow-inner">
         <div 
-          className="bg-blue-400 flex items-center justify-center text-xs text-white font-bold transition-all duration-300"
+          className="bg-accent/60 flex items-center justify-center text-xs text-white font-bold transition-all duration-300"
           style={{ width: `${ratios.water}%` }}
         >
           {ratios.water > 10 && `Water ${ratios.water}%`}
@@ -132,7 +132,7 @@ const ConcreteMix = ({
           <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Est. Strength</div>
           <div className={`text-2xl font-bold ${
             estimatedStrength.grade === 'High' ? 'text-green-600 dark:text-green-400' :
-            estimatedStrength.grade === 'Medium-High' ? 'text-blue-600 dark:text-blue-400' :
+            estimatedStrength.grade === 'Medium-High' ? 'text-accent dark:text-accent/60' :
             estimatedStrength.grade === 'Medium' ? 'text-yellow-600 dark:text-yellow-400' :
             'text-red-600 dark:text-red-400'
           }`}>

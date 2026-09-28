@@ -6,7 +6,10 @@ const buttonVariants = {
   primary: 'bg-accent text-white hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 active:scale-[0.98]',
   secondary: 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] border border-[var(--color-border)] hover:bg-[var(--color-bg-tertiary)] hover:border-[var(--color-border-hover)]',
   ghost: 'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]',
-  danger: 'bg-danger text-white hover:bg-red-600 hover:shadow-lg hover:shadow-danger/25',
+  danger: 'bg-danger text-white hover:bg-danger-hover hover:shadow-lg hover:shadow-danger/25',
+  success: 'bg-success text-white hover:bg-success-hover hover:shadow-lg hover:shadow-success/25',
+  warning: 'bg-warning text-white hover:bg-warning-hover hover:shadow-lg hover:shadow-warning/25',
+  accent: 'bg-accent text-white hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25',
   outline: 'bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white',
 };
 

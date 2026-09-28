@@ -57,7 +57,7 @@ export default function OfflineStatusBanner() {
       return 'border-emerald-200 bg-emerald-50/95 text-emerald-900';
     }
 
-    return 'border-blue-200 bg-blue-50/95 text-blue-900';
+    return 'border-accent/20 bg-accent/10/95 text-accent-hover';
   }, [isOnline, meta?.ready]);
 
   const message = !isOnline

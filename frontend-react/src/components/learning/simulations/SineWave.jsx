@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
+import { getThemeColor } from '../../../lib/utils';
 
 const SineWave = ({
   peakVoltage = 170,
@@ -87,35 +88,36 @@ const SineWave = ({
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={waveData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke={getThemeColor('--color-border', '#e5e7eb')} />
             <XAxis 
               dataKey="time" 
-              label={{ value: 'Time (ms)', position: 'insideBottom', offset: -10 }}
-              stroke="#9ca3af"
+              label={{ value: 'Time (ms)', position: 'insideBottom', offset: -10, fill: getThemeColor('--color-text-secondary', '#6b7280') }}
+              stroke={getThemeColor('--color-text-muted', '#9ca3af')}
             />
             <YAxis 
               domain={[-peak * 1.2, peak * 1.2]}
-              label={{ value: 'Voltage (V)', angle: -90, position: 'insideLeft' }}
-              stroke="#9ca3af"
+              stroke={getThemeColor('--color-text-muted', '#9ca3af')}
+              label={{ value: 'Voltage (V)', angle: -90, position: 'insideLeft', fill: getThemeColor('--color-text-secondary', '#6b7280') }}
             />
             <Tooltip 
               contentStyle={{ 
-                backgroundColor: 'rgba(255,255,255,0.95)',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px'
+                backgroundColor: getThemeColor('--color-bg-primary', 'rgba(255,255,255,0.95)'),
+                border: `1px solid ${getThemeColor('--color-border', '#e5e7eb')}`,
+                borderRadius: '8px',
+                color: getThemeColor('--color-text-primary', '#111827')
               }}
               formatter={(value, name) => [`${value}V`, name === 'voltage' ? 'Instantaneous' : 'RMS']}
             />
             {showRMS && (
               <>
-                <ReferenceLine y={parseFloat(rmsVoltage)} stroke="#10b981" strokeDasharray="5 5" />
-                <ReferenceLine y={-parseFloat(rmsVoltage)} stroke="#10b981" strokeDasharray="5 5" />
+                <ReferenceLine y={parseFloat(rmsVoltage)} stroke={getThemeColor('--color-success', '#10b981')} strokeDasharray="5 5" />
+                <ReferenceLine y={-parseFloat(rmsVoltage)} stroke={getThemeColor('--color-success', '#10b981')} strokeDasharray="5 5" />
               </>
             )}
             <Line 
               type="monotone" 
               dataKey="voltage" 
-              stroke="#3b82f6" 
+              stroke={getThemeColor('--color-accent', '#0891b2')} 
               strokeWidth={2} 
               dot={false} 
               isAnimationActive={false}
@@ -126,17 +128,17 @@ const SineWave = ({
 
       {/* Info Panel */}
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg text-center">
-          <div className="text-xs text-blue-600 dark:text-blue-400 uppercase">Peak Voltage</div>
-          <div className="text-xl font-bold text-blue-700 dark:text-blue-300">{peak}V</div>
+        <div className="bg-accent/10 dark:bg-accent/20 p-3 rounded-lg text-center">
+          <div className="text-xs text-accent dark:text-accent/60 uppercase">Peak Voltage</div>
+          <div className="text-xl font-bold text-accent-hover dark:text-accent/40">{peak}V</div>
         </div>
         <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg text-center">
           <div className="text-xs text-green-600 dark:text-green-400 uppercase">RMS Voltage</div>
           <div className="text-xl font-bold text-green-700 dark:text-green-300">{rmsVoltage}V</div>
         </div>
-        <div className="bg-purple-50 dark:bg-purple-900/30 p-3 rounded-lg text-center">
-          <div className="text-xs text-purple-600 dark:text-purple-400 uppercase">Frequency</div>
-          <div className="text-xl font-bold text-purple-700 dark:text-purple-300">{freq}Hz</div>
+        <div className="bg-accent/10 dark:bg-accent/20 p-3 rounded-lg text-center">
+          <div className="text-xs text-accent dark:text-accent uppercase">Frequency</div>
+          <div className="text-xl font-bold text-accent-hover dark:text-accent/80">{freq}Hz</div>
         </div>
         <div className="bg-amber-50 dark:bg-amber-900/30 p-3 rounded-lg text-center">
           <div className="text-xs text-amber-600 dark:text-amber-400 uppercase">Period</div>

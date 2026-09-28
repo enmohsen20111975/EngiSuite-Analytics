@@ -10,7 +10,7 @@ export default function TermsPage() {
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 dark:bg-accent/20 text-accent mb-4">
           <FileText className="w-8 h-8" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -36,7 +36,7 @@ export default function TermsPage() {
         {/* Description of Service */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Check className="w-6 h-6 text-blue-500" />
+            <Check className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Description of Service
             </h2>
@@ -71,7 +71,7 @@ export default function TermsPage() {
         {/* Subscription and Payments */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <CreditCard className="w-6 h-6 text-blue-500" />
+            <CreditCard className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Subscriptions and Payments
             </h2>
@@ -109,7 +109,7 @@ export default function TermsPage() {
         {/* Intellectual Property */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Scale className="w-6 h-6 text-blue-500" />
+            <Scale className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Intellectual Property
             </h2>
@@ -144,7 +144,7 @@ export default function TermsPage() {
         {/* Disclaimer */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Shield className="w-6 h-6 text-blue-500" />
+            <Shield className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Disclaimer
             </h2>
@@ -185,7 +185,7 @@ export default function TermsPage() {
         {/* Contact */}
         <Card className="p-6 mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Mail className="w-6 h-6 text-blue-500" />
+            <Mail className="w-6 h-6 text-accent" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Contact Us
             </h2>
@@ -201,11 +201,11 @@ export default function TermsPage() {
 
         {/* Footer Links */}
         <div className="flex justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-          <Link to="/terms" className="hover:text-blue-600">Terms of Service</Link>
+          <Link to="/terms" className="hover:text-accent">Terms of Service</Link>
           <span>•</span>
-          <Link to="/privacy" className="hover:text-blue-600">Privacy Policy</Link>
+          <Link to="/privacy" className="hover:text-accent">Privacy Policy</Link>
           <span>•</span>
-          <Link to="/dashboard" className="hover:text-blue-600">Dashboard</Link>
+          <Link to="/dashboard" className="hover:text-accent">Dashboard</Link>
         </div>
       </div>
     </div>

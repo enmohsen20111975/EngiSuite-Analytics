@@ -1,0 +1,78 @@
+- generic [ref=e250] clickable [onclick]
+  - generic
+  - complementary
+    - StaticText "EngiSuite"
+    - button "100 pts" [ref=e254]
+      - StaticText "100"
+      - StaticText " pts"
+    - navigation
+      - list
+        - listitem [level=1]
+          - link "Dashboard" [ref=e280]
+        - listitem [level=1]
+          - link "Calculators" [ref=e281]
+        - listitem [level=1]
+          - link "Engineering Calculators" [ref=e282]
+        - listitem [level=1]
+          - link "Unit Converter" [ref=e283]
+        - listitem [level=1]
+          - link "Projects" [ref=e284]
+        - listitem [level=1]
+          - link "Visual Workflow" [ref=e285]
+        - listitem [level=1]
+          - link "Reports" [ref=e286]
+        - listitem [level=1]
+          - link "Projects" [ref=e287]
+        - listitem [level=1]
+          - link "Learning Center" [ref=e288]
+        - listitem [level=1]
+          - link "Knowledge" [ref=e289]
+        - listitem [level=1]
+          - link "Pricing" [ref=e290]
+      - button "TOOLS" [ref=e270]
+        - paragraph
+      - list
+        - listitem [level=1]
+          - link "Diagram Studio" [ref=e291]
+        - listitem [level=1]
+          - link "Logic Gate Simulator" [ref=e292]
+        - listitem [level=1]
+          - link "PDF Editor" [ref=e293]
+        - listitem [level=1]
+          - link "Analytics" [ref=e294]
+      - button "INTERACTIVE SIMULATORS" [ref=e271]
+    - list
+      - listitem [level=1]
+        - link "Profile" [ref=e277]
+      - listitem [level=1]
+        - link "Settings" [ref=e278]
+    - button [ref=e255]
+  - banner
+    - textbox "Search..." [ref=e251]
+    - button "100 pts" [ref=e252]
+    - button "Language" [ref=e256]
+    - button [ref=e257]
+    - button [ref=e253]
+    - button "T" [ref=e258]
+  - main
+    - heading "Chat History" [level=3, ref=e259]
+    - button "×" [ref=e260]
+    - generic
+      - button "Ohm's Law calculation How do I calculate voltage... 2 hours ago" [ref=e272]
+      - button "Structural analysis script Write a JavaScript script for... Yesterday" [ref=e273]
+      - button "Beam deflection formulas What are the formulas for... 3 days ago" [ref=e274]
+    - button "New Chat" [ref=e275]
+    - heading "EngiSuite AI Assistant" [level=1, ref=e261]
+    - paragraph
+    - button [ref=e262]
+    - button [ref=e263]
+    - heading "How can I help you today?" [level=2, ref=e264]
+    - paragraph
+    - button "Solve an equation" [ref=e265]
+    - button "Generate code" [ref=e266]
+    - button "Explain a concept" [ref=e267]
+    - button "Write documentation" [ref=e268]
+    - generic
+      - textbox "Ask me anything about engineering..." [ref=e276]
+      - button [ref=e279]
+    - button [disabled, ref=e269]

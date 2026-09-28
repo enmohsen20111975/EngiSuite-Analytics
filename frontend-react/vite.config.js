@@ -10,99 +10,100 @@ export default defineConfig({
     port: 4000,
     strictPort: true,
     proxy: {
-      // Proxy auth requests to FastAPI backend
-      '/auth': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy auth requests to Node backend (regex requires '/' after prefix
+      // so SPA routes like /auth/callback are NOT proxied)
+      '^/auth/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy API requests to FastAPI backend
-      '/api': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy API requests to Node backend
+      '^/api/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy analytics requests
-      '/analytics': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy analytics API requests (regex prevents clash with /analytics SPA route)
+      '^/analytics/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy calculation requests
-      '/calculate': {
-        target: 'http://127.0.0.1:4001',
+      '^/calculate/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy user data requests
-      '/user-data': {
-        target: 'http://127.0.0.1:4001',
+      '^/user-data/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy admin requests
-      '/admin': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy admin requests (regex prevents clash with /admin SPA routes)
+      '^/admin/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy AI requests
-      '/ai': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy AI requests (regex prevents clash with /ai-assistant SPA route)
+      '^/ai/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy payments
-      '/payments': {
-        target: 'http://127.0.0.1:4001',
+      '^/payments/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy learning
-      '/learning': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy learning (regex prevents clash with /learning SPA route)
+      '^/learning/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy projects
-      '/projects': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy projects (regex prevents clash with /projects SPA routes)
+      '^/projects/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy reporting
-      '/reporting': {
-        target: 'http://127.0.0.1:4001',
+      '^/reporting/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy canvas
-      '/canvas': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy canvas API (no SPA route conflicts; allow bare prefix)
+      '^/canvas/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
-      // Proxy VDA
-      '/vda': {
-        target: 'http://127.0.0.1:4001',
+      // Proxy VDA (regex prevents clash with /vda SPA route if any)
+      '^/vda/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy prices
-      '/prices': {
-        target: 'http://127.0.0.1:4001',
+      '^/prices/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy posts/social
-      '/posts': {
-        target: 'http://127.0.0.1:4001',
+      '^/posts/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxy telegram
-      '/telegram': {
-        target: 'http://127.0.0.1:4001',
+      '^/telegram/': {
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
         secure: false,
       },
